@@ -1,11 +1,11 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ReservationService } from './reservation.service';
-import { provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
-import { firstValueFrom } from 'rxjs';
 
-import { Reservation } from '@features/reservations/models/reservation';
+import { Reservation, ReservationState } from '@features/reservations/models/reservation';
+import { ApiError } from '../models/api-error';
 
 describe('Reservation', () => {
   let service: ReservationService;
@@ -24,28 +24,88 @@ describe('Reservation', () => {
     httpTesting.verify();
   });
 
-  it('getReservations should return the list of reservations on success', async () => {
-    const mockReservations: Reservation[] = [
-      {
-        id: '1',
-        boardgameName: 'Root',
-        associationName: 'Gilda',
-        participantsCurrent: 1,
-        participantsMax: 4,
-        startTime: '',
-        endTime: '',
-      },
-    ];
+  describe('getReservations', () => {
+    it('should return the list of reservations on success', () => {
+      const mockReservations: Reservation[] = [
+        {
+          id: '1',
+          boardgameName: 'Root',
+          associationName: 'Gilda',
+          participantsCurrent: 1,
+          participantsMax: 4,
+          startTime: '',
+          endTime: '',
+        },
+      ];
 
-    const reservations = service.getReservations();
-    const reservationsPromise = firstValueFrom(reservations);
-    const req = httpTesting.expectOne(
-      { method: 'GET', url: '/api/v1/reservations' },
-      'Request to load the reservations'
-    );
+      service.getReservations().subscribe({
+        next: (reservations) => {
+          expect(reservations).toEqual(mockReservations);
+        },
+        error: (e: HttpErrorResponse) => {
+          throw new Error(`Expected success, but got error: ${e.message}`);
+        },
+      });
 
-    req.flush(mockReservations);
+      const req = httpTesting.expectOne(
+        { method: 'GET', url: '/api/v1/reservations' },
+        'Request to load the reservations'
+      );
+      req.flush(mockReservations);
+    });
 
-    expect(await reservationsPromise).toEqual(mockReservations);
+    it('should handle query parameters error ', () => {
+      const mockErrorResponse: ApiError = {
+        timestamp: '2025-11-13T15:55:12Z',
+        status: 500,
+        error: 'Bad Request',
+        message: 'Invalid game filter parameters',
+        path: '/api/v1/reservations',
+      };
+
+      service.getReservations().subscribe({
+        next: () => {
+          throw new Error('Should have failed with 500 error');
+        },
+        error: (error: HttpErrorResponse) => {
+          expect(error.status).toBe(500);
+
+          const backendError = error.error as ApiError;
+          expect(backendError.message).toBe('Invalid game filter parameters');
+        },
+      });
+
+      const req = httpTesting.expectOne({ method: 'GET', url: '/api/v1/reservations' });
+      req.flush(mockErrorResponse, { status: 500, statusText: 'Server Error' });
+    });
+
+    it('should include query parameters in the request when filters are provided', () => {
+      const filters = {
+        state: ReservationState.Open,
+        game: 'Root',
+        association: 'Gilda',
+      };
+
+      const mockReservations: Reservation[] = [];
+
+      service.getReservations(filters).subscribe({
+        next: () => {},
+        error: (e) => {
+          throw new Error(`Expected success, but got error: ${e.message}`);
+        },
+      });
+
+      const req = httpTesting.expectOne((req) => {
+        return (
+          req.url === '/api/v1/reservations' &&
+          req.method === 'GET' &&
+          req.params.get('state') === 'open' &&
+          req.params.get('game') === 'Root' &&
+          req.params.get('association') === 'Gilda'
+        );
+      });
+
+      req.flush(mockReservations);
+    });
   });
 });

@@ -9,7 +9,12 @@ export interface Reservation {
 }
 
 export interface ReservationFilter {
-  state?: string;
+  state?: ReservationState;
   game?: string;
   association?: string;
+}
+
+export enum ReservationState {
+  Open = 'open',
+  Closed = 'closed',
 }
