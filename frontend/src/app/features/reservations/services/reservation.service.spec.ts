@@ -125,5 +125,34 @@ describe('Reservation', () => {
 
       req.flush(mockReservations);
     });
+
+    it('should return 400 when invalid state is provided', () => {
+      // Manually override the compiler error
+      const invalidFilter = { state: 'wrong-state' } as unknown as ReservationFilter;
+
+      const mockErrorResponse: ApiError = {
+        timestamp: '2025-11-21T10:00:00Z',
+        status: 400,
+        error: 'Bad Request',
+        message: 'Invalid state value',
+        path: '/api/v1/reservations',
+      };
+
+      service.getReservations(invalidFilter).subscribe({
+        next: () => fail('Expected error 400'),
+        error: (error: HttpErrorResponse) => {
+          expect(error.status).toBe(400);
+          expect((error.error as ApiError).message).toContain('Invalid state value');
+        },
+      });
+
+      const req = httpTesting.expectOne((req) => {
+        return (
+          req.url === apiURL && req.method === 'GET' && req.params.get('state') === 'wrong-state'
+        );
+      });
+
+      req.flush(mockErrorResponse, { status: 400, statusText: 'Bad Request' });
+    });
   });
 });
