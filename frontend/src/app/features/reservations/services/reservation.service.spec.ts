@@ -1,15 +1,25 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ReservationService } from './reservation.service';
-import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, HttpRequest, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
-import { Reservation, ReservationState } from '@features/reservations/models/reservation';
+import {
+  Reservation,
+  ReservationFilter,
+  ReservationState,
+} from '@features/reservations/models/reservation';
 import { ApiError } from '../models/api-error';
 
 describe('Reservation', () => {
+  const apiURL = '/api/v1/reservations';
+
   let service: ReservationService;
   let httpTesting: HttpTestingController;
+
+  const fail = (description: string) => {
+    throw new Error(description);
+  };
 
   beforeEach(() => {
     TestBed.configureTestingModule({
@@ -36,6 +46,15 @@ describe('Reservation', () => {
           startTime: '',
           endTime: '',
         },
+        {
+          id: '2',
+          boardgameName: 'Root2',
+          associationName: 'Gilda2',
+          participantsCurrent: 2,
+          participantsMax: 6,
+          startTime: '',
+          endTime: '',
+        },
       ];
 
       service.getReservations().subscribe({
@@ -43,61 +62,60 @@ describe('Reservation', () => {
           expect(reservations).toEqual(mockReservations);
         },
         error: (e: HttpErrorResponse) => {
-          throw new Error(`Expected success, but got error: ${e.message}`);
+          fail(`Expected success, but got error: ${e.message}`);
         },
       });
 
       const req = httpTesting.expectOne(
-        { method: 'GET', url: '/api/v1/reservations' },
+        { method: 'GET', url: apiURL },
         'Request to load the reservations'
       );
       req.flush(mockReservations);
     });
 
-    it('should handle query parameters error ', () => {
+    it('should fail with 500 for server errors', () => {
       const mockErrorResponse: ApiError = {
         timestamp: '2025-11-13T15:55:12Z',
         status: 500,
-        error: 'Bad Request',
-        message: 'Invalid game filter parameters',
-        path: '/api/v1/reservations',
+        error: 'Internal Server Error',
+        message: 'Server is not responding correctly',
+        path: apiURL,
       };
 
       service.getReservations().subscribe({
         next: () => {
-          throw new Error('Should have failed with 500 error');
+          fail('Should have failed with 500 error');
         },
         error: (error: HttpErrorResponse) => {
           expect(error.status).toBe(500);
 
           const backendError = error.error as ApiError;
-          expect(backendError.message).toBe('Invalid game filter parameters');
+          expect(backendError.message).toBe('Server is not responding correctly');
         },
       });
 
-      const req = httpTesting.expectOne({ method: 'GET', url: '/api/v1/reservations' });
+      const req = httpTesting.expectOne({ method: 'GET', url: apiURL });
       req.flush(mockErrorResponse, { status: 500, statusText: 'Server Error' });
     });
 
     it('should include query parameters in the request when filters are provided', () => {
+      const mockReservations: Reservation[] = [];
       const filters = {
         state: ReservationState.Open,
         game: 'Root',
         association: 'Gilda',
       };
 
-      const mockReservations: Reservation[] = [];
-
       service.getReservations(filters).subscribe({
         next: () => {},
         error: (e) => {
-          throw new Error(`Expected success, but got error: ${e.message}`);
+          fail(`Expected success, but got error: ${e.message}`);
         },
       });
 
       const req = httpTesting.expectOne((req) => {
         return (
-          req.url === '/api/v1/reservations' &&
+          req.url === apiURL &&
           req.method === 'GET' &&
           req.params.get('state') === 'open' &&
           req.params.get('game') === 'Root' &&
