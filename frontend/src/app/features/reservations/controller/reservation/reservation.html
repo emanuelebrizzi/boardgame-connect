@@ -1,0 +1,57 @@
+<mat-card
+  appearance="outlined"
+  class="h-full flex flex-col hover:shadow-md transition-shadow duration-200"
+>
+  <mat-card-header>
+    <mat-card-subtitle class="font-bold text-indigo-600">
+      {{ reservation().associationName | uppercase }}
+    </mat-card-subtitle>
+    <mat-card-title class="!font-medium">{{ reservation().boardgameName }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content class="flex-grow mt-4">
+    <!-- Date Info -->
+    <div class="flex items-center gap-2 text-gray-600 mb-2">
+      <mat-icon
+        class="text-gray-400 text-sm !w-4 !h-4 flex items-center justify-center"
+        aria-hidden="true"
+        >calendar_today</mat-icon
+      >
+      <span class="text-sm">{{ reservation().startTime | date : 'EEE, d MMM y' }}</span>
+    </div>
+
+    <!-- Time Info TODO: probably we need to clarify the time range better!-->
+    <div class="flex items-center gap-2 text-gray-600 mb-4">
+      <mat-icon
+        class="text-gray-400 text-sm !w-4 !h-4 flex items-center justify-center"
+        aria-hidden="true"
+        >schedule</mat-icon
+      >
+      <span class="text-sm">
+        {{ reservation().startTime | date : 'HH:mm' }} -
+        {{ reservation().endTime | date : 'HH:mm' }}
+      </span>
+    </div>
+
+    <!-- Availability Chip -->
+    <mat-chip-set aria-label="Seat availability">
+      <mat-chip
+        [class]="isFull() ? 'bg-red-50 text-red-700' : 'bg-green-50 text-green-700'"
+        highlighted
+      >
+        <mat-icon matChipAvatar>group</mat-icon>
+        {{ reservation().participantsCurrent }} / {{ reservation().participantsMax }}
+      </mat-chip>
+    </mat-chip-set>
+  </mat-card-content>
+
+  <mat-card-actions align="end" class="border-t border-gray-50">
+    <button
+      mat-button
+      color="primary"
+      [attr.aria-label]="'View details for ' + reservation().boardgameName"
+    >
+      Details
+    </button>
+  </mat-card-actions>
+</mat-card>
