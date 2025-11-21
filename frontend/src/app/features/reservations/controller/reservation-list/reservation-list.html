@@ -4,7 +4,7 @@
   <!-- HEADER -->
   <header class="mb-8 border-b border-gray-200 pb-4">
     <h1 class="text-3xl font-light text-gray-800">Available Games</h1>
-    <p class="text-gray-500 mt-1">Join game or create a reservation.</p>
+    <p class="text-gray-500 mt-1">Join a game or reserve your spot.</p>
   </header>
 
   <!-- ERROR STATE: 500 SERVER ERROR (Full Page) -->
@@ -29,57 +29,49 @@
 
   <!-- FILTERS TOOLBAR -->
   <!-- Grid: 1 column mobile, 3 columns desktop, plus button -->
-  <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 mb-8">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+  <div class="filters-card mat-elevation-z1">
+    <div class="filters-grid">
       <!-- Filter: Game Name -->
-      <div class="md:col-span-4">
-        <mat-form-field appearance="outline" class="w-full dense-form-field">
-          <mat-label>Game Name</mat-label>
-          <input matInput placeholder="e.g. Root" />
-          <mat-icon matSuffix class="text-gray-400">videogame_asset</mat-icon>
-        </mat-form-field>
-      </div>
+      <mat-form-field appearance="outline" class="filter-item">
+        <mat-label>Game Name</mat-label>
+        <input matInput placeholder="e.g. Root" />
+        <mat-icon matSuffix class="text-gray-400">videogame_asset</mat-icon>
+      </mat-form-field>
 
       <!-- Filter: Association -->
-      <div class="md:col-span-4">
-        <mat-form-field appearance="outline" class="w-full dense-form-field">
-          <mat-label>Association</mat-label>
-          <input matInput placeholder="e.g. Gilda" />
-          <mat-icon matSuffix class="text-gray-400">store</mat-icon>
-        </mat-form-field>
-      </div>
+      <mat-form-field appearance="outline" class="filter-item">
+        <mat-label>Association</mat-label>
+        <input matInput placeholder="e.g. Gilda" />
+        <mat-icon matSuffix class="text-gray-400">store</mat-icon>
+      </mat-form-field>
 
       <!-- Filter: Status -->
-      <div class="md:col-span-3">
-        <mat-form-field appearance="outline" class="w-full dense-form-field">
-          <mat-label>Status</mat-label>
-          <mat-select>
-            <mat-option value="">All</mat-option>
-            <mat-option value="open">Open</mat-option>
-            <mat-option value="closed">Closed</mat-option>
-          </mat-select>
-        </mat-form-field>
-      </div>
+      <mat-form-field appearance="outline" class="filter-item status-filter">
+        <mat-label>Status</mat-label>
+        <mat-select>
+          <mat-option value="">All</mat-option>
+          <mat-option value="open">Open</mat-option>
+          <mat-option value="closed">Closed</mat-option>
+        </mat-select>
+      </mat-form-field>
 
       <!-- Filter Actions -->
-      <div class="md:col-span-1 flex justify-end md:justify-center">
-        <button mat-icon-button color="primary" aria-label="Apply Filters" class="scale-125">
+      <div class="filter-actions">
+        <button mat-stroked-button color="primary" class="filter-btn" aria-label="Apply filters">
           <mat-icon>filter_list</mat-icon>
         </button>
       </div>
     </div>
-  </div>
 
-  <!-- LOADING -->
-  @if (isLoading()) {
-  <div class="flex flex-col items-center justify-center py-16">
-    <mat-spinner diameter="48"></mat-spinner>
-    <p class="mt-4 text-gray-500 text-sm">Updating results...</p>
-  </div>
-  }
+    <!-- LOADING -->
+    @if (isLoading()) {
+    <div class="loading-container">
+      <mat-spinner diameter="40"></mat-spinner>
+    </div>
+    }
 
-  <!-- GENERIC ERROR (e.g. 400 Bad Request) - Inline -->
-  <!-- @if (error() && errorStatus() !== 500) {
+    <!-- GENERIC ERROR (e.g. 400 Bad Request) - Inline -->
+    <!-- @if (error() && errorStatus() !== 500) {
   <div class="bg-orange-50 border-l-4 border-orange-500 p-4 mb-6 rounded-r" role="alert">
     <div class="flex">
       <mat-icon class="text-orange-500 mr-2">warning</mat-icon>
@@ -91,23 +83,21 @@
   </div>
   } -->
 
-  <!-- GRID RESULTS -->
-  @if (!isLoading()) {
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-    @for (item of reservations(); track item.id) {
-    <app-reservation [reservation]="item" />
-    }
+    <!-- GRID RESULTS -->
+    @if (!isLoading()) {
+    <div class="results-grid">
+      @for (item of reservations(); track item.id) {
+      <app-reservation [reservation]="item" />
+      }
 
-    <!-- EMPTY RESULTS -->
-    @if (reservations().length === 0) {
-    <div
-      class="col-span-full flex flex-col items-center justify-center py-16 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50"
-    >
-      <mat-icon class="text-gray-300 text-6xl mb-2 !w-16 !h-16">filter_alt_off</mat-icon>
-      <p class="text-gray-500 font-medium text-lg">No results match your filters.</p>
-      <button mat-button color="primary" class="mt-2">CLEAR FILTERS</button>
+      <!-- EMPTY RESULTS -->
+      @if (reservations().length === 0) {
+      <div class="empty-state">
+        <mat-icon>event_busy</mat-icon>
+        <p>No tables found.</p>
+      </div>
+      }
     </div>
     }
   </div>
-  }
 </div>

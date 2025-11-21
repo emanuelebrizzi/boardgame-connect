@@ -1,24 +1,116 @@
-.dense-form-field {
-  font-size: 14px;
-}
+/* PAGE HEADER */
+.page-header {
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #e0e0e0;
 
-:host ::ng-deep .mat-mdc-form-field-subscript-wrapper {
-  display: none;
-  /* Hides the space reserved for hint/error if not used, for tighter layout */
-}
-
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
+  h1 {
+    margin: 0;
+    font-weight: 300;
+    font-size: 2rem;
+    color: #333;
   }
 
-  to {
-    opacity: 1;
-    transform: translateY(0);
+  p {
+    margin: 4px 0 0;
+    color: #666;
   }
+}
+
+/* FILTERS LAYOUT */
+.filters-card {
+  background: white;
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 32px;
+  border: 1px solid #e0e0e0;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+.filter-item {
+  grid-column: span 4;
+  /* Desktop: 3 columns */
+}
+
+.status-filter {
+  grid-column: span 3;
+}
+
+.filter-actions {
+  grid-column: span 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filter-btn {
+  height: 56px;
+  /* Matches MatFormField height */
+  width: 100%;
+  border-color: #e0e0e0;
+
+  &:hover {
+    background-color: #f5f5f5;
+  }
+}
+
+/* RESPONSIVE BREAKPOINTS */
+@media (max-width: 960px) {
+
+  .filter-item,
+  .status-filter {
+    grid-column: span 6;
+  }
+
+  .filter-actions {
+    grid-column: span 12;
+  }
+}
+
+@media (max-width: 600px) {
+
+  .filter-item,
+  .status-filter {
+    grid-column: span 12;
+  }
+}
+
+/* RESULTS GRID */
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* STATES */
+.loading-container,
+.empty-state,
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 0;
+  text-align: center;
+}
+
+.empty-state mat-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #bdbdbd;
+  margin-bottom: 16px;
+}
+
+.error-state .error-icon {
+  font-size: 64px;
+  width: 64px;
+  height: 64px;
+  color: #f44336;
+  margin-bottom: 16px;
 }

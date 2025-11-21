@@ -8,7 +8,7 @@ import { Reservation, ReservationFilter } from '@features/reservations/models/re
 })
 export class ReservationService {
   private httpClient = inject(HttpClient);
-  private readonly apiURL = '/api/v1/reservations';
+  private readonly apiURL = 'http://localhost:3000/reservations/';
 
   getReservations(filters?: ReservationFilter): Observable<Reservation[]> {
     let params = new HttpParams();

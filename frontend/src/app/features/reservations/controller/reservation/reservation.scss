@@ -1,15 +1,75 @@
-.bg-red-50 {
-  background-color: #fef2f2 !important;
+.card-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.2s, transform 0.2s;
+
+  &:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
 }
 
-.text-red-700 {
-  color: #b91c1c !important;
+.card-title {
+  font-weight: 700;
+  font-size: 1.15rem;
+  margin-bottom: 4px;
 }
 
-.bg-green-50 {
-  background-color: #f0fdf4 !important;
+.card-subtitle {
+  color: #3f51b5;
+  /* Indigo */
+  font-weight: 500;
+  font-size: 0.75rem;
+  letter-spacing: 0.05em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
-.text-green-700 {
-  color: #15803d !important;
+.subtitle-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.card-content {
+  margin-top: 16px;
+  flex-grow: 1;
+  border-top: 1px solid #f0f0f0;
+  padding-top: 12px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #616161;
+  margin-bottom: 8px;
+  font-size: 0.9rem;
+}
+
+.info-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+  color: #9e9e9e;
+}
+
+.status-chip {
+  margin-top: 16px;
+}
+
+/* Chip Colors */
+.chip-open {
+  color: #2e7d32;
+}
+
+.chip-closed {
+  color: #c62828;
+}
+
+.card-actions {
+  background-color: #fafafa;
+  border-top: 1px solid #eee;
 }

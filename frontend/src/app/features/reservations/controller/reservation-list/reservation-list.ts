@@ -23,7 +23,7 @@ import { MatSelectModule } from '@angular/material/select';
   styleUrl: './reservation-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReservationList implements OnInit {
+export class ReservationListComponent implements OnInit {
   private readonly service = inject(ReservationService);
 
   reservations = signal<Reservation[]>([]);
