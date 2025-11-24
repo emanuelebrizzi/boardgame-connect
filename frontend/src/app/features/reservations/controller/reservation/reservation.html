@@ -1,0 +1,38 @@
+<mat-card appearance="outlined" class="card-container">
+  <mat-card-header>
+    <mat-card-subtitle class="card-title">
+      {{ reservation().boardgameName }}
+    </mat-card-subtitle>
+    <mat-card-title class="card-subtitle">{{
+      reservation().associationName | uppercase
+    }}</mat-card-title>
+  </mat-card-header>
+
+  <mat-card-content class="card-content">
+    <!-- Date Info
+        Example: 'EEE, d MMM y' format for Nov 25, 2025 is 'Tue, 25 Nov 2025'
+    -->
+    <div class="info-row">
+      <mat-icon class="info-icon">calendar_today</mat-icon>
+      <span class="text-sm">{{ reservation().startTime | date : 'EEE, d MMM y' }}</span>
+    </div>
+
+    <!-- Time Info -->
+    <div class="info-row">
+      <mat-icon class="info-icon">schedule</mat-icon>
+      <span class="text-sm">
+        {{ reservation().startTime | date : 'HH:mm' }} -
+        {{ reservation().endTime | date : 'HH:mm' }}
+      </span>
+    </div>
+
+    <!-- Availability Chip -->
+    <mat-chip-set aria-label="Seat availability" class="status-chip">
+      <!-- Logic for Chips colors -->
+      <mat-chip [class.chip-closed]="isFull()" [class.chip-open]="!isFull()">
+        <mat-icon matChipAvatar>group</mat-icon>
+        {{ reservation().participantsCurrent }} / {{ reservation().participantsMax }}
+      </mat-chip>
+    </mat-chip-set>
+  </mat-card-content>
+</mat-card>

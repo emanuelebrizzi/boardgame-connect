@@ -1,0 +1,54 @@
+{
+  "reservations": [
+    {
+      "id": "t_123",
+      "boardgameName": "Root",
+      "associationName": "La Gilda del Cassero",
+      "participantsCurrent": 2,
+      "participantsMax": 4,
+      "startTime": "2025-11-20T21:00:00Z",
+      "endTime": "2025-11-20T22:30:00Z",
+      "state": "open"
+    },
+    {
+      "id": "t_124",
+      "boardgameName": "Wingspan",
+      "associationName": "Ludoteca Svelta",
+      "participantsCurrent": 1,
+      "participantsMax": 5,
+      "startTime": "2025-11-21T18:30:00Z",
+      "endTime": "2025-11-21T19:30:00Z",
+      "state": "open"
+    },
+    {
+      "id": "t_125",
+      "boardgameName": "Brass: Birmingham",
+      "associationName": "Tana dei Goblin",
+      "participantsCurrent": 3,
+      "participantsMax": 4,
+      "startTime": "2025-11-22T20:00:00Z",
+      "endTime": "2025-11-22T23:00:00Z",
+      "state": "closed"
+    },
+    {
+      "id": "t_126",
+      "boardgameName": "Dune: Imperium",
+      "associationName": "Circolo Arci",
+      "participantsCurrent": 4,
+      "participantsMax": 4,
+      "startTime": "2025-11-23T20:30:00Z",
+      "endTime": "2025-11-23T23:30:00Z",
+      "state": "closed"
+    },
+    {
+      "id": "t_127",
+      "boardgameName": "Ark Nova",
+      "associationName": "Ludoteca Svelta",
+      "participantsCurrent": 2,
+      "participantsMax": 4,
+      "startTime": "2025-11-24T14:00:00Z",
+      "endTime": "2025-11-24T17:00:00Z",
+      "state": "open"
+    }
+  ]
+}
