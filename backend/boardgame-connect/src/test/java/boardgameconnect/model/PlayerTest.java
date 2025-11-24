@@ -8,8 +8,9 @@ class PlayerTest {
 
     @Test
     void shouldCreatePlayer() {
-        Player p = new Player(new Email("p@ex.com"), "pwd", "user1");
-        assertEquals("user1", p.getUsername());
+        Player p = new Player(new Email("breezen@domain.com"), "password", "Breezen");
+        assertEquals("Breezen", p.getUsername());
     }
+
 
 }
