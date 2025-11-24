@@ -9,13 +9,15 @@
   </mat-card-header>
 
   <mat-card-content class="card-content">
-    <!-- Date Info -->
+    <!-- Date Info
+        Example: 'EEE, d MMM y' format for Nov 25, 2025 is 'Tue, 25 Nov 2025'
+    -->
     <div class="info-row">
       <mat-icon class="info-icon">calendar_today</mat-icon>
       <span class="text-sm">{{ reservation().startTime | date : 'EEE, d MMM y' }}</span>
     </div>
 
-    <!-- Time Info TODO: probably we need to clarify the time range better!-->
+    <!-- Time Info -->
     <div class="info-row">
       <mat-icon class="info-icon">schedule</mat-icon>
       <span class="text-sm">
@@ -34,6 +36,7 @@
     </mat-chip-set>
   </mat-card-content>
 
+  <!-- TODO: Add action for the button -->
   <mat-card-actions align="end" class="card-action">
     <button
       mat-button

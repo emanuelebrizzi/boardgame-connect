@@ -12,7 +12,7 @@ import {
 import { ApiError } from '../models/api-error';
 
 describe('Reservation', () => {
-  const apiURL = '/api/v1/reservations';
+  const apiURL = 'http://localhost:3000/reservations/';
 
   let service: ReservationService;
   let httpTesting: HttpTestingController;
