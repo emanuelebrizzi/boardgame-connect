@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  inject,
+  OnInit,
+  signal,
+} from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -6,11 +14,16 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
-import { Reservation } from '@features/reservations/models/reservation';
+import { catchError, debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
+import { merge, of } from 'rxjs';
+import {
+  Reservation,
+  ReservationFilter,
+  ReservationState,
+} from '@features/reservations/models/reservation';
 import { ReservationService } from '@features/reservations/services/reservation.service';
 import { ReservationComponent } from '../reservation/reservation';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-reservation-list',
@@ -28,8 +41,9 @@ import { ReservationComponent } from '../reservation/reservation';
   styleUrl: './reservation-list.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReservationListComponent {
+export class ReservationListComponent implements OnInit {
   private readonly service = inject(ReservationService);
+  private readonly destroyRef = inject(DestroyRef);
 
   reservations = signal<Reservation[]>([]);
   isLoading = signal(false);
@@ -40,16 +54,41 @@ export class ReservationListComponent {
   assocFilter = new FormControl('');
   statusFilter = new FormControl('');
 
-  constructor() {
+  ngOnInit(): void {
+    this.setupFilterListeners();
     this.loadData();
+  }
+
+  private setupFilterListeners() {
+    merge(
+      this.nameFilter.valueChanges,
+      this.assocFilter.valueChanges,
+      this.statusFilter.valueChanges
+    )
+      .pipe(
+        debounceTime(800), // Wait for user to stop typing
+        distinctUntilChanged(), // Ignore identical subsequent values
+        takeUntilDestroyed(this.destroyRef) // Auto-unsubscribe
+      )
+      .subscribe(() => {
+        this.loadData();
+      });
   }
 
   loadData() {
     this.isLoading.set(true);
     this.error.set(null);
 
+    const rawState = this.statusFilter.value;
+    const stateFilter = rawState ? (rawState as ReservationState) : undefined;
+    const filters: ReservationFilter = {
+      game: this.nameFilter.value ?? '',
+      association: this.assocFilter.value ?? '',
+      state: stateFilter,
+    };
+
     this.service
-      .getReservations()
+      .getReservations(filters)
       .pipe(
         catchError((err) => {
           const msg =
@@ -67,5 +106,11 @@ export class ReservationListComponent {
           this.reservations.set(data);
         }
       });
+  }
+
+  clearFilters() {
+    this.nameFilter.setValue('');
+    this.assocFilter.setValue('');
+    this.statusFilter.setValue('');
   }
 }

@@ -27,7 +27,19 @@
         </mat-select>
       </mat-form-field>
 
-      <div class="filter-actions">
+      <div class="filter-actions flex gap-2">
+        <!-- CLEAR BUTTON -->
+        <button
+          mat-stroked-button
+          color="warn"
+          (click)="clearFilters()"
+          aria-label="Clear all filters"
+          [disabled]="!nameFilter.value && !assocFilter.value && !statusFilter.value"
+        >
+          <mat-icon>filter_alt_off</mat-icon>
+        </button>
+
+        <!-- REFRESH BUTTON -->
         <button mat-stroked-button color="primary" (click)="loadData()" aria-label="Refresh list">
           <mat-icon>refresh</mat-icon>
         </button>
