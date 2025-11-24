@@ -6,8 +6,8 @@ public class Email {
 
 	public Email(String email) {
 		super();
-		
-		if ((email == null) || (email == "") || (!email.matches("^[^@\\s]+@[^@\\s]+$"))) {
+
+		if ((email == null) || (!email.matches("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$"))) {
 			throw new IllegalArgumentException("Invalid email format");
 		}
 		this.email = email;
