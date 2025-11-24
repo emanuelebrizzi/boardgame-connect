@@ -29,5 +29,4 @@ public class EmailTest {
 		assertThrows(IllegalArgumentException.class, () -> new Email("Invalidmail@invaliddomain"), "Invalid email format");
 	}
 
-
 }
