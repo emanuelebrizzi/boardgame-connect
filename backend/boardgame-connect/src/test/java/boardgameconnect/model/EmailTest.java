@@ -22,11 +22,12 @@ public class EmailTest {
 	void testCreateEmailWhenEmailStringIsEmptyStringShouldSThrow() {
 		assertThrows(IllegalArgumentException.class, () -> new Email(""), "Invalid email format");
 	}
-	
+		
 	@Test
 	void testCreateEmailWhenEmailStringIsInvalidEmailShouldSThrow() {
 		assertThrows(IllegalArgumentException.class, () -> new Email("Invalidmail"), "Invalid email format");
 		assertThrows(IllegalArgumentException.class, () -> new Email("Invalidmail@invaliddomain"), "Invalid email format");
+		assertThrows(IllegalArgumentException.class, () -> new Email("Invalidmail@invalid domain.com"), "Invalid email format");
 	}
 
 }
