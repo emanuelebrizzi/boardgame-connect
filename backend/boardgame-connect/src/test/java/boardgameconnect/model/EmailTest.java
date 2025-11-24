@@ -8,16 +8,14 @@ import org.junit.jupiter.api.Test;
 public class EmailTest {
 
 	@Test
-    void testCreateEmailWhenEmailStringIsValidShouldCreateEmail() {
-        Email email = new Email("user@domain.com");
-        assertEquals("user@domain.com", email.getEmail());
-    }
-	
+	void testCreateEmailWhenEmailStringIsValidShouldCreateEmail() {
+		Email email = new Email("user@domain.com");
+		assertEquals("user@domain.com", email.getEmail());
+	}
+
 	@Test
 	void testCreateEmailWhenEmailStringIsEmptyStringShouldSThrow() {
-        Email email = new Email("");
-        assertThrows(IllegalArgumentException.class, () -> new Email(""));
-    }
-	
-	
+		assertThrows(IllegalArgumentException.class, () -> new Email(""), "Invalid email format");
+	}
+
 }
