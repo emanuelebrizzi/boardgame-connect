@@ -1,103 +1,71 @@
 <div class="container mx-auto p-4 max-w-6xl">
-  <!-- Increased max-width for filters -->
-
-  <!-- HEADER -->
   <header class="mb-8 border-b border-gray-200 pb-4">
     <h1 class="text-3xl font-light text-gray-800">Available Games</h1>
     <p class="text-gray-500 mt-1">Join a game or reserve your spot.</p>
   </header>
 
-  <!-- ERROR STATE: 500 SERVER ERROR (Full Page) -->
-  <!-- @if (errorStatus() === 500) {
-        <div class="flex flex-col items-center justify-center py-20 text-center animate-fade-in">
-          <div class="bg-red-50 p-6 rounded-full mb-6">
-            <mat-icon class="text-red-500 text-6xl !w-16 !h-16">dns</mat-icon>
-          </div>
-          <h2 class="text-2xl font-bold text-gray-800 mb-2">Server Error</h2>
-          <p class="text-gray-600 max-w-md mb-8">
-            Oops! Something went wrong on our end. We are working to fix it.
-            Please try again in a few minutes.
-          </p>
-          <button mat-flat-button color="primary" (click)="loadData()">
-            <mat-icon>refresh</mat-icon> RETRY CONNECTION
-          </button>
-        </div>
-      } -->
-
-  <!-- NORMAL STATE -->
-  <!-- @else { -->
-
-  <!-- FILTERS TOOLBAR -->
-  <!-- Grid: 1 column mobile, 3 columns desktop, plus button -->
-  <div class="filters-card mat-elevation-z1">
+  <div class="filters-card mat-elevation-z1 mb-6">
     <div class="filters-grid">
-      <!-- Filter: Game Name -->
       <mat-form-field appearance="outline" class="filter-item">
         <mat-label>Game Name</mat-label>
-        <input matInput placeholder="e.g. Root" />
+        <input matInput [formControl]="nameFilter" placeholder="e.g. Root" />
         <mat-icon matSuffix class="text-gray-400">videogame_asset</mat-icon>
       </mat-form-field>
 
-      <!-- Filter: Association -->
       <mat-form-field appearance="outline" class="filter-item">
         <mat-label>Association</mat-label>
-        <input matInput placeholder="e.g. Gilda" />
+        <input matInput [formControl]="assocFilter" placeholder="e.g. Gilda" />
         <mat-icon matSuffix class="text-gray-400">store</mat-icon>
       </mat-form-field>
 
-      <!-- Filter: Status -->
       <mat-form-field appearance="outline" class="filter-item status-filter">
         <mat-label>Status</mat-label>
-        <mat-select>
+        <mat-select [formControl]="statusFilter">
           <mat-option value="">All</mat-option>
           <mat-option value="open">Open</mat-option>
           <mat-option value="closed">Closed</mat-option>
         </mat-select>
       </mat-form-field>
 
-      <!-- Filter Actions -->
       <div class="filter-actions">
-        <button mat-stroked-button color="primary" class="filter-btn" aria-label="Apply filters">
-          <mat-icon>filter_list</mat-icon>
+        <button mat-stroked-button color="primary" (click)="loadData()" aria-label="Refresh list">
+          <mat-icon>refresh</mat-icon>
         </button>
       </div>
     </div>
-
-    <!-- LOADING -->
-    @if (isLoading()) {
-    <div class="loading-container">
-      <mat-spinner diameter="40"></mat-spinner>
-    </div>
-    }
-
-    <!-- GENERIC ERROR (e.g. 400 Bad Request) - Inline -->
-    <!-- @if (error() && errorStatus() !== 500) {
-  <div class="bg-orange-50 border-l-4 border-orange-500 p-4 mb-6 rounded-r" role="alert">
-    <div class="flex">
-      <mat-icon class="text-orange-500 mr-2">warning</mat-icon>
-      <div>
-        <p class="text-orange-800 font-bold">Attention</p>
-        <p class="text-orange-700 text-sm">{{ error() }}</p>
-      </div>
-    </div>
   </div>
-  } -->
 
-    <!-- GRID RESULTS -->
-    @if (!isLoading()) {
-    <div class="results-grid">
-      @for (item of reservations(); track item.id) {
-      <app-reservation [reservation]="item" />
-      }
+  @if (isLoading()) {
+  <div class="flex justify-center py-12" role="status">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span class="sr-only">Loading reservations...</span>
+  </div>
+  } @else if (hasError()) {
+  <div
+    class="flex flex-col items-center justify-center py-12 text-center animate-fade-in"
+    role="alert"
+  >
+    <div class="bg-red-50 p-6 rounded-full mb-6 text-red-500">
+      <mat-icon class="text-6xl !w-16 !h-16">dns</mat-icon>
+    </div>
 
-      <!-- EMPTY RESULTS -->
-      @if (reservations().length === 0) {
-      <div class="empty-state">
-        <mat-icon>event_busy</mat-icon>
-        <p>No tables found.</p>
-      </div>
-      }
+    <h2 class="text-2xl font-bold text-gray-800 mb-2">Connection Failed</h2>
+    <p class="text-gray-600 max-w-md mb-8">{{ error() }}</p>
+
+    <button mat-flat-button color="primary" (click)="loadData()">
+      <mat-icon>refresh</mat-icon> TRY AGAIN
+    </button>
+  </div>
+  } @else {
+  <div class="results-grid">
+    @for (item of reservations(); track item.id) {
+    <app-reservation [reservation]="item" />
+    } @empty {
+    <div class="col-span-full flex flex-col items-center py-12 text-gray-500">
+      <mat-icon class="text-4xl mb-2">event_busy</mat-icon>
+      <p>No tables found matching your filters.</p>
     </div>
     }
   </div>
+  }
 </div>

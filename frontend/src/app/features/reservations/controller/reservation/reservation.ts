@@ -7,7 +7,6 @@ import { MatChipsModule } from '@angular/material/chips';
 
 @Component({
   selector: 'app-reservation',
-  standalone: true,
   imports: [MatCardModule, MatIcon, MatChipsModule, UpperCasePipe, DatePipe],
   templateUrl: './reservation.html',
   styleUrl: './reservation.scss',
