@@ -26,6 +26,8 @@ public class EmailTest {
 	@Test
 	void testCreateEmailWhenEmailStringIsInvalidEmailShouldSThrow() {
 		assertThrows(IllegalArgumentException.class, () -> new Email("Invalidmail"), "Invalid email format");
+		assertThrows(IllegalArgumentException.class, () -> new Email("Invalidmail@invaliddomain"), "Invalid email format");
 	}
+
 
 }
