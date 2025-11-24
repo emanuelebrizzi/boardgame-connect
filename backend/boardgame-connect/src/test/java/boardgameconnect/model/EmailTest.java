@@ -12,6 +12,11 @@ public class EmailTest {
 		Email email = new Email("user@domain.com");
 		assertEquals("user@domain.com", email.getEmail());
 	}
+	
+	@Test
+	void testCreateEmailWhenEmailStringIsNullStringShouldSThrow() {
+		assertThrows(IllegalArgumentException.class, () -> new Email(null), "Invalid email format");
+	}
 
 	@Test
 	void testCreateEmailWhenEmailStringIsEmptyStringShouldSThrow() {
