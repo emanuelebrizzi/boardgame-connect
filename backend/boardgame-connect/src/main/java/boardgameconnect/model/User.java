@@ -8,6 +8,9 @@ public class User {
 		super();
 		this.email = email;
 		this.password = password;
+        if (password.isBlank()) {
+            throw new IllegalArgumentException("Password cannot be blank");
+        }
 	}
 
 	public Email getEmail() {
