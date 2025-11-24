@@ -16,7 +16,7 @@ class PlayerTest {
 	@Test
 	void testCreatePlayerWhenUsernameIsNullShouldThrow() {
 		assertThrows(IllegalArgumentException.class,
-				() -> new Player(new Email("breezen@domain.com"), "password", null));
+				() -> new Player(new Email("breezen@domain.com"), "password", null), "");
 	}
 
 }
