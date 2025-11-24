@@ -29,21 +29,10 @@
     <!-- Availability Chip -->
     <mat-chip-set aria-label="Seat availability" class="status-chip">
       <!-- Logic for Chips colors -->
-      <mat-chip [class.chip-closed]="isFull()" [class.chip-open]="!isFull()" highlighted>
+      <mat-chip [class.chip-closed]="isFull()" [class.chip-open]="!isFull()">
         <mat-icon matChipAvatar>group</mat-icon>
         {{ reservation().participantsCurrent }} / {{ reservation().participantsMax }}
       </mat-chip>
     </mat-chip-set>
   </mat-card-content>
-
-  <!-- TODO: Add action for the button -->
-  <mat-card-actions align="end" class="card-action">
-    <button
-      mat-button
-      color="primary"
-      [attr.aria-label]="'View details for ' + reservation().boardgameName"
-    >
-      Details
-    </button>
-  </mat-card-actions>
 </mat-card>

@@ -62,14 +62,16 @@
 
 /* Chip Colors */
 .chip-open {
-  color: #2e7d32;
+  background-color: #e8f5e9 !important;
+  color: #2e7d32 !important;
+  --mdc-chip-label-text-color: #2e7d32;
+  --mat-chip-leading-icon-color: #2e7d32;
 }
 
+/* 2. CLOSED STATE (Red) */
 .chip-closed {
-  color: #c62828;
-}
-
-.card-actions {
-  background-color: #fafafa;
-  border-top: 1px solid #eee;
+  background-color: #ffebee !important;
+  color: #c62828 !important;
+  --mdc-chip-label-text-color: #c62828;
+  --mat-chip-leading-icon-color: #c62828;
 }
