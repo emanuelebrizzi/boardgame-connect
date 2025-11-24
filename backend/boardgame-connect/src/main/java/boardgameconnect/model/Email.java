@@ -6,7 +6,8 @@ public class Email {
 
 	public Email(String email) {
 		super();
-		if (email == "") {
+		
+		if ((email == null) || (email == "")) {
 			throw new IllegalArgumentException("Invalid email format");
 		}
 		this.email = email;
