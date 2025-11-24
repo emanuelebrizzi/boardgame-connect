@@ -7,9 +7,10 @@ import org.junit.jupiter.api.Test;
 public class UserTest {
 	
 	@Test
-    void shouldCreateUserWithEmailAndPassword() {
+    void stestCreateUserWhenEmailAndPasswordAreValidShouldCreateUser() {
         User u = new User(new Email("user@domain.com"), "password");
         assertEquals("user@domain.com", u.getEmail().getEmail());
         assertEquals("password", u.getPassword());
     }
+	
 }
