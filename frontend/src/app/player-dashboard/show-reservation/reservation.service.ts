@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Reservation, ReservationFilter } from './reservation.model';
+import { ReservationInfo } from './reservation-info.model';
 
 @Injectable({
   providedIn: 'root',
@@ -31,7 +32,7 @@ export class ReservationService {
     return this.httpClient.get<Reservation[]>(`${this.apiURL}/reservations`, { params });
   }
 
-  getReservation(id: string): Observable<undefined> {
-    return this.httpClient.get<undefined>(`${this.apiURL}/reservation/${id}`);
+  getReservation(id: string): Observable<ReservationInfo> {
+    return this.httpClient.get<ReservationInfo>(`${this.apiURL}/reservation/${id}`);
   }
 }
