@@ -19,11 +19,11 @@ export class ReservationService {
       }
 
       if (filters.game) {
-        params = params.set('boardgameName', filters.game);
+        params = params.set('game', filters.game);
       }
 
       if (filters.association) {
-        params = params.set('associationName', filters.association);
+        params = params.set('association', filters.association);
       }
     }
 

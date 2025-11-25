@@ -17,6 +17,6 @@ export class ReservationComponent {
 
   isFull = computed(() => {
     const r = this.reservation();
-    return r.participantsCurrent >= r.participantsMax;
+    return r.currentPlayers >= r.maxPlayers;
   });
 }

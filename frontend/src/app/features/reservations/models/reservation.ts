@@ -1,20 +1,21 @@
 export interface Reservation {
   id: string;
-  boardgameName: string;
-  associationName: string;
-  participantsCurrent: number;
-  participantsMax: number;
+  game: string;
+  association: string;
+  currentPlayers: number;
+  maxPlayers: number;
   startTime: string;
   endTime: string;
 }
 
 export interface ReservationFilter {
-  state?: ReservationState;
   game?: string;
   association?: string;
+  state?: ReservationState;
 }
 
 export enum ReservationState {
   Open = 'open',
+  Approved = 'approved',
   Closed = 'closed',
 }
