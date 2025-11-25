@@ -7,8 +7,9 @@ import { Reservation, ReservationFilter } from './reservation.model';
   providedIn: 'root',
 })
 export class ReservationService {
+  readonly apiURL = 'http://localhost:3000';
+
   private httpClient = inject(HttpClient);
-  private readonly apiURL = 'http://localhost:3000/reservations/';
 
   getReservations(filters?: ReservationFilter): Observable<Reservation[]> {
     let params = new HttpParams();
@@ -27,6 +28,10 @@ export class ReservationService {
       }
     }
 
-    return this.httpClient.get<Reservation[]>(this.apiURL, { params });
+    return this.httpClient.get<Reservation[]>(`${this.apiURL}/reservations`, { params });
+  }
+
+  getReservation(id: string): Observable<undefined> {
+    return this.httpClient.get<undefined>(`${this.apiURL}/reservation/${id}`);
   }
 }

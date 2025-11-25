@@ -1,15 +1,13 @@
 import { TestBed } from '@angular/core/testing';
 
 import { ReservationService } from './reservation.service';
-import { HttpErrorResponse, HttpRequest, provideHttpClient } from '@angular/common/http';
+import { HttpErrorResponse, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
 import { Reservation, ReservationFilter, ReservationState } from './reservation.model';
 import { ApiError } from '../api-error.model';
 
 describe('Reservation', () => {
-  const apiURL = 'http://localhost:3000/reservations/';
-
   let service: ReservationService;
   let httpTesting: HttpTestingController;
 
@@ -63,7 +61,7 @@ describe('Reservation', () => {
       });
 
       const req = httpTesting.expectOne(
-        { method: 'GET', url: apiURL },
+        { method: 'GET', url: `${service.apiURL}/reservations` },
         'Request to load the reservations'
       );
       req.flush(mockReservations);
@@ -75,7 +73,7 @@ describe('Reservation', () => {
         status: 500,
         error: 'Internal Server Error',
         message: 'Server is not responding correctly',
-        path: apiURL,
+        path: 'api/v1/reservations',
       };
 
       service.getReservations().subscribe({
@@ -90,7 +88,7 @@ describe('Reservation', () => {
         },
       });
 
-      const req = httpTesting.expectOne({ method: 'GET', url: apiURL });
+      const req = httpTesting.expectOne({ method: 'GET', url: `${service.apiURL}/reservations` });
       req.flush(mockErrorResponse, { status: 500, statusText: 'Server Error' });
     });
 
@@ -111,7 +109,7 @@ describe('Reservation', () => {
 
       const req = httpTesting.expectOne((req) => {
         return (
-          req.url === apiURL &&
+          req.url === `${service.apiURL}/reservations` &&
           req.method === 'GET' &&
           req.params.get('state') === 'open' &&
           req.params.get('game') === 'Root' &&
@@ -144,11 +142,32 @@ describe('Reservation', () => {
 
       const req = httpTesting.expectOne((req) => {
         return (
-          req.url === apiURL && req.method === 'GET' && req.params.get('state') === 'wrong-state'
+          req.url === `${service.apiURL}/reservations` &&
+          req.method === 'GET' &&
+          req.params.get('state') === 'wrong-state'
         );
       });
 
       req.flush(mockErrorResponse, { status: 400, statusText: 'Bad Request' });
+    });
+  });
+
+  describe('getReservation', () => {
+    it('should return 200', () => {
+      const reservationId: string = '1';
+
+      service.getReservation(reservationId).subscribe({
+        error: (e: HttpErrorResponse) => {
+          fail(`Expected success, but got error: ${e.message}`);
+        },
+      });
+
+      const req = httpTesting.expectOne(
+        { method: 'GET', url: `${service.apiURL}/reservation/${reservationId}` },
+        `Request to load the reservation with id:${reservationId}`
+      );
+
+      // req.flush('success');
     });
   });
 });
