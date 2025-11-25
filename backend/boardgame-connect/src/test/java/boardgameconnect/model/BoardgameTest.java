@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 public class BoardgameTest {
 	
 	@Test
-	void testCreateBoardgameWhenNameTaxcodeAddressAreValidShouldCreateassociation() {
+	void testCreateBoardgameWhenValuesAreValidShouldCreateassociation() {
 		Boardgame bg = new Boardgame ("Terra Mystica",2,5,60,30);
 		assertEquals("Terra Mystica", bg.getName());
 		assertEquals(2, bg.getMinPlayer());
