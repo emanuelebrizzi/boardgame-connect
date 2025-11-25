@@ -1,7 +1,7 @@
-import { Reservation } from './../../models/reservation';
+import { Reservation } from './reservation.model';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReservationComponent } from './reservation';
+import { ReservationComponent } from './reservation.component';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { DatePipe } from '@angular/common';

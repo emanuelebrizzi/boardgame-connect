@@ -4,12 +4,8 @@ import { ReservationService } from './reservation.service';
 import { HttpErrorResponse, HttpRequest, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 
-import {
-  Reservation,
-  ReservationFilter,
-  ReservationState,
-} from '@features/reservations/models/reservation';
-import { ApiError } from '../models/api-error';
+import { Reservation, ReservationFilter, ReservationState } from './reservation.model';
+import { ApiError } from '../api-error.model';
 
 describe('Reservation', () => {
   const apiURL = 'http://localhost:3000/reservations/';

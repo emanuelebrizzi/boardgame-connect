@@ -1,9 +1,9 @@
-import { Reservation } from '@features/reservations/models/reservation';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
+import { Reservation } from './reservation.model';
 
 @Component({
   selector: 'app-reservation',

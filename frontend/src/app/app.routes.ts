@@ -1,12 +1,10 @@
 import { Routes } from '@angular/router';
+import { DashboardComponent } from './player-dashboard/dashboard.component';
 
 export const routes: Routes = [
   {
     path: 'reservations',
-    loadComponent: () =>
-      import('./features/reservations/controller/reservation-list/reservation-list').then(
-        (m) => m.ReservationListComponent
-      ),
+    component: DashboardComponent,
   },
   { path: '', redirectTo: 'reservations', pathMatch: 'full' },
 ];
