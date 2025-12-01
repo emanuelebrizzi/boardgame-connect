@@ -22,7 +22,7 @@ import {
   ReservationState,
 } from './show-reservations/reservation-models';
 import { ReservationService } from './show-reservations/reservation.service';
-import { ReservationCardComponent } from './show-reservations/reservation-card/reservation-card.component';
+import { ReservationCardComponent } from './show-reservations/reservation-card/reservation-card';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({

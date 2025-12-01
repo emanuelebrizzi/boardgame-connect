@@ -4,6 +4,7 @@
   [routerLink]="['/reservations', reservation().id]"
   matRipple
 >
+  <img mat-card-image [src]="gameImageUrl()" class="game-cover-image" />
   <mat-card-header>
     <mat-card-subtitle class="card-title">
       {{ reservation().game }}

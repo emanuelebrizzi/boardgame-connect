@@ -25,6 +25,16 @@ import { RouterLink } from '@angular/router';
 export class ReservationCardComponent {
   reservation = input.required<Reservation>();
 
+  protected gameImageUrl = computed(() => {
+    const gameName = this.reservation().game;
+    const slug = gameName
+      .toLowerCase()
+      .replace(/:/g, '') // Remove colons
+      .replace(/\s+/g, '-') // Replace spaces with hyphens
+      .trim();
+    return `/games/${slug}.jpg`;
+  });
+
   isFull = computed(() => {
     const r = this.reservation();
     return r.currentPlayers >= r.maxPlayers;
