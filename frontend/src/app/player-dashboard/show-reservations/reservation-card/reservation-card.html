@@ -1,4 +1,9 @@
-<mat-card appearance="outlined" class="card-container">
+<mat-card
+  appearance="outlined"
+  class="card-container"
+  [routerLink]="['/reservations', reservation().id]"
+  matRipple
+>
   <mat-card-header>
     <mat-card-subtitle class="card-title">
       {{ reservation().game }}

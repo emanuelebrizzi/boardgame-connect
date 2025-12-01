@@ -71,7 +71,7 @@
   } @else {
   <div class="results-grid">
     @for (item of reservations(); track item.id) {
-    <app-reservation [reservation]="item" />
+    <app-reservation-card [reservation]="item" />
     } @empty {
     <div class="col-span-full flex flex-col items-center py-12 text-gray-500">
       <mat-icon class="text-4xl mb-2">event_busy</mat-icon>

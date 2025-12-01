@@ -4,10 +4,20 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { Reservation } from '../reservation-models';
+import { MatRippleModule } from '@angular/material/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
-  selector: 'app-reservation',
-  imports: [MatCardModule, MatIcon, MatChipsModule, UpperCasePipe, DatePipe],
+  selector: 'app-reservation-card',
+  imports: [
+    MatCardModule,
+    MatIcon,
+    MatChipsModule,
+    MatRippleModule,
+    RouterLink,
+    UpperCasePipe,
+    DatePipe,
+  ],
   templateUrl: './reservation-card.html',
   styleUrl: './reservation-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -61,14 +61,18 @@
 
   <mat-divider></mat-divider>
 
-  <mat-card-actions align="end">
-    <button mat-button routerLink="/reservations">BACK</button>
+  <mat-card-actions>
+    <button mat-stroked-button routerLink="/reservations">BACK</button>
+
+    <span class="header-spacer"></span>
 
     <button mat-flat-button color="primary" [disabled]="res.players.length >= res.maxPlayers">
-      JOIN GAME
+      <mat-icon class="mr-1">login</mat-icon> JOIN GAME
     </button>
 
-    <button mat-stroked-button color="warn">EXIT GAME</button>
+    <button mat-stroked-button color="warn">
+      <mat-icon class="mr-1">logout</mat-icon> EXIT GAME
+    </button>
   </mat-card-actions>
 </mat-card>
 } @else {
