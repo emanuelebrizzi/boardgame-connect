@@ -3,8 +3,16 @@
     {
       "id": "t_123",
       "game": "Root",
-      "association": "La Gilda del Cassero",
-      "currentPlayers": 2,
+      "association": {
+        "id": "a_001",
+        "name": "La Gilda del Cassero",
+        "address": "Via Roma 1"
+      },
+      "players": [
+        { "id": "u_1", "username": "Alice" },
+        { "id": "u_2", "username": "Bob" }
+      ],
+      "minPlayers": 2,
       "maxPlayers": 4,
       "startTime": "2025-11-20T21:00:00Z",
       "endTime": "2025-11-20T22:30:00Z",
@@ -13,45 +21,17 @@
     {
       "id": "t_124",
       "game": "Wingspan",
-      "association": "Ludoteca Svelta",
-      "currentPlayers": 1,
+      "association": {
+        "id": "a_002",
+        "name": "Ludoteca Svelta",
+        "address": "Piazza Verdi 5"
+      },
+      "players": [{ "id": "u_3", "username": "Charlie" }],
+      "minPlayers": 1,
       "maxPlayers": 5,
       "startTime": "2025-11-21T18:30:00Z",
       "endTime": "2025-11-21T19:30:00Z",
       "state": "open"
-    },
-    {
-      "id": "t_125",
-      "game": "Brass: Birmingham",
-      "association": "Tana dei Goblin",
-      "currentPlayers": 3,
-      "maxPlayers": 4,
-      "startTime": "2025-11-22T20:00:00Z",
-      "endTime": "2025-11-22T23:00:00Z",
-      "state": "closed"
-    },
-    {
-      "id": "t_126",
-      "game": "Dune: Imperium",
-      "association": "Circolo Arci",
-      "currentPlayers": 4,
-      "maxPlayers": 4,
-      "startTime": "2025-11-23T20:30:00Z",
-      "endTime": "2025-11-23T23:30:00Z",
-      "state": "closed"
-    },
-    {
-      "id": "t_127",
-      "game": "Ark Nova",
-      "association": "Ludoteca Svelta",
-      "currentPlayers": 2,
-      "maxPlayers": 4,
-      "startTime": "2025-11-24T14:00:00Z",
-      "endTime": "2025-11-24T17:00:00Z",
-      "state": "open"
-    },
-    {
-      "id": "bf32"
     }
   ]
 }

@@ -1,14 +1,14 @@
-import { Reservation } from './reservation.model';
+import { Reservation } from '../reservation.model';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReservationComponent } from './reservation.component';
+import { ReservationCardComponent } from './reservation-card.component';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { DatePipe } from '@angular/common';
 
 describe('ReservationComponent', () => {
-  let component: ReservationComponent;
-  let fixture: ComponentFixture<ReservationComponent>;
+  let component: ReservationCardComponent;
+  let fixture: ComponentFixture<ReservationCardComponent>;
   let datePipe: DatePipe;
   let expectedReservation: Reservation;
 
@@ -19,13 +19,13 @@ describe('ReservationComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ReservationComponent],
+      imports: [ReservationCardComponent],
       providers: [DatePipe],
     }).compileComponents();
   });
 
   beforeEach(async () => {
-    fixture = TestBed.createComponent(ReservationComponent);
+    fixture = TestBed.createComponent(ReservationCardComponent);
 
     component = fixture.componentInstance;
     datePipe = TestBed.inject(DatePipe);

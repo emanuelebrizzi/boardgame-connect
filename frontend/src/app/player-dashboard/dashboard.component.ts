@@ -20,13 +20,13 @@ import {
   Reservation,
   ReservationFilter,
   ReservationState,
-} from './show-reservation/reservation.model';
-import { ReservationService } from './show-reservation/reservation.service';
-import { ReservationComponent } from './show-reservation/reservation.component';
+} from './show-reservations/reservation-models';
+import { ReservationService } from './show-reservations/reservation.service';
+import { ReservationCardComponent } from './show-reservations/reservation-card/reservation-card.component';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-reservation-list',
+  selector: 'player-dashboard',
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -35,7 +35,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     MatProgressSpinnerModule,
     MatSelectModule,
     MatButtonModule,
-    ReservationComponent,
+    ReservationCardComponent,
   ],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.scss',

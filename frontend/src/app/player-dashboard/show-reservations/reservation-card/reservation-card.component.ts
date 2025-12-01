@@ -3,16 +3,16 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { MatCardModule } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { Reservation } from './reservation.model';
+import { Reservation } from '../reservation-models';
 
 @Component({
   selector: 'app-reservation',
   imports: [MatCardModule, MatIcon, MatChipsModule, UpperCasePipe, DatePipe],
-  templateUrl: './reservation.html',
-  styleUrl: './reservation.scss',
+  templateUrl: './reservation-card.html',
+  styleUrl: './reservation-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReservationComponent {
+export class ReservationCardComponent {
   reservation = input.required<Reservation>();
 
   isFull = computed(() => {
