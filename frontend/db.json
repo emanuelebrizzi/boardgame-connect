@@ -71,6 +71,24 @@
       "startTime": "2025-11-10T20:30:00Z",
       "endTime": "2025-11-10T23:30:00Z",
       "state": "closed"
+    },
+    {
+      "id": "t_127",
+      "game": "Ark Nova",
+      "association": {
+        "id": "a_002",
+        "name": "Ludoteca Svelta",
+        "address": "Piazza Verdi 5"
+      },
+      "players": [
+        { "id": "u_9", "username": "Ivan" },
+        { "id": "u_10", "username": "Judy" }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "startTime": "2025-11-25T15:00:00Z",
+      "endTime": "2025-11-25T18:00:00Z",
+      "state": "approved"
     }
   ]
 }
