@@ -1,14 +1,16 @@
 <mat-card
   appearance="outlined"
   class="card-container"
-  [routerLink]="['/reservations', reservation().id]"
-  matRipple
+  [class]="'status-' + cardStatus()"
+  [routerLink]="cardStatus() === 'closed' ? null : ['/reservations', reservation().id]"
 >
   <img mat-card-image [src]="gameImageUrl()" class="game-cover-image" />
-  <mat-card-header>
+
+  <mat-card-header class="card-header">
     <mat-card-subtitle class="card-title">
       {{ reservation().game }}
     </mat-card-subtitle>
+
     <mat-card-title class="card-subtitle">{{
       reservation().associationName | uppercase
     }}</mat-card-title>
@@ -32,13 +34,18 @@
       </span>
     </div>
 
-    <!-- Availability Chip -->
-    <mat-chip-set aria-label="Seat availability" class="status-chip">
-      <!-- Logic for Chips colors -->
-      <mat-chip [class.chip-closed]="isFull()" [class.chip-open]="!isFull()">
-        <mat-icon matChipAvatar>group</mat-icon>
-        {{ reservation().currentPlayers }} / {{ reservation().maxPlayers }}
-      </mat-chip>
-    </mat-chip-set>
+    <div class="card-footer">
+      <mat-chip-set aria-label="Seat availability">
+        <mat-chip>
+          <mat-icon matChipAvatar>group</mat-icon>
+          {{ reservation().currentPlayers }} / {{ reservation().maxPlayers }}
+        </mat-chip>
+      </mat-chip-set>
+
+      <!-- State indication -->
+      <span class="status-text">
+        {{ cardStatus() }}
+      </span>
+    </div>
   </mat-card-content>
 </mat-card>

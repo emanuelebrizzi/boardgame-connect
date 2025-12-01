@@ -1,11 +1,13 @@
 .card-container {
-  height: 100%;
   display: flex;
   flex-direction: column;
-  transition: box-shadow 0.2s, transform 0.2s;
+  height: 100%;
+
+  border-left: 6px solid transparent;
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
   &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transform: translateY(-2px);
   }
 }
@@ -17,15 +19,19 @@
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
+.card-header {
+  margin-top: 12px;
+}
+
 .card-title {
-  font-weight: 700;
   font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.2;
   margin-bottom: 4px;
 }
 
 .card-subtitle {
-  color: #3f51b5;
-  /* Indigo */
+  color: #3f51b5; /* Indigo */
   font-weight: 500;
   font-size: 0.75rem;
   letter-spacing: 0.05em;
@@ -41,10 +47,19 @@
 }
 
 .card-content {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card-footer {
   margin-top: 16px;
-  flex-grow: 1;
-  border-top: 1px solid #f0f0f0;
   padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .info-row {
@@ -63,22 +78,43 @@
   color: #9e9e9e;
 }
 
-.status-chip {
-  margin-top: 16px;
+.status-text {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #bdbdbd; // Neutral gray
 }
 
-/* Chip Colors */
-.chip-open {
-  background-color: #e8f5e9 !important;
-  color: #2e7d32 !important;
-  --mdc-chip-label-text-color: #2e7d32;
-  --mat-chip-leading-icon-color: #2e7d32;
+.status-open {
+  border-left-color: #4caf50;
+
+  .card-title {
+    color: #2e7d32;
+  }
 }
 
-/* 2. CLOSED STATE (Red) */
-.chip-closed {
-  background-color: #ffebee !important;
-  color: #c62828 !important;
-  --mdc-chip-label-text-color: #c62828;
-  --mat-chip-leading-icon-color: #c62828;
+.status-approved {
+  border-left-color: #2196f3;
+  background-color: #f0f7ff;
+
+  .card-title {
+    color: #1565c0;
+  }
+}
+
+.status-closed {
+  border-left-color: #9e9e9e;
+  opacity: 0.7;
+
+  pointer-events: none;
+
+  .game-cover-image {
+    filter: grayscale(100%);
+  }
+
+  .card-title {
+    color: #616161;
+    text-decoration: line-through;
+  }
 }

@@ -4,27 +4,21 @@ import { MatCardModule } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
 import { Reservation } from '../reservation-models';
-import { MatRippleModule } from '@angular/material/core';
 import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-reservation-card',
-  imports: [
-    MatCardModule,
-    MatIcon,
-    MatChipsModule,
-    MatRippleModule,
-    RouterLink,
-    UpperCasePipe,
-    DatePipe,
-  ],
+  imports: [MatCardModule, MatIcon, MatChipsModule, RouterLink, UpperCasePipe, DatePipe],
   templateUrl: './reservation-card.html',
   styleUrl: './reservation-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReservationCardComponent {
+  readonly imageFolderPath = '/games';
+
   reservation = input.required<Reservation>();
 
+  // We assume that the name of the image follows the convention: dune-imperium.jpg
   protected gameImageUrl = computed(() => {
     const gameName = this.reservation().game;
     const slug = gameName
@@ -32,11 +26,10 @@ export class ReservationCardComponent {
       .replace(/:/g, '') // Remove colons
       .replace(/\s+/g, '-') // Replace spaces with hyphens
       .trim();
-    return `/games/${slug}.jpg`;
+    return `${this.imageFolderPath}/${slug}.jpg`;
   });
 
-  isFull = computed(() => {
-    const r = this.reservation();
-    return r.currentPlayers >= r.maxPlayers;
+  protected cardStatus = computed(() => {
+    return this.reservation().state;
   });
 }
