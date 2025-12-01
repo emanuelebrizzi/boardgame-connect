@@ -2,53 +2,93 @@
   "reservations": [
     {
       "id": "t_123",
-      "boardgameName": "Root",
-      "associationName": "La Gilda del Cassero",
-      "participantsCurrent": 2,
-      "participantsMax": 4,
+      "game": "Root",
+      "association": {
+        "id": "a_001",
+        "name": "La Gilda del Cassero",
+        "address": "Via Roma 1"
+      },
+      "players": [
+        { "id": "u_1", "username": "Alice" },
+        { "id": "u_2", "username": "Bob" }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
       "startTime": "2025-11-20T21:00:00Z",
       "endTime": "2025-11-20T22:30:00Z",
       "state": "open"
     },
     {
       "id": "t_124",
-      "boardgameName": "Wingspan",
-      "associationName": "Ludoteca Svelta",
-      "participantsCurrent": 1,
-      "participantsMax": 5,
+      "game": "Wingspan",
+      "association": {
+        "id": "a_002",
+        "name": "Ludoteca Svelta",
+        "address": "Piazza Verdi 5"
+      },
+      "players": [{ "id": "u_3", "username": "Charlie" }],
+      "minPlayers": 1,
+      "maxPlayers": 5,
       "startTime": "2025-11-21T18:30:00Z",
       "endTime": "2025-11-21T19:30:00Z",
       "state": "open"
     },
     {
       "id": "t_125",
-      "boardgameName": "Brass: Birmingham",
-      "associationName": "Tana dei Goblin",
-      "participantsCurrent": 3,
-      "participantsMax": 4,
+      "game": "Brass: Birmingham",
+      "association": {
+        "id": "a_003",
+        "name": "Tana dei Goblin",
+        "address": "Via Garibaldi 12"
+      },
+      "players": [
+        { "id": "u_4", "username": "Dave" },
+        { "id": "u_5", "username": "Eve" },
+        { "id": "u_6", "username": "Frank" },
+        { "id": "u_7", "username": "Grace" }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
       "startTime": "2025-11-22T20:00:00Z",
       "endTime": "2025-11-22T23:00:00Z",
-      "state": "closed"
+      "state": "open"
     },
     {
       "id": "t_126",
-      "boardgameName": "Dune: Imperium",
-      "associationName": "Circolo Arci",
-      "participantsCurrent": 4,
-      "participantsMax": 4,
-      "startTime": "2025-11-23T20:30:00Z",
-      "endTime": "2025-11-23T23:30:00Z",
+      "game": "Dune: Imperium",
+      "association": {
+        "id": "a_001",
+        "name": "La Gilda del Cassero",
+        "address": "Via Roma 1"
+      },
+      "players": [
+        { "id": "u_1", "username": "Alice" },
+        { "id": "u_4", "username": "Dave" },
+        { "id": "u_8", "username": "Heidi" }
+      ],
+      "minPlayers": 3,
+      "maxPlayers": 4,
+      "startTime": "2025-11-10T20:30:00Z",
+      "endTime": "2025-11-10T23:30:00Z",
       "state": "closed"
     },
     {
       "id": "t_127",
-      "boardgameName": "Ark Nova",
-      "associationName": "Ludoteca Svelta",
-      "participantsCurrent": 2,
-      "participantsMax": 4,
-      "startTime": "2025-11-24T14:00:00Z",
-      "endTime": "2025-11-24T17:00:00Z",
-      "state": "open"
+      "game": "Ark Nova",
+      "association": {
+        "id": "a_002",
+        "name": "Ludoteca Svelta",
+        "address": "Piazza Verdi 5"
+      },
+      "players": [
+        { "id": "u_9", "username": "Ivan" },
+        { "id": "u_10", "username": "Judy" }
+      ],
+      "minPlayers": 2,
+      "maxPlayers": 4,
+      "startTime": "2025-11-25T15:00:00Z",
+      "endTime": "2025-11-25T18:00:00Z",
+      "state": "approved"
     }
   ]
 }

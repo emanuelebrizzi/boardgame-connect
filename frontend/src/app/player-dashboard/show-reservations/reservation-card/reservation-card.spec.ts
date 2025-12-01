@@ -1,14 +1,14 @@
-import { Reservation } from './../../models/reservation';
+import { Reservation } from '../reservation.model';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ReservationComponent } from './reservation';
+import { ReservationCardComponent } from './reservation-card';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { DatePipe } from '@angular/common';
 
 describe('ReservationComponent', () => {
-  let component: ReservationComponent;
-  let fixture: ComponentFixture<ReservationComponent>;
+  let component: ReservationCardComponent;
+  let fixture: ComponentFixture<ReservationCardComponent>;
   let datePipe: DatePipe;
   let expectedReservation: Reservation;
 
@@ -19,13 +19,13 @@ describe('ReservationComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      imports: [ReservationComponent],
+      imports: [ReservationCardComponent],
       providers: [DatePipe],
     }).compileComponents();
   });
 
   beforeEach(async () => {
-    fixture = TestBed.createComponent(ReservationComponent);
+    fixture = TestBed.createComponent(ReservationCardComponent);
 
     component = fixture.componentInstance;
     datePipe = TestBed.inject(DatePipe);
@@ -37,10 +37,10 @@ describe('ReservationComponent', () => {
 
     expectedReservation = {
       id: '1',
-      boardgameName: 'Root',
-      associationName: 'La Gilda del Cassero',
-      participantsCurrent: 2,
-      participantsMax: 4,
+      game: 'Root',
+      association: 'La Gilda del Cassero',
+      currentPlayers: 2,
+      maxPlayers: 4,
       startTime: '2025-11-20T21:00:00Z',
       endTime: '2025-11-20T22:30:00Z',
     };
@@ -51,14 +51,14 @@ describe('ReservationComponent', () => {
   });
 
   it('should display reservation information', () => {
-    const expectedAssociationName = expectedReservation.associationName.toUpperCase();
+    const expectedAssociationName = expectedReservation.association.toUpperCase();
     const dateRow = infoRows[0];
     const timeRow = infoRows[1];
     const expectedDateString = datePipe.transform(expectedReservation.startTime, 'EEE, d MMM y');
     const expectedStartTime = datePipe.transform(expectedReservation.startTime, 'HH:mm');
     const expectedEndTime = datePipe.transform(expectedReservation.endTime, 'HH:mm');
 
-    expect(cardTitle.nativeElement.textContent).toContain(expectedReservation.boardgameName);
+    expect(cardTitle.nativeElement.textContent).toContain(expectedReservation.game);
     expect(cardSubtitle.nativeElement.textContent).toContain(expectedAssociationName);
     expect(dateRow.nativeElement.textContent).toContain('calendar_today');
     expect(dateRow.nativeElement.textContent).toContain(expectedDateString);
@@ -70,7 +70,7 @@ describe('ReservationComponent', () => {
 
   it('should display the participants availability chip when open', () => {
     expect(chip.nativeElement.textContent).toContain(
-      `${expectedReservation.participantsCurrent} / ${expectedReservation.participantsMax}`
+      `${expectedReservation.currentPlayers} / ${expectedReservation.maxPlayers}`
     );
     expect(chip.classes['chip-open']).toBeTruthy();
     expect(chip.classes['chip-closed']).toBeFalsy();
@@ -79,14 +79,14 @@ describe('ReservationComponent', () => {
   it('should display the participants availability chip when closed', () => {
     const fullReservation = {
       ...expectedReservation,
-      participantsCurrent: expectedReservation.participantsMax,
+      currentPlayers: expectedReservation.maxPlayers,
     };
 
     fixture.componentRef.setInput('reservation', fullReservation);
     fixture.detectChanges();
 
     expect(chip.nativeElement.textContent).toContain(
-      `${fullReservation.participantsCurrent} / ${fullReservation.participantsMax}`
+      `${fullReservation.currentPlayers} / ${fullReservation.maxPlayers}`
     );
     expect(chip.classes['chip-open']).toBeFalsy();
     expect(chip.classes['chip-closed']).toBeTruthy();

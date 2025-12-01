@@ -20,13 +20,13 @@ import {
   Reservation,
   ReservationFilter,
   ReservationState,
-} from '@features/reservations/models/reservation';
-import { ReservationService } from '@features/reservations/services/reservation.service';
-import { ReservationComponent } from '../reservation/reservation';
+} from './show-reservations/reservation-models';
+import { ReservationService } from './show-reservations/reservation.service';
+import { ReservationCardComponent } from './show-reservations/reservation-card/reservation-card';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'app-reservation-list',
+  selector: 'player-dashboard',
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -35,13 +35,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
     MatProgressSpinnerModule,
     MatSelectModule,
     MatButtonModule,
-    ReservationComponent,
+    ReservationCardComponent,
   ],
-  templateUrl: './reservation-list.html',
-  styleUrl: './reservation-list.scss',
+  templateUrl: './dashboard.html',
+  styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReservationListComponent implements OnInit {
+export class DashboardComponent implements OnInit {
   private readonly service = inject(ReservationService);
   private readonly destroyRef = inject(DestroyRef);
 

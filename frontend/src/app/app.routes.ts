@@ -4,9 +4,23 @@ export const routes: Routes = [
   {
     path: 'reservations',
     loadComponent: () =>
-      import('./features/reservations/controller/reservation-list/reservation-list').then(
-        (m) => m.ReservationListComponent
+      import('./player-dashboard/dashboard.component').then((m) => m.DashboardComponent),
+  },
+  {
+    path: 'reservations/:id',
+    loadComponent: () =>
+      import('./player-dashboard/show-reservations/reservation-detail/reservation-detail').then(
+        (m) => m.ReservationDetail
       ),
   },
-  { path: '', redirectTo: 'reservations', pathMatch: 'full' },
+  {
+    path: '',
+    redirectTo: 'reservations',
+    pathMatch: 'full',
+  },
+  {
+    // TODO: Error page for 404
+    path: '**',
+    redirectTo: 'reservations',
+  },
 ];
