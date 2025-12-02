@@ -9,6 +9,6 @@ public class TableTest {
 	@Test
 	void testCreateEmailWhenEmailStringIsValidShouldCreateEmail() {
 		Table t = new Table(TableSize.SMALL);
-		assertEquals("SMALL", t.getSize());
+		assertEquals(TableSize.SMALL, t.getSize());
 	}
 }
