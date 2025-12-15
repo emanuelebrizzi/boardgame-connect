@@ -1,33 +1,71 @@
 package boardgameconnect.model;
 
-public class User {
-	private String id;
-	private Email email;
-	private String password;
+import static jakarta.persistence.GenerationType.UUID;
+import static jakarta.persistence.InheritanceType.JOINED;
 
-	public User(String id, Email email, String password) {
-		super();
-		this.id = id ;
-		this.email = email;
-		this.password = password;
-		if (password.isBlank()) {
-			throw new IllegalArgumentException("Password cannot be blank");
-		}
-	}
+import java.util.Objects;
 
-	public String getId() {
-		return id;
-	}
+import jakarta.persistence.Column;
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.Table;
 
-	
-	public Email getEmail() {
-		return email;
-	}
+@Entity
+@Table(name = "users")
+@Inheritance(strategy = JOINED)
+@DiscriminatorColumn(name = "user_type")
+public abstract class User {
+    @Id
+    @GeneratedValue(strategy = UUID)
+    private String id;
 
-	public String getPassword() {
-		return password;
+    @Column(nullable = false, unique = true)
+    private Email email;
+
+    @Column(nullable = false)
+    private String password;
+
+    protected User() {
+    }
+
+    public User(Email email, String password) {
+	this.email = email;
+	this.password = password;
+	if (password.isBlank()) {
+	    throw new IllegalArgumentException("Password cannot be blank");
 	}
-	
-	
+    }
+
+    public String getId() {
+	return id;
+    }
+
+    public Email getEmail() {
+	return email;
+    }
+
+    public String getPassword() {
+	return password;
+    }
+
+    @Override
+    public int hashCode() {
+	return Objects.hash(email);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+	if (this == obj)
+	    return true;
+	if (obj == null)
+	    return false;
+	if (getClass() != obj.getClass())
+	    return false;
+	User other = (User) obj;
+	return Objects.equals(email, other.email);
+    }
 
 }

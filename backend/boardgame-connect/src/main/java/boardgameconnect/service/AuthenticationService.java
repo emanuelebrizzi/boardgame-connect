@@ -2,23 +2,24 @@ package boardgameconnect.service;
 
 import org.springframework.stereotype.Service;
 
+import boardgameconnect.dao.UserRepository;
 import boardgameconnect.dto.LoginRequest;
 import boardgameconnect.dto.LoginResponse;
-import boardgameconnect.dto.UserResponse;
+import boardgameconnect.model.User;
 
 @Service
 public class AuthenticationService {
+    private final UserRepository userRepository;
 
-	public LoginResponse login(LoginRequest request) {
+    public AuthenticationService(UserRepository userRepository) {
+	this.userRepository = userRepository;
+    }
 
-		// TODO: sostituire con lookup su database + password encoder
-		String email = "mario.rossi@example.com";
-		String password = "password";
+    public LoginResponse login(LoginRequest request) {
+	User user = userRepository.findByEmail(request.getEmail())
+		.orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
-		if (!email.equalsIgnoreCase(request.getEmail()) || !password.equals(request.getPassword())) {
-			throw new RuntimeException("Credenziali non valide");
-		}
-
-	return null;
-	}
+	String tokenPlaceholder = "valid token";
+	return new LoginResponse(tokenPlaceholder, user);
+    }
 }

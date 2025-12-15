@@ -1,20 +1,21 @@
 package boardgameconnect.dto;
 
+import boardgameconnect.model.User;
+
 public class LoginResponse {
     private String accessToken;
-    private UserResponse user;
-    
-    public LoginResponse(String accessToken, UserResponse user) {
-		super();
-        this.accessToken = accessToken;
-        this.user = user;
+    private User user;
+
+    public LoginResponse(String accessToken, User user) {
+	this.accessToken = accessToken;
+	this.user = user;
     }
-    
+
     public String getAccessToken() {
-        return accessToken;
+	return accessToken;
     }
-    
-    public UserResponse getUser() {
-        return user;
+
+    public User getUser() {
+	return user;
     }
 }
