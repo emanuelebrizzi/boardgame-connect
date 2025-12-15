@@ -9,13 +9,14 @@ public class UserTest {
 
 	@Test
 	void testCreateUserWhenEmailAndPasswordAreValidShouldCreateUser() {
-		User u = new User(new Email("user@domain.com"), "password");
+		User u = new User("u_123",new Email("user@domain.com"), "password");
+		assertEquals("u_123", u.getEmail().getEmail());
 		assertEquals("user@domain.com", u.getEmail().getEmail());
 		assertEquals("password", u.getPassword());
 	}
 
 	@Test
 	void testCreateUserWhenPasswordAreInvalidShouldThrowException() {
-		assertThrows(IllegalArgumentException.class, () -> new User(new Email("test@example.com"), ""));
+		assertThrows(IllegalArgumentException.class, () -> new User("u_123",new Email("test@example.com"), ""));
 	}
 }

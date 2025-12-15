@@ -8,7 +8,7 @@ public class AssociationTest {
 	
 	@Test
 	void testCreateAssosationWhenNameTaxcodeAddressAreValidShouldCreateassociation() {
-		Association a = new Association (new Email("breezen@domain.com"), "password", "Associazione Ludica", "80012354879","Via Roma 1");
+		Association a = new Association ("u_123", new Email("breezen@domain.com"), "password", "Associazione Ludica", "80012354879","Via Roma 1");
 		assertEquals("Associazione Ludica", a.getName());
 		assertEquals("80012354879", a.getTaxCode());
 		assertEquals("Via Roma 1", a.getAddress());

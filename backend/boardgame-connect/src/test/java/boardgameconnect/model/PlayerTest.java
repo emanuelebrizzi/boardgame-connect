@@ -9,14 +9,14 @@ class PlayerTest {
 
 	@Test
 	void testCreatePlayerWhenUsernameIsValisShouldCreatePlayer() {
-		Player p = new Player(new Email("breezen@domain.com"), "password", "Breezen");
+		Player p = new Player("u_123", new Email("breezen@domain.com"), "password", "Breezen");
 		assertEquals("Breezen", p.getUsername());
 	}
 
 	@Test
 	void testCreatePlayerWhenUsernameIsNullShouldThrow() {
 		assertThrows(IllegalArgumentException.class,
-				() -> new Player(new Email("breezen@domain.com"), "password", null), "");
+				() -> new Player("u_123", new Email("breezen@domain.com"), "password", null), "");
 	}
 
 }

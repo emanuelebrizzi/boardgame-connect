@@ -6,8 +6,8 @@ public class Association extends User{
 	private String taxCode;
 	private String address;
 		
-	public Association(Email email, String password, String name, String taxCode, String address) {
-		super(email, password);
+	public Association(String id, Email email, String password, String name, String taxCode, String address) {
+		super(id, email, password);
 		this.name = name;
 		this.taxCode = taxCode;
 		this.address = address;
