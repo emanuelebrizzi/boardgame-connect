@@ -5,7 +5,9 @@ import static jakarta.persistence.InheritanceType.JOINED;
 
 import java.util.Objects;
 
+import boardgameconnect.mapper.EmailConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,6 +25,7 @@ public abstract class User {
     private String id;
 
     @Column(nullable = false, unique = true)
+    @Convert(converter = EmailConverter.class)
     private Email email;
 
     @Column(nullable = false)
