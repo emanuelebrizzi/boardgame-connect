@@ -54,4 +54,17 @@ class AuthenticationServiceTest {
 	assertThat(response.getUser()).isEqualTo(user);
     }
 
+    @Test
+    void testLoginShouldThrowExceptionWhenPasswordIsWrong() {
+	var email = new Email("mario.rossi@example.com");
+	User user = new Player(email, "password", "Mario Rossi");
+
+	when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
+
+	LoginRequest request = new LoginRequest(email, "wrong_password");
+
+	assertThatThrownBy(() -> authenticationService.login(request)).isInstanceOf(RuntimeException.class)
+		.hasMessage("Invalid credentials");
+    }
+
 }

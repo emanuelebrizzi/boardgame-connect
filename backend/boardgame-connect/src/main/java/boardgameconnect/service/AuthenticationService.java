@@ -19,6 +19,10 @@ public class AuthenticationService {
 	User user = userRepository.findByEmail(request.getEmail())
 		.orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
+	if (!user.getPassword().equals(request.getPassword())) {
+	    throw new RuntimeException("Invalid credentials");
+	}
+
 	String tokenPlaceholder = "valid token";
 	return new LoginResponse(tokenPlaceholder, user);
     }
