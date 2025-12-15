@@ -11,6 +11,7 @@ import org.mockito.MockitoAnnotations;
 
 import boardgameconnect.dao.UserRepository;
 import boardgameconnect.dto.LoginRequest;
+import boardgameconnect.dto.LoginResponse;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.User;
@@ -29,7 +30,7 @@ class AuthenticationServiceTest {
     }
 
     @Test
-    void testLoginWhenCredentialsAreInvalidTest() {
+    void testLoginWhenCredentialsAreInvalidTestShouldThrow() {
 
         User user = new Player(
                 "u_123",
@@ -47,6 +48,32 @@ class AuthenticationServiceTest {
 
         assertThrows(RuntimeException.class,
                 () -> authenticationService.login(request));
+    }
+    
+    @Test
+    void testLoginWhenCredentialsAreValidTestShouldReturnLoginResponse() {
+        
+        User user = new Player(
+                "u_123",
+                new Email("mario.rossi@example.com"),
+                "password",
+                "Mario Rossi"
+        );
+
+        when(userRepository.findByEmail_Email("mario.rossi@example.com"))
+                .thenReturn(user);
+
+        LoginRequest request =
+                new LoginRequest("mario.rossi@example.com", "password");
+
+        
+        LoginResponse response = authenticationService.login(request);
+
+        
+        assertNotNull(response);
+        assertEquals("jwt-token-for-mario.rossi@example.com", response.getAccessToken());
+        assertEquals("u_123", response.getUser().getId());
+        assertEquals("Mario Rossi", response.getUser().getUsername());
     }
 
 }
