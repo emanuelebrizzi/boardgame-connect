@@ -6,11 +6,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import boardgameconnect.dao.UserRepository;
 import boardgameconnect.dto.LoginRequest;
@@ -25,17 +26,33 @@ class AuthenticationServiceTest {
     @Mock
     private UserRepository userRepository;
 
-    @InjectMocks
+    private PasswordEncoder passwordEncoder;
     private AuthenticationService authenticationService;
+
+    @BeforeEach
+    void setUp() {
+	// Fake implementation for test performance: using the a real encoder would slow
+	// down the unit test.
+	passwordEncoder = new PasswordEncoder() {
+	    @Override
+	    public String encode(CharSequence rawPassword) {
+		return "ENC_" + rawPassword;
+	    }
+
+	    @Override
+	    public boolean matches(CharSequence rawPassword, String encodedPassword) {
+		return encodedPassword.equals("ENC_" + rawPassword);
+	    }
+	};
+
+	authenticationService = new AuthenticationService(userRepository, passwordEncoder);
+    }
 
     @Test
     void testLoginWhenCredentialsAreInvalidTestShouldThrow() {
 	var email = new Email("mario.rossi@example.com");
-
 	when(userRepository.findByEmail(email)).thenReturn(Optional.empty());
-
 	LoginRequest request = new LoginRequest(email, "wrong");
-
 	assertThatThrownBy(() -> authenticationService.login(request)).isInstanceOf(RuntimeException.class)
 		.hasMessageContaining("Invalid credentials");
     }
@@ -43,11 +60,13 @@ class AuthenticationServiceTest {
     @Test
     void testLoginWhenCredentialsAreValidTestShouldReturnLoginResponse() {
 	var email = new Email("mario.rossi@example.com");
-	User user = new Player(email, "password", "Mario Rossi");
+	String rawPassword = "password";
+	String dbPassword = passwordEncoder.encode(rawPassword);
+	User user = new Player(email, dbPassword, "Mario Rossi");
 
 	when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
-	LoginRequest request = new LoginRequest(email, "password");
+	LoginRequest request = new LoginRequest(email, rawPassword);
 	LoginResponse response = authenticationService.login(request);
 
 	assertThat(response.getAccessToken()).isEqualTo("valid token");
@@ -57,7 +76,9 @@ class AuthenticationServiceTest {
     @Test
     void testLoginShouldThrowExceptionWhenPasswordIsWrong() {
 	var email = new Email("mario.rossi@example.com");
-	User user = new Player(email, "password", "Mario Rossi");
+	String rawPassword = "password";
+	String dbPassword = passwordEncoder.encode(rawPassword);
+	User user = new Player(email, dbPassword, "Mario Rossi");
 
 	when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
