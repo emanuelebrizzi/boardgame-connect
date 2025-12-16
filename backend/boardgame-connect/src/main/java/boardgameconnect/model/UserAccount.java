@@ -1,25 +1,22 @@
 package boardgameconnect.model;
 
 import static jakarta.persistence.GenerationType.UUID;
-import static jakarta.persistence.InheritanceType.JOINED;
 
 import java.util.Objects;
 
 import boardgameconnect.mapper.EmailConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
-import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "users")
-@Inheritance(strategy = JOINED)
-@DiscriminatorColumn(name = "user_type")
-public abstract class User {
+public class UserAccount {
     @Id
     @GeneratedValue(strategy = UUID)
     private String id;
@@ -31,15 +28,20 @@ public abstract class User {
     @Column(nullable = false)
     private String password;
 
-    protected User() {
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
+
+    protected UserAccount() {
     }
 
-    public User(Email email, String password) {
+    public UserAccount(Email email, String password, UserRole role) {
 	this.email = email;
 	this.password = password;
+	this.role = role;
 	if (password.isBlank()) {
 	    throw new IllegalArgumentException("Password cannot be blank");
 	}
+
     }
 
     public String getId() {
@@ -67,7 +69,7 @@ public abstract class User {
 	    return false;
 	if (getClass() != obj.getClass())
 	    return false;
-	User other = (User) obj;
+	UserAccount other = (UserAccount) obj;
 	return Objects.equals(email, other.email);
     }
 

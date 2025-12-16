@@ -13,18 +13,18 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import boardgameconnect.dao.UserRepository;
+import boardgameconnect.dao.UserAccountRepository;
 import boardgameconnect.dto.LoginRequest;
 import boardgameconnect.dto.LoginResponse;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.Player;
-import boardgameconnect.model.User;
+import boardgameconnect.model.UserAccount;
 
 @ExtendWith(MockitoExtension.class)
 class AuthenticationServiceTest {
 
     @Mock
-    private UserRepository userRepository;
+    private UserAccountRepository userRepository;
 
     private PasswordEncoder passwordEncoder;
     private AuthenticationService authenticationService;
@@ -62,7 +62,7 @@ class AuthenticationServiceTest {
 	var email = new Email("mario.rossi@example.com");
 	String rawPassword = "password";
 	String dbPassword = passwordEncoder.encode(rawPassword);
-	User user = new Player(email, dbPassword, "Mario Rossi");
+	UserAccount user = new Player(email, dbPassword, "Mario Rossi");
 
 	when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 
@@ -78,7 +78,7 @@ class AuthenticationServiceTest {
 	var email = new Email("mario.rossi@example.com");
 	String rawPassword = "password";
 	String dbPassword = passwordEncoder.encode(rawPassword);
-	User user = new Player(email, dbPassword, "Mario Rossi");
+	UserAccount user = new Player(email, dbPassword, "Mario Rossi");
 
 	when(userRepository.findByEmail(email)).thenReturn(Optional.of(user));
 

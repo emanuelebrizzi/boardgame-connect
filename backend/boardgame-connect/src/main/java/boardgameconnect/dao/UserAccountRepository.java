@@ -6,9 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import boardgameconnect.model.Email;
-import boardgameconnect.model.User;
+import boardgameconnect.model.UserAccount;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String> {
-    Optional<User> findByEmail(Email email);
+public interface UserAccountRepository extends JpaRepository<UserAccount, String> {
+    Optional<UserAccount> findByEmail(Email email);
 }
