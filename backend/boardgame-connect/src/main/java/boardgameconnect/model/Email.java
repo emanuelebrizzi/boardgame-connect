@@ -2,11 +2,15 @@ package boardgameconnect.model;
 
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+
 public class Email {
     private static final Pattern EMAIL_PATTERN = Pattern.compile("^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$");
 
     private String email;
 
+    @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public Email(String email) {
 	if ((email == null) || (!EMAIL_PATTERN.matcher(email).matches())) {
 	    throw new IllegalArgumentException("Invalid email format");
@@ -14,6 +18,7 @@ public class Email {
 	this.email = email;
     }
 
+    @JsonValue
     public String getEmail() {
 	return email;
     }
