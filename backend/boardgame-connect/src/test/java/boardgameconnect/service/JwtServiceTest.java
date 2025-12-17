@@ -27,7 +27,7 @@ public class JwtServiceTest {
     @InjectMocks
     private JwtService jwtService;
 
-    private static final String TEST_SECRET = "QuestaChiaveSegretaPerIUnitTestDeveEssereMoltoLungaECompleta1234567890";
+    private static final String TEST_SECRET = "ThisIsAVeryLongSecretKeyUsedForUnitTestingPurposesOnly1234567890";
     private static final long TEST_EXPIRATION = 3600000;
 
     private UserAccount testAccount;
@@ -44,7 +44,7 @@ public class JwtServiceTest {
     }
 
     @Test
-    void testGenerateTokenWhenEmailIsValidShouldReturnSignedJwt() {
+    void generateTokenWhenEmailIsValidShouldReturnSignedJwt() {
 	String token = jwtService.generateToken(testAccount);
 
 	assertNotNull(token);
@@ -53,7 +53,7 @@ public class JwtServiceTest {
     }
 
     @Test
-    void testGenerateTokenShouldContainCorrectClaimsAndRole() {
+    void generateTokenShouldContainCorrectClaimsAndRole() {
 	String token = jwtService.generateToken(testAccount);
 
 	Claims claims = Jwts.parserBuilder().setSigningKey(testKey).build().parseClaimsJws(token).getBody();
