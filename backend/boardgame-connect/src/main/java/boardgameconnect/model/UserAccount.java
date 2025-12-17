@@ -60,6 +60,10 @@ public class UserAccount {
 	return password;
     }
 
+    public UserRole getUserRole() {
+	return role;
+    }
+
     public void setPassword(String password) {
 	this.password = password;
     }

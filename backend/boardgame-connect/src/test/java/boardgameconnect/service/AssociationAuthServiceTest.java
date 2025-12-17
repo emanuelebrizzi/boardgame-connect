@@ -36,6 +36,8 @@ class AssociationAuthServiceTest {
     private AssociationRepository associationRepository;
     @Mock
     private UserMapper userMapper;
+    @Mock
+    private JwtService jwtService;
 
     private PasswordEncoder passwordEncoder;
     private AssociationAuthService associationAuthService;
@@ -56,7 +58,7 @@ class AssociationAuthServiceTest {
 	};
 
 	associationAuthService = new AssociationAuthService(accountRepository, associationRepository, passwordEncoder,
-		userMapper);
+		userMapper, jwtService);
     }
 
     @Test
@@ -69,7 +71,7 @@ class AssociationAuthServiceTest {
 	assertThatThrownBy(() -> associationAuthService.login(request)).isInstanceOf(RuntimeException.class)
 		.hasMessage("Invalid credentials");
 
-	verifyNoMoreInteractions(associationRepository, userMapper);
+	verifyNoMoreInteractions(associationRepository, userMapper, jwtService);
     }
 
     @Test
@@ -96,22 +98,25 @@ class AssociationAuthServiceTest {
 	String encodedPassword = passwordEncoder.encode(rawPassword);
 	UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.ASSOCIATION);
 	Association association = new Association(account, "test_taxcode", "test_address");
+	String mockToken = "mocked-jwt-token";
 	AssociationDto expectedDto = new AssociationDto("assoc_id", "association@example.com", "Assoc Name",
 		"test_taxcode", "Via Roma 1", UserRole.ASSOCIATION);
 
 	when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
 	when(associationRepository.findByAccount(account)).thenReturn(Optional.of(association));
+	when(jwtService.generateToken(account)).thenReturn(mockToken);
 	when(userMapper.toDto(association)).thenReturn(expectedDto);
 
 	LoginRequest request = new LoginRequest(email, rawPassword);
 	LoginResponse<AssociationDto> response = associationAuthService.login(request);
 
-	assertThat(response.accessToken()).isEqualTo("valid_token");
+	assertThat(response.accessToken()).isEqualTo(mockToken);
 	assertThat(response.profile()).isEqualTo(expectedDto);
 
-	InOrder inOrder = inOrder(accountRepository, associationRepository, userMapper);
+	InOrder inOrder = inOrder(accountRepository, associationRepository, userMapper, jwtService);
 	inOrder.verify(accountRepository).findByEmail(email);
 	inOrder.verify(associationRepository).findByAccount(account);
+	inOrder.verify(jwtService).generateToken(account);
 	inOrder.verify(userMapper).toDto(association);
     }
 }

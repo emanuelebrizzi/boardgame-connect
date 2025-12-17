@@ -6,7 +6,7 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import boardgameconnect.model.Email;
+import boardgameconnect.model.UserAccount;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -15,22 +15,22 @@ import jakarta.annotation.PostConstruct;
 @Service
 public class JwtService {
 
-	private static final long EXPIRATION_TIME = 1000 * 60 * 60;
+    @Value("${jwt.secret}")
+    private String secret;
 
-	@Value("${jwt.secret}")
-	private String secret;
+    @Value("${jwt.expiration}")
+    private long jwtExpiration;
 
-	private Key secretKey;
+    private Key secretKey;
 
-	@PostConstruct
-	public void init() {
-		this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-	}
+    @PostConstruct
+    public void init() {
+	this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+    }
 
-	public String generateToken(Email email) {
-		return Jwts.builder().setSubject(email.getEmail()).setIssuedAt(new Date())
-				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
-				.signWith(secretKey, SignatureAlgorithm.HS256).compact();
-	
-	}
+    public String generateToken(UserAccount account) {
+	return Jwts.builder().setSubject(account.getEmail().toString()).claim("role", account.getUserRole())
+		.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+		.signWith(secretKey, SignatureAlgorithm.HS256).compact();
+    }
 }
