@@ -1,0 +1,44 @@
+package boardgameconnect.service;
+
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import boardgameconnect.dao.AssociationRepository;
+import boardgameconnect.dao.UserAccountRepository;
+import boardgameconnect.dto.AssociationDto;
+import boardgameconnect.dto.LoginRequest;
+import boardgameconnect.dto.LoginResponse;
+import boardgameconnect.mapper.UserMapper;
+import boardgameconnect.model.Association;
+import boardgameconnect.model.UserAccount;
+
+public class AssociationAuthService implements AuthService<AssociationDto> {
+    private final UserAccountRepository accountRepo;
+    private final AssociationRepository associationRepo;
+    private final PasswordEncoder encoder;
+    private final UserMapper userMapper;
+
+    public AssociationAuthService(UserAccountRepository accountRepo, AssociationRepository associationRepo,
+	    PasswordEncoder encoder, UserMapper userMapper) {
+	this.accountRepo = accountRepo;
+	this.associationRepo = associationRepo;
+	this.encoder = encoder;
+	this.userMapper = userMapper;
+    }
+
+    @Override
+    public LoginResponse<AssociationDto> login(LoginRequest request) {
+	UserAccount account = accountRepo.findByEmail(request.email())
+		.orElseThrow(() -> new RuntimeException("Invalid credentials"));
+
+	if (!encoder.matches(request.password(), account.getPassword())) {
+	    throw new RuntimeException("Invalid credentials");
+	}
+
+	Association association = associationRepo.findByAccount(account)
+		.orElseThrow(() -> new RuntimeException("Account exists but not linked to a player"));
+
+	AssociationDto profile = userMapper.toDto(association);
+	return new LoginResponse<>("valid_token", profile);
+    }
+
+}
