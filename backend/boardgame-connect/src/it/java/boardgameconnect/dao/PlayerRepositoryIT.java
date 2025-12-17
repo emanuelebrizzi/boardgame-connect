@@ -15,13 +15,13 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import boardgameconnect.model.Email;
+import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 
 @DataJpaTest
 @Testcontainers
-class UserAccountRepositoryIT {
-
+public class PlayerRepositoryIT {
     @Container
     static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -35,21 +35,24 @@ class UserAccountRepositoryIT {
     @Autowired
     private UserAccountRepository userAccountRepository;
 
+    @Autowired
+    private PlayerRepository playerRepository;
+
     @BeforeEach
     void setUp() {
 	userAccountRepository.deleteAll();
+	playerRepository.deleteAll();
     }
 
     @Test
-    void shouldFindUserByEmail() {
-	Email email = new Email("player@boardgame.com");
-	UserAccount account = new UserAccount(email, "securePassword123", // In a real app, this should be encoded!
-		"John Doe", UserRole.PLAYER);
-	userAccountRepository.save(account);
+    void shouldFindPlayerByUserAccount() {
+	var email = new Email("player@boardgame.com");
+	var account = new UserAccount(email, "securePassword123", "John Doe", UserRole.PLAYER);
+	var player = new Player(account);
+	playerRepository.save(player);
 
-	Optional<UserAccount> result = userAccountRepository.findByEmail(email);
+	Optional<Player> result = playerRepository.findByAccount(account);
 
-	assertThat(result.get()).isEqualTo(account);
+	assertThat(result.get()).isEqualTo(player);
     }
-
 }
