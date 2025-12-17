@@ -38,10 +38,6 @@ public class UserAccount {
 	this.email = email;
 	this.password = password;
 	this.role = role;
-	if (password.isBlank()) {
-	    throw new IllegalArgumentException("Password cannot be blank");
-	}
-
     }
 
     public String getId() {

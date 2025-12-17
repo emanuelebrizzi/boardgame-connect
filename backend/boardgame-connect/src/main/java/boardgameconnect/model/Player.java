@@ -23,9 +23,6 @@ public class Player {
     private String username;
 
     public Player(UserAccount account, String username) {
-	if ((username == null)) {
-	    throw new IllegalArgumentException("Username cannnot be null");
-	}
 	this.account = account;
 	this.username = username;
     }
