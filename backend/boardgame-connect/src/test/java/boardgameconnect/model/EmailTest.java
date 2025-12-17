@@ -2,6 +2,7 @@ package boardgameconnect.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,6 +31,13 @@ public class EmailTest {
 				"Invalid email format");
 		assertThrows(IllegalArgumentException.class, () -> new Email("Invalidmail@invalid domain.com"),
 				"Invalid email format");
+	}
+
+	@Test
+	void testEqualsWhenEmailsWithDifferOnlyByCaseShouldReturnTrue() {
+		Email email1 = new Email("USER@DOMAIN.COM");
+		Email email2 = new Email("user@domain.com");
+		assertTrue(email1.equals(email2));
 	}
 
 }
