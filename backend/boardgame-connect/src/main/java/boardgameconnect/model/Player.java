@@ -20,15 +20,20 @@ public class Player {
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private UserAccount account;
 
-    private String username;
-
-    public Player(UserAccount account, String username) {
+    public Player(UserAccount account) {
 	this.account = account;
-	this.username = username;
     }
 
-    public String getUsername() {
-	return username;
+    public String getId() {
+	return id;
+    }
+
+    public UserAccount getAccount() {
+	return account;
+    }
+
+    public void setAccount(UserAccount account) {
+	this.account = account;
     }
 
 }

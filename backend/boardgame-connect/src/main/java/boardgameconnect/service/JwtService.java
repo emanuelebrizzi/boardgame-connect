@@ -31,5 +31,6 @@ public class JwtService {
 		return Jwts.builder().setSubject(email.getEmail()).setIssuedAt(new Date())
 				.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
 				.signWith(secretKey, SignatureAlgorithm.HS256).compact();
+	
 	}
 }

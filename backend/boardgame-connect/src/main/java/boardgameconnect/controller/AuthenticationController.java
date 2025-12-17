@@ -6,24 +6,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import boardgameconnect.dto.AssociationDto;
 import boardgameconnect.dto.LoginRequest;
 import boardgameconnect.dto.LoginResponse;
-import boardgameconnect.service.AuthenticationService;
+import boardgameconnect.dto.PlayerDto;
+import boardgameconnect.service.AssociationAuthService;
+import boardgameconnect.service.PlayerAuthService;
 
 @RestController
-@RequestMapping("/api/v1/login")
+@RequestMapping("/api/v1/auth")
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
+    private final PlayerAuthService playerService;
+    private final AssociationAuthService associationService;
 
-    public AuthenticationController(AuthenticationService authenticationService) {
-	this.authenticationService = authenticationService;
+    public AuthenticationController(PlayerAuthService playerService, AssociationAuthService associationService) {
+	this.playerService = playerService;
+	this.associationService = associationService;
     }
 
-    @PostMapping
-    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
-	LoginResponse response = authenticationService.login(request);
-	return ResponseEntity.ok(response);
+    @PostMapping("/login/player")
+    public ResponseEntity<LoginResponse<PlayerDto>> loginPlayer(@RequestBody LoginRequest request) {
+	return ResponseEntity.ok(playerService.login(request));
+    }
+
+    @PostMapping("/login/association")
+    public ResponseEntity<LoginResponse<AssociationDto>> loginAssociation(@RequestBody LoginRequest request) {
+	return ResponseEntity.ok(associationService.login(request));
     }
 
 }

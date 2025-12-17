@@ -22,8 +22,6 @@ public class Association {
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private UserAccount account;
 
-    @Column(nullable = false)
-    private String name;
     @Column(name = "tax_code", nullable = false)
     private String taxCode;
     private String address;
@@ -31,15 +29,18 @@ public class Association {
     protected Association() {
     }
 
-    public Association(UserAccount account, String name, String taxCode, String address) {
+    public Association(UserAccount account, String taxCode, String address) {
 	this.account = account;
-	this.name = name;
 	this.taxCode = taxCode;
 	this.address = address;
     }
 
-    public String getName() {
-	return name;
+    public String getId() {
+	return id;
+    }
+
+    public UserAccount getAccount() {
+	return account;
     }
 
     public String getTaxCode() {

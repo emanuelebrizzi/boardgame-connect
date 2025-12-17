@@ -28,15 +28,19 @@ public class UserAccount {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private String name;
+
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
     protected UserAccount() {
     }
 
-    public UserAccount(Email email, String password, UserRole role) {
+    public UserAccount(Email email, String password, String name, UserRole role) {
 	this.email = email;
 	this.password = password;
+	this.name = name;
 	this.role = role;
     }
 
@@ -48,8 +52,24 @@ public class UserAccount {
 	return email;
     }
 
+    public void setEmail(Email email) {
+	this.email = email;
+    }
+
     public String getPassword() {
 	return password;
+    }
+
+    public void setPassword(String password) {
+	this.password = password;
+    }
+
+    public String getName() {
+	return name;
+    }
+
+    public void setName(String name) {
+	this.name = name;
     }
 
     @Override

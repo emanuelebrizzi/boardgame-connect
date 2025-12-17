@@ -2,31 +2,31 @@ package boardgameconnect.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import boardgameconnect.dao.PlayerRepository;
+import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.UserAccountRepository;
+import boardgameconnect.dto.AssociationDto;
 import boardgameconnect.dto.LoginRequest;
 import boardgameconnect.dto.LoginResponse;
-import boardgameconnect.dto.PlayerDto;
 import boardgameconnect.mapper.UserMapper;
-import boardgameconnect.model.Player;
+import boardgameconnect.model.Association;
 import boardgameconnect.model.UserAccount;
 
-public class PlayerAuthService implements AuthService<PlayerDto> {
+public class AssociationAuthService implements AuthService<AssociationDto> {
     private final UserAccountRepository accountRepo;
-    private final PlayerRepository playerRepo;
+    private final AssociationRepository associationRepo;
     private final PasswordEncoder encoder;
     private final UserMapper userMapper;
 
-    public PlayerAuthService(UserAccountRepository accountRepo, PlayerRepository playerRepo, PasswordEncoder encoder,
-	    UserMapper userMapper) {
+    public AssociationAuthService(UserAccountRepository accountRepo, AssociationRepository associationRepo,
+	    PasswordEncoder encoder, UserMapper userMapper) {
 	this.accountRepo = accountRepo;
-	this.playerRepo = playerRepo;
+	this.associationRepo = associationRepo;
 	this.encoder = encoder;
 	this.userMapper = userMapper;
     }
 
     @Override
-    public LoginResponse<PlayerDto> login(LoginRequest request) {
+    public LoginResponse<AssociationDto> login(LoginRequest request) {
 	UserAccount account = accountRepo.findByEmail(request.email())
 		.orElseThrow(() -> new RuntimeException("Invalid credentials"));
 
@@ -34,10 +34,10 @@ public class PlayerAuthService implements AuthService<PlayerDto> {
 	    throw new RuntimeException("Invalid credentials");
 	}
 
-	Player player = playerRepo.findByAccount(account)
+	Association association = associationRepo.findByAccount(account)
 		.orElseThrow(() -> new RuntimeException("Account exists but not linked to a player"));
 
-	PlayerDto profile = userMapper.toDto(player);
+	AssociationDto profile = userMapper.toDto(association);
 	return new LoginResponse<>("valid_token", profile);
     }
 
