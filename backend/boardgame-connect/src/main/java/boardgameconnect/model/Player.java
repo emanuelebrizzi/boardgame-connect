@@ -20,6 +20,9 @@ public class Player {
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private UserAccount account;
 
+    public Player() {
+    }
+
     public Player(UserAccount account) {
 	this.account = account;
     }

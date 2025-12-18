@@ -1,16 +1,19 @@
 package boardgameconnect.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.UserAccountRepository;
 import boardgameconnect.dto.AssociationDto;
 import boardgameconnect.dto.LoginRequest;
 import boardgameconnect.dto.LoginResponse;
+import boardgameconnect.exception.InvalidCredentialsException;
 import boardgameconnect.mapper.UserMapper;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.UserAccount;
 
+@Service
 public class AssociationAuthService implements AuthService<AssociationDto> {
     private final UserAccountRepository accountRepo;
     private final AssociationRepository associationRepo;
@@ -31,10 +34,10 @@ public class AssociationAuthService implements AuthService<AssociationDto> {
     @Override
     public LoginResponse<AssociationDto> login(LoginRequest request) {
 	UserAccount account = accountRepo.findByEmail(request.email())
-		.orElseThrow(() -> new RuntimeException("Invalid credentials"));
+		.orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
 
 	if (!encoder.matches(request.password(), account.getPassword())) {
-	    throw new RuntimeException("Invalid credentials");
+	    throw new InvalidCredentialsException("Invalid credentials");
 	}
 
 	Association association = associationRepo.findByAccount(account)

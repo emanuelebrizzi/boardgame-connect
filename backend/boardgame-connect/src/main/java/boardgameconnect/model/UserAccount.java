@@ -4,9 +4,7 @@ import static jakarta.persistence.GenerationType.UUID;
 
 import java.util.Objects;
 
-import boardgameconnect.mapper.EmailConverter;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,7 +20,7 @@ public class UserAccount {
     private String id;
 
     @Column(nullable = false, unique = true)
-    @Convert(converter = EmailConverter.class)
+//    @Convert(converter = EmailConverter.class)
     private Email email;
 
     @Column(nullable = false)
@@ -34,7 +32,7 @@ public class UserAccount {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    protected UserAccount() {
+    public UserAccount() {
     }
 
     public UserAccount(Email email, String password, String name, UserRole role) {
