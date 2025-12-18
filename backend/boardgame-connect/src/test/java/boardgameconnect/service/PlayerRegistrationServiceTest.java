@@ -1,9 +1,8 @@
 package boardgameconnect.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -22,9 +21,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.UserAccountRepository;
 import boardgameconnect.dto.PlayerDto;
-import boardgameconnect.dto.PlayerRegistrationDetails;
 import boardgameconnect.dto.RegistrationRequest;
-import boardgameconnect.mapper.UserMapper;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
@@ -34,58 +31,68 @@ import boardgameconnect.model.UserRole;
 class PlayerRegistrationServiceTest {
 
     @Mock
-    private UserAccountRepository accountRepository;
-
+    private UserAccountRepository accountRepo;
     @Mock
-    private PlayerRepository playerRepository;
-
+    private PlayerRepository playerRepo;
     @Mock
-    private UserMapper userMapper;
+    private PasswordEncoder encoder;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    private PlayerRegistrationService playerRegistrationService;
+    private PlayerRegistrationService registrationService;
 
     @BeforeEach
     void setUp() {
-	playerRegistrationService = new PlayerRegistrationService(accountRepository, playerRepository, passwordEncoder,
-		userMapper);
+	registrationService = new PlayerRegistrationService(accountRepo, playerRepo, encoder);
     }
 
     @Test
-    void registerWhenEmailAlreadyExistsShouldThrowException() {
-	Email existingEmail = new Email("mario@example.com");
-	PlayerRegistrationDetails details = new PlayerRegistrationDetails();
-	RegistrationRequest<PlayerRegistrationDetails> request = new RegistrationRequest<>(existingEmail, "password",
-		"Mario Rossi", details);
+    void register_ShouldSaveAccountAndAssociation_WhenEmailIsNotRegistered() {
 
-	when(accountRepository.findByEmail(existingEmail)).thenReturn(Optional.of(mock(UserAccount.class)));
-	assertThatThrownBy(() -> playerRegistrationService.register(request)).isInstanceOf(RuntimeException.class)
-		.hasMessage("Email already registered");
-	verify(playerRepository, never()).save(any());
-    }
+	Email email = new Email("mariorosi@dominio.it");
+	String rawPassword = "password123";
+	String encodedPassword = "encoded_password";
 
-    @Test
-    void registerShouldSuccessfullySavePlayerWithEncryptedPassword() {
-	Email email = new Email("newplayer@domain.com");
-	PlayerRegistrationDetails details = new PlayerRegistrationDetails();
-	RegistrationRequest<PlayerRegistrationDetails> request = new RegistrationRequest<>(email, "password",
-		"Mario Rossi", details);
+	PlayerDto details = new PlayerDto(null, email.getEmail(), "Mario Rossi", UserRole.PLAYER);
+	RegistrationRequest<PlayerDto> request = new RegistrationRequest<PlayerDto>(email, rawPassword, details);
 
-	when(accountRepository.findByEmail(email)).thenReturn(Optional.empty());
-	when(passwordEncoder.encode(anyString())).thenReturn("encrypted_pass");
+	when(accountRepo.findByEmail(email)).thenReturn(Optional.empty());
+	when(encoder.encode(rawPassword)).thenReturn(encodedPassword);
 
-	Player savedPlayer = mock(Player.class);
-	when(playerRepository.save(any(Player.class))).thenReturn(savedPlayer);
-	when(userMapper.toDto(savedPlayer)).thenReturn(mock(PlayerDto.class));
+	registrationService.register(request);
 
-	playerRegistrationService.register(request);
+	ArgumentCaptor<UserAccount> accountCaptor = ArgumentCaptor.forClass(UserAccount.class);
+	verify(accountRepo).save(accountCaptor.capture());
+	UserAccount savedAccount = accountCaptor.getValue();
+
+	assertEquals(email, savedAccount.getEmail());
+	assertEquals(encodedPassword, savedAccount.getPassword());
 
 	ArgumentCaptor<Player> playerCaptor = ArgumentCaptor.forClass(Player.class);
-	verify(playerRepository).save(playerCaptor.capture());
+	verify(playerRepo).save(playerCaptor.capture());
+	Player savedPlayer = playerCaptor.getValue();
 
-	Player captured = playerCaptor.getValue();
-	assertThat(captured.getAccount().getUserRole()).isEqualTo(UserRole.PLAYER);
+	assertEquals(savedAccount, savedPlayer.getAccount());
+    }
+
+    @Test
+    void register_ShouldThrowException_WhenEmailAlreadyExists() {
+
+	Email existingEmail = new Email("existing.email@test.it");
+	String rawPassword = "password123";
+
+	PlayerDto details = new PlayerDto(null, existingEmail.getEmail(), "Mario Rossi", UserRole.PLAYER);
+	RegistrationRequest<PlayerDto> request = new RegistrationRequest<PlayerDto>(existingEmail, rawPassword,
+		details);
+
+	UserAccount mockAccount = mock(UserAccount.class);
+	when(accountRepo.findByEmail(existingEmail)).thenReturn(Optional.of(mockAccount));
+
+	RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+	    registrationService.register(request);
+	});
+
+	assertEquals("Email already registered", exception.getMessage());
+
+	verify(accountRepo, never()).save(any());
+	verify(playerRepo, never()).save(any());
     }
 }
