@@ -18,13 +18,15 @@ public class PlayerAuthService implements AuthService<PlayerDto> {
     private final PlayerRepository playerRepo;
     private final PasswordEncoder encoder;
     private final UserMapper userMapper;
+    private final JwtService jwtService;
 
     public PlayerAuthService(UserAccountRepository accountRepo, PlayerRepository playerRepo, PasswordEncoder encoder,
-	    UserMapper userMapper) {
+	    UserMapper userMapper, JwtService jwtService) {
 	this.accountRepo = accountRepo;
 	this.playerRepo = playerRepo;
 	this.encoder = encoder;
 	this.userMapper = userMapper;
+	this.jwtService = jwtService;
     }
 
     @Override
@@ -39,8 +41,9 @@ public class PlayerAuthService implements AuthService<PlayerDto> {
 	Player player = playerRepo.findByAccount(account)
 		.orElseThrow(() -> new RuntimeException("Account exists but not linked to a player"));
 
+	String token = jwtService.generateToken(account);
 	PlayerDto profile = userMapper.toDto(player);
-	return new LoginResponse<>("valid_token", profile);
+	return new LoginResponse<>(token, profile);
     }
 
 }

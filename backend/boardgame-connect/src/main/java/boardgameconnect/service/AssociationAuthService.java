@@ -18,13 +18,16 @@ public class AssociationAuthService implements AuthService<AssociationDto> {
     private final AssociationRepository associationRepo;
     private final PasswordEncoder encoder;
     private final UserMapper userMapper;
+    private final JwtService jwtService;
 
     public AssociationAuthService(UserAccountRepository accountRepo, AssociationRepository associationRepo,
-	    PasswordEncoder encoder, UserMapper userMapper) {
+	    PasswordEncoder encoder, UserMapper userMapper, JwtService jwtService) {
 	this.accountRepo = accountRepo;
 	this.associationRepo = associationRepo;
 	this.encoder = encoder;
 	this.userMapper = userMapper;
+	this.jwtService = jwtService;
+
     }
 
     @Override
@@ -39,8 +42,9 @@ public class AssociationAuthService implements AuthService<AssociationDto> {
 	Association association = associationRepo.findByAccount(account)
 		.orElseThrow(() -> new RuntimeException("Account exists but not linked to a player"));
 
+	String token = jwtService.generateToken(account);
 	AssociationDto profile = userMapper.toDto(association);
-	return new LoginResponse<>("valid_token", profile);
+	return new LoginResponse<>(token, profile);
     }
 
 }
