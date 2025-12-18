@@ -40,7 +40,7 @@ export class Login {
     this.errorMessage.set('');
 
     const credentials = this.loginForm.getRawValue();
-    this.authService.login(credentials).subscribe({
+    this.authService.login(credentials, 'PLAYER').subscribe({
       next: () => {
         this.isLoading.set(false);
         this.router.navigate(['/reservations']);
