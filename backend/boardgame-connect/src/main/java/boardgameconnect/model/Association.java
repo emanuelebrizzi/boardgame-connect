@@ -26,7 +26,7 @@ public class Association {
     private String taxCode;
     private String address;
 
-    protected Association() {
+    public Association() {
     }
 
     public Association(UserAccount account, String taxCode, String address) {

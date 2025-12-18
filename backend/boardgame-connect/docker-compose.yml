@@ -1,5 +1,4 @@
 services:
-  # The name of the service, can be used as a hostname if running the app inside docker too
   db:
     image: postgres:16-alpine
     container_name: boardgame_db
@@ -9,7 +8,7 @@ services:
       POSTGRES_USER: myuser
       POSTGRES_PASSWORD: secretpassword
     ports:
-      - "5432:5432" # Maps localhost:5432 to container:5432
+      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data # Persists data even if container stops
 

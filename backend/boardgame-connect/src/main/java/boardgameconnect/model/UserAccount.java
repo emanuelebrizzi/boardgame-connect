@@ -32,7 +32,7 @@ public class UserAccount {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    protected UserAccount() {
+    public UserAccount() {
     }
 
     public UserAccount(Email email, String password, String name, UserRole role) {
