@@ -9,7 +9,7 @@ import { catchError, Observable, tap, throwError } from 'rxjs';
 export class AuthService {
   private readonly USER_KEY = 'user_session';
   private readonly TOKEN_KEY = 'access_token';
-  private readonly apiUrl = 'http://localhost:3000';
+  private readonly apiUrl = 'http://localhost:8080/api/v1';
 
   private readonly http = inject(HttpClient);
 
