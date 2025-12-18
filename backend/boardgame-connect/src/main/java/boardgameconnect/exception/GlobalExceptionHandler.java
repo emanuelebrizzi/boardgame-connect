@@ -37,7 +37,7 @@ public class GlobalExceptionHandler {
 	log.error("Unexpected error occurred at path {}: ", request.getRequestURI(), ex);
 
 	var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
-		HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "An unexpected error occurred",
+		HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase(), "An internal error occurred",
 		request.getRequestURI());
 
 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
