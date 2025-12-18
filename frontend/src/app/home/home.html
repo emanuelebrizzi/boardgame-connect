@@ -1,5 +1,9 @@
 <div class="home-container">
   <section class="hero">
+    <div class="hero-visual">
+      <mat-icon class="huge-icon">casino</mat-icon>
+    </div>
+
     <div class="hero-content">
       <h1 class="hero-title">Play. Connect. Reserve.</h1>
       <p class="hero-subtitle">
@@ -10,12 +14,28 @@
         <a mat-flat-button color="tertiary" routerLink="/register" class="cta-button">
           Join the Community
         </a>
-        <a mat-stroked-button color="primary" routerLink="/login"> Sign In </a>
+        <a mat-stroked-button color="primary" routerLink="/login" class="cta-button"> Sign In </a>
       </div>
     </div>
+  </section>
 
-    <div class="hero-visual">
-      <mat-icon class="huge-icon">casino</mat-icon>
+  <section class="features">
+    <div class="feature-card">
+      <div class="icon-box"><mat-icon>calendar_today</mat-icon></div>
+      <h3>Book Tables</h3>
+      <p>Reserve your spot instantly.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon-box"><mat-icon>groups</mat-icon></div>
+      <h3>Meet Players</h3>
+      <p>Find friends for your games.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="icon-box"><mat-icon>emoji_events</mat-icon></div>
+      <h3>Join Events</h3>
+      <p>Participate in local tournaments.</p>
     </div>
   </section>
 </div>
