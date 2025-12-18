@@ -6,6 +6,8 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
+import { UserRole } from '../models';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Component({
   selector: 'app-login',
@@ -15,6 +17,7 @@ import { Router } from '@angular/router';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
+    MatButtonToggleModule,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -27,20 +30,23 @@ export class Login {
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
+  readonly loginType = signal<UserRole>('PLAYER');
 
   readonly loginForm = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
   });
 
-  onSubmit() {
+  processLoginForm() {
     if (this.loginForm.invalid) return;
 
     this.isLoading.set(true);
     this.errorMessage.set('');
 
     const credentials = this.loginForm.getRawValue();
-    this.authService.login(credentials).subscribe({
+    const role = this.loginType();
+
+    this.authService.login(credentials, role).subscribe({
       next: () => {
         this.isLoading.set(false);
         this.router.navigate(['/reservations']);
@@ -48,7 +54,7 @@ export class Login {
 
       error: (err) => {
         this.isLoading.set(false);
-        this.errorMessage.set('Invalid email or password');
+        this.errorMessage.set(err.message);
       },
     });
   }

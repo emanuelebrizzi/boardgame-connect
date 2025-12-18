@@ -1,19 +1,46 @@
-<form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-  <mat-form-field>
-    <mat-label>Email</mat-label>
-    <input matInput formControlName="email" />
+<mat-card class="login-card">
+  <mat-card-header>
+    <mat-card-title>Welcome Back</mat-card-title>
+  </mat-card-header>
 
-    @if (loginForm.get('email')?.hasError('email')) {
-    <mat-error>Invalid email address</mat-error>
+  <form [formGroup]="loginForm" (ngSubmit)="processLoginForm()">
+    <mat-form-field>
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" placeholder="name@example.com" />
+
+      @if (loginForm.get('email')?.hasError('required')) {
+      <mat-error>Email is required</mat-error>
+      } @else if (loginForm.get('email')?.hasError('email')) {
+      <mat-error>Invalid email address</mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Password</mat-label>
+      <input matInput type="password" formControlName="password" />
+      @if (loginForm.get('password')?.hasError('required')) {
+      <mat-error>Password is required</mat-error>
+      }
+    </mat-form-field>
+
+    <div class="role-selector">
+      <mat-button-toggle-group
+        [value]="loginType()"
+        (change)="loginType.set($event.value)"
+        appearance="legacy"
+        name="role"
+      >
+        <mat-button-toggle value="PLAYER">Player</mat-button-toggle>
+        <mat-button-toggle value="ASSOCIATION">Association</mat-button-toggle>
+      </mat-button-toggle-group>
+    </div>
+
+    @if (errorMessage()) {
+    <div class="error-feedback">{{ errorMessage() }}</div>
     }
-  </mat-form-field>
 
-  <mat-form-field>
-    <mat-label>Password</mat-label>
-    <input matInput type="password" formControlName="password" />
-  </mat-form-field>
-
-  <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
-    Sign In
-  </button>
-</form>
+    <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
+      Sign In
+    </button>
+  </form>
+</mat-card>
