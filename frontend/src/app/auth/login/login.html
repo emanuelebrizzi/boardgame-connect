@@ -8,7 +8,9 @@
       <mat-label>Email</mat-label>
       <input matInput formControlName="email" placeholder="name@example.com" />
 
-      @if (loginForm.get('email')?.hasError('email')) {
+      @if (loginForm.get('email')?.hasError('required')) {
+      <mat-error>Email is required</mat-error>
+      } @else if (loginForm.get('email')?.hasError('email')) {
       <mat-error>Invalid email address</mat-error>
       }
     </mat-form-field>
@@ -16,6 +18,9 @@
     <mat-form-field>
       <mat-label>Password</mat-label>
       <input matInput type="password" formControlName="password" />
+      @if (loginForm.get('password')?.hasError('required')) {
+      <mat-error>Password is required</mat-error>
+      }
     </mat-form-field>
 
     <div class="role-selector">

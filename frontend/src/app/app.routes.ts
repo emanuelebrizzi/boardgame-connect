@@ -24,9 +24,9 @@ export const routes: Routes = [
     path: 'error',
     loadComponent: () => import('./error/error').then((m) => m.Error),
     data: {
-      code: '500',
-      title: 'Server Error',
-      message: 'Our servers are having a bad day. We are working to fix it.',
+      code: '404',
+      title: 'Page Not Found',
+      message: 'The page you are looking for does not exist.',
     },
   },
   {
