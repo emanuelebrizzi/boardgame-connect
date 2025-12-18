@@ -1,0 +1,129 @@
+.home-container {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 64px);
+  background-color: #f4fbfb;
+}
+
+.hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  max-width: 800px;
+  z-index: 2;
+}
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 24px;
+  color: #006064;
+
+  @media (max-width: 600px) {
+    font-size: 2.5rem;
+  }
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  color: #546e7a;
+  margin-bottom: 48px;
+  line-height: 1.6;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+
+  @media (max-width: 600px) {
+    font-size: 1.1rem;
+    margin-bottom: 32px;
+  }
+}
+
+.cta-actions {
+  display: flex;
+  gap: 24px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.cta-button {
+  padding: 16px 48px !important;
+  font-size: 1.25rem !important;
+  border-radius: 32px !important;
+  min-width: 200px;
+
+  mat-icon {
+    width: 24px;
+    height: 24px;
+    font-size: 24px;
+    margin-left: 8px;
+  }
+}
+
+.hero-visual {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-15deg);
+  z-index: 1;
+  opacity: 0.4;
+  pointer-events: none;
+
+  .huge-icon {
+    font-size: 400px;
+    width: 400px;
+    height: 400px;
+    color: rgba(0, 96, 100, 0.05);
+  }
+}
+
+.features {
+  padding: 64px 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 32px;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.feature-card {
+  text-align: center;
+  padding: 24px;
+  background-color: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+
+  h3 {
+    margin-top: 16px;
+    font-size: 1.2rem;
+    color: #006064;
+  }
+
+  p {
+    color: #666;
+  }
+}
+
+.icon-box {
+  width: 64px;
+  height: 64px;
+  background-color: #e0f2f1;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  color: #006064;
+}

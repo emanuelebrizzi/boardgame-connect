@@ -1,9 +1,17 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './auth/auth-guard';
+import { guestGuard } from './auth/guest-guard';
 
 export const routes: Routes = [
   {
+    path: '',
+    canActivate: [guestGuard],
+    loadComponent: () => import('./home/home').then((m) => m.Home),
+    pathMatch: 'full',
+  },
+  {
     path: 'login',
+    canActivate: [guestGuard],
     loadComponent: () => import('./auth/login/login').then((m) => m.Login),
   },
   {
@@ -28,11 +36,6 @@ export const routes: Routes = [
       title: 'Page Not Found',
       message: 'The page you are looking for does not exist.',
     },
-  },
-  {
-    path: '',
-    redirectTo: 'reservations',
-    pathMatch: 'full',
   },
   {
     path: '**',
