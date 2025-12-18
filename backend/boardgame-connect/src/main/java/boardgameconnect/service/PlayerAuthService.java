@@ -1,6 +1,7 @@
 package boardgameconnect.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
 
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.UserAccountRepository;
@@ -11,6 +12,7 @@ import boardgameconnect.mapper.UserMapper;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
 
+@Service
 public class PlayerAuthService implements AuthService<PlayerDto> {
     private final UserAccountRepository accountRepo;
     private final PlayerRepository playerRepo;
