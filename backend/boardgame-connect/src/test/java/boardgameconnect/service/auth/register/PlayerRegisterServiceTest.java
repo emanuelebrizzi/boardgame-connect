@@ -1,4 +1,4 @@
-package boardgameconnect.service;
+package boardgameconnect.service.auth.register;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.inOrder;
@@ -15,66 +15,62 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import boardgameconnect.dao.AssociationRepository;
+import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.UserAccountRepository;
-import boardgameconnect.dto.authorization.AssociationDetails;
-import boardgameconnect.dto.authorization.RegistrationRequest;
-import boardgameconnect.model.Association;
+import boardgameconnect.dto.auth.register.RegisterRequest;
 import boardgameconnect.model.Email;
+import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
+import boardgameconnect.service.auth.register.PlayerRegisterService;
 
 @ExtendWith(MockitoExtension.class)
-class AssociationRegistrationServiceTest {
+class PlayerRegisterServiceTest {
 
     @Mock
     private UserAccountRepository accountRepo;
     @Mock
-    private AssociationRepository associationRepo;
+    private PlayerRepository playerRepo;
     @Mock
     private PasswordEncoder encoder;
     @InjectMocks
-    private AssociationRegistrationService registrationService;
+    private PlayerRegisterService registerService;
 
     @Test
     void registerShouldSaveAccountAndAssociationWhenEmailIsNotRegistered() {
-	Email email = new Email("info@associazione.it");
+	Email email = new Email("mariorosi@dominio.it");
 	String rawPassword = "password123";
-	String name = "associazione";
 	String encodedPassword = "encoded_password";
-	var details = new AssociationDetails("test_taxcode", "test_address");
-	var association = new Association(new UserAccount(email, encodedPassword, name, UserRole.ASSOCIATION),
-		"test_taxcode", "test_address");
-	RegistrationRequest<AssociationDetails> request = new RegistrationRequest<>(email, rawPassword, name, details);
+	String name = "Mario Rossi";
+	Player player = new Player(new UserAccount(email, encodedPassword, name, UserRole.PLAYER));
+	RegisterRequest<Void> request = new RegisterRequest<>(email, rawPassword, name, null);
 
 	when(accountRepo.findByEmail(email)).thenReturn(Optional.empty());
 	when(encoder.encode(rawPassword)).thenReturn(encodedPassword);
-	when(associationRepo.save(association)).thenReturn(association);
+	when(playerRepo.save(player)).thenReturn(player);
 
-	registrationService.register(request);
-	InOrder inOrder = inOrder(accountRepo, encoder, associationRepo);
+	registerService.register(request);
+	InOrder inOrder = inOrder(accountRepo, encoder, playerRepo);
 	inOrder.verify(accountRepo).findByEmail(email);
 	inOrder.verify(encoder).encode(rawPassword);
-	inOrder.verify(associationRepo).save(association);
-	verifyNoMoreInteractions(accountRepo, encoder, associationRepo);
+	inOrder.verify(playerRepo).save(player);
+	verifyNoMoreInteractions(accountRepo, encoder, playerRepo);
     }
 
     @Test
     void registerShouldThrowExceptionWhenEmailAlreadyExists() {
 	Email existingEmail = new Email("existing.email@test.it");
 	String rawPassword = "password123";
-	String name = "associazione";
-	var userAccount = new UserAccount(existingEmail, rawPassword, name, UserRole.ASSOCIATION);
+	String name = "Mario Rossi";
+	var userAccount = new UserAccount(existingEmail, rawPassword, name, UserRole.PLAYER);
 
-	var details = new AssociationDetails("test_taxcode", "test_address");
-	RegistrationRequest<AssociationDetails> request = new RegistrationRequest<>(existingEmail, rawPassword, name,
-		details);
+	RegisterRequest<Void> request = new RegisterRequest<>(existingEmail, rawPassword, name, null);
 
 	when(accountRepo.findByEmail(existingEmail)).thenReturn(Optional.of(userAccount));
 
-	assertThatThrownBy(() -> registrationService.register(request)).isInstanceOf(RuntimeException.class)
+	assertThatThrownBy(() -> registerService.register(request)).isInstanceOf(RuntimeException.class)
 		.hasMessage("Email already registered");
 
-	verifyNoMoreInteractions(accountRepo, encoder, associationRepo);
+	verifyNoMoreInteractions(accountRepo, encoder, playerRepo);
     }
 }

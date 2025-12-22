@@ -1,23 +1,23 @@
-package boardgameconnect.service;
+package boardgameconnect.service.auth.register;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.UserAccountRepository;
-import boardgameconnect.dto.authorization.RegistrationRequest;
+import boardgameconnect.dto.auth.register.RegisterRequest;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 
 @Service
-public class PlayerRegistrationService implements RegistrationService<Void> {
+public class PlayerRegisterService implements RegisterService<Void> {
 
     private final UserAccountRepository accountRepo;
     private final PlayerRepository playerRepo;
     private final PasswordEncoder encoder;
 
-    public PlayerRegistrationService(UserAccountRepository accountRepo, PlayerRepository playerRepo,
+    public PlayerRegisterService(UserAccountRepository accountRepo, PlayerRepository playerRepo,
 	    PasswordEncoder encoder) {
 	this.accountRepo = accountRepo;
 	this.playerRepo = playerRepo;
@@ -25,7 +25,7 @@ public class PlayerRegistrationService implements RegistrationService<Void> {
     }
 
     @Override
-    public void register(RegistrationRequest<Void> request) {
+    public void register(RegisterRequest<Void> request) {
 	if (accountRepo.findByEmail(request.email()).isPresent()) {
 	    throw new RuntimeException("Email already registered");
 	}

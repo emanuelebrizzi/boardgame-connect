@@ -6,32 +6,32 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import boardgameconnect.dto.AssociationDto;
-import boardgameconnect.dto.PlayerDto;
-import boardgameconnect.dto.authorization.LoginRequest;
-import boardgameconnect.dto.authorization.LoginResponse;
-import boardgameconnect.service.AssociationAuthService;
-import boardgameconnect.service.PlayerAuthService;
+import boardgameconnect.dto.AssociationProfile;
+import boardgameconnect.dto.PlayerProfile;
+import boardgameconnect.dto.auth.login.LoginRequest;
+import boardgameconnect.dto.auth.login.LoginResponse;
+import boardgameconnect.service.auth.login.AssociationLoginService;
+import boardgameconnect.service.auth.login.PlayerLoginService;
 
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
 
-    private final PlayerAuthService playerService;
-    private final AssociationAuthService associationService;
+    private final PlayerLoginService playerService;
+    private final AssociationLoginService associationService;
 
-    public AuthenticationController(PlayerAuthService playerService, AssociationAuthService associationService) {
+    public AuthenticationController(PlayerLoginService playerService, AssociationLoginService associationService) {
 	this.playerService = playerService;
 	this.associationService = associationService;
     }
 
     @PostMapping("/login/player")
-    public ResponseEntity<LoginResponse<PlayerDto>> loginPlayer(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse<PlayerProfile>> loginPlayer(@RequestBody LoginRequest request) {
 	return ResponseEntity.ok(playerService.login(request));
     }
 
     @PostMapping("/login/association")
-    public ResponseEntity<LoginResponse<AssociationDto>> loginAssociation(@RequestBody LoginRequest request) {
+    public ResponseEntity<LoginResponse<AssociationProfile>> loginAssociation(@RequestBody LoginRequest request) {
 	return ResponseEntity.ok(associationService.login(request));
     }
 

@@ -16,15 +16,15 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import boardgameconnect.dto.AssociationDto;
-import boardgameconnect.dto.PlayerDto;
-import boardgameconnect.dto.authorization.LoginRequest;
-import boardgameconnect.dto.authorization.LoginResponse;
+import boardgameconnect.dto.AssociationProfile;
+import boardgameconnect.dto.PlayerProfile;
+import boardgameconnect.dto.auth.login.LoginRequest;
+import boardgameconnect.dto.auth.login.LoginResponse;
 import boardgameconnect.exception.InvalidCredentialsException;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.UserRole;
-import boardgameconnect.service.AssociationAuthService;
-import boardgameconnect.service.PlayerAuthService;
+import boardgameconnect.service.auth.login.AssociationLoginService;
+import boardgameconnect.service.auth.login.PlayerLoginService;
 
 @WebMvcTest(AuthenticationController.class)
 class AuthenticationControllerTest {
@@ -36,17 +36,17 @@ class AuthenticationControllerTest {
     private ObjectMapper objectMapper;
 
     @MockitoBean
-    private PlayerAuthService playerService;
+    private PlayerLoginService playerService;
 
     @MockitoBean
-    private AssociationAuthService associationService;
+    private AssociationLoginService associationService;
 
     @Test
     void loginPlayerShouldReturnTokenAndPlayerProfile() throws Exception {
 	var email = new Email("player@example.com");
 	var request = new LoginRequest(email, "password");
-	PlayerDto playerDto = new PlayerDto("uuid-123", "player@example.com", "MarioRossi", UserRole.PLAYER);
-	LoginResponse<PlayerDto> response = new LoginResponse<>("valid_token", playerDto);
+	PlayerProfile playerDto = new PlayerProfile("uuid-123", "player@example.com", "MarioRossi", UserRole.PLAYER);
+	LoginResponse<PlayerProfile> response = new LoginResponse<>("valid_token", playerDto);
 	when(playerService.login(request)).thenReturn(response);
 
 	mockMvc.perform(post("/api/v1/auth/login/player").contentType(MediaType.APPLICATION_JSON)
@@ -90,9 +90,9 @@ class AuthenticationControllerTest {
     void loginAssociationShouldReturnTokenAndAssociationProfile() throws Exception {
 	var email = new Email("assoc@example.com");
 	LoginRequest request = new LoginRequest(email, "password");
-	AssociationDto associationDto = new AssociationDto("uuid-456", "assoc@example.com", "BoardGames Inc", "TAX123",
+	AssociationProfile associationDto = new AssociationProfile("uuid-456", "assoc@example.com", "BoardGames Inc", "TAX123",
 		"Via Roma 1", UserRole.ASSOCIATION);
-	LoginResponse<AssociationDto> response = new LoginResponse<>("valid_token", associationDto);
+	LoginResponse<AssociationProfile> response = new LoginResponse<>("valid_token", associationDto);
 
 	when(associationService.login(request)).thenReturn(response);
 
