@@ -3,39 +3,39 @@ package boardgameconnect.service.auth.register;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import boardgameconnect.dao.AssociationRepository;
+import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.UserAccountRepository;
-import boardgameconnect.dto.auth.register.AssociationDetails;
-import boardgameconnect.dto.auth.register.RegisterRequest;
+import boardgameconnect.dto.auth.register.RegistrationRequest;
 import boardgameconnect.exception.EmailAlreadyInUseException;
-import boardgameconnect.model.Association;
+import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 
 @Service
-public class AssociationRegisterService implements RegisterService<AssociationDetails> {
+public class PlayerRegistrationService implements RegistrationService<Void> {
 
     private final UserAccountRepository accountRepo;
-    private final AssociationRepository associationRepo;
+    private final PlayerRepository playerRepo;
     private final PasswordEncoder encoder;
 
-    public AssociationRegisterService(UserAccountRepository accountRepo, AssociationRepository associationRepo,
+    public PlayerRegistrationService(UserAccountRepository accountRepo, PlayerRepository playerRepo,
 	    PasswordEncoder encoder) {
 	this.accountRepo = accountRepo;
-	this.associationRepo = associationRepo;
+	this.playerRepo = playerRepo;
 	this.encoder = encoder;
     }
 
     @Override
-    public void register(RegisterRequest<AssociationDetails> request) {
+    public void register(RegistrationRequest<Void> request) {
 	if (accountRepo.findByEmail(request.email()).isPresent()) {
 	    throw new EmailAlreadyInUseException("Email already registered");
 	}
 
 	UserAccount account = new UserAccount(request.email(), encoder.encode(request.password()), request.name(),
-		UserRole.ASSOCIATION);
+		UserRole.PLAYER);
 
-	Association association = new Association(account, request.details().taxCode(), request.details().address());
-	associationRepo.save(association);
+	Player player = new Player(account);
+	playerRepo.save(player);
+
     }
 }
