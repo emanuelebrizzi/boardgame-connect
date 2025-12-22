@@ -12,9 +12,11 @@ import boardgameconnect.dto.AssociationProfile;
 import boardgameconnect.dto.PlayerProfile;
 import boardgameconnect.dto.auth.login.LoginRequest;
 import boardgameconnect.dto.auth.login.LoginResponse;
+import boardgameconnect.dto.auth.register.AssociationDetails;
 import boardgameconnect.dto.auth.register.RegistrationRequest;
 import boardgameconnect.service.auth.login.AssociationLoginService;
 import boardgameconnect.service.auth.login.PlayerLoginService;
+import boardgameconnect.service.auth.register.AssociationRegistrationService;
 import boardgameconnect.service.auth.register.PlayerRegistrationService;
 import jakarta.validation.Valid;
 
@@ -25,12 +27,15 @@ public class AuthenticationController {
     private final PlayerLoginService playerService;
     private final AssociationLoginService associationService;
     private final PlayerRegistrationService playerRegistrationService;
+    private final AssociationRegistrationService associationRegistrationService;
 
     public AuthenticationController(PlayerLoginService playerService, AssociationLoginService associationService,
-	    PlayerRegistrationService playerRegistrationService) {
+	    PlayerRegistrationService playerRegistrationService,
+	    AssociationRegistrationService associationRegistrationService) {
 	this.playerService = playerService;
 	this.associationService = associationService;
 	this.playerRegistrationService = playerRegistrationService;
+	this.associationRegistrationService = associationRegistrationService;
     }
 
     @PostMapping("/login/player")
@@ -47,5 +52,11 @@ public class AuthenticationController {
     @ResponseStatus(HttpStatus.CREATED)
     public void registerPlayer(@RequestBody @Valid RegistrationRequest<Void> request) {
 	playerRegistrationService.register(request);
+    }
+
+    @PostMapping("/register/association")
+    @ResponseStatus(HttpStatus.CREATED)
+    public void registerAssociation(@RequestBody @Valid RegistrationRequest<AssociationDetails> request) {
+	associationRegistrationService.register(request);
     }
 }
