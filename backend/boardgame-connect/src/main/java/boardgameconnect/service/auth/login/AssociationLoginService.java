@@ -1,37 +1,39 @@
-package boardgameconnect.service;
+package boardgameconnect.service.auth.login;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import boardgameconnect.dao.PlayerRepository;
+import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.UserAccountRepository;
-import boardgameconnect.dto.LoginRequest;
-import boardgameconnect.dto.LoginResponse;
-import boardgameconnect.dto.PlayerDto;
+import boardgameconnect.dto.AssociationProfile;
+import boardgameconnect.dto.auth.login.LoginRequest;
+import boardgameconnect.dto.auth.login.LoginResponse;
 import boardgameconnect.exception.InvalidCredentialsException;
 import boardgameconnect.mapper.UserMapper;
-import boardgameconnect.model.Player;
+import boardgameconnect.model.Association;
 import boardgameconnect.model.UserAccount;
+import boardgameconnect.service.JwtService;
 
 @Service
-public class PlayerAuthService implements AuthService<PlayerDto> {
+public class AssociationLoginService implements LoginService<AssociationProfile> {
     private final UserAccountRepository accountRepo;
-    private final PlayerRepository playerRepo;
+    private final AssociationRepository associationRepo;
     private final PasswordEncoder encoder;
     private final UserMapper userMapper;
     private final JwtService jwtService;
 
-    public PlayerAuthService(UserAccountRepository accountRepo, PlayerRepository playerRepo, PasswordEncoder encoder,
-	    UserMapper userMapper, JwtService jwtService) {
+    public AssociationLoginService(UserAccountRepository accountRepo, AssociationRepository associationRepo,
+	    PasswordEncoder encoder, UserMapper userMapper, JwtService jwtService) {
 	this.accountRepo = accountRepo;
-	this.playerRepo = playerRepo;
+	this.associationRepo = associationRepo;
 	this.encoder = encoder;
 	this.userMapper = userMapper;
 	this.jwtService = jwtService;
+
     }
 
     @Override
-    public LoginResponse<PlayerDto> login(LoginRequest request) {
+    public LoginResponse<AssociationProfile> login(LoginRequest request) {
 	UserAccount account = accountRepo.findByEmail(request.email())
 		.orElseThrow(() -> new InvalidCredentialsException("Invalid credentials"));
 
@@ -39,11 +41,11 @@ public class PlayerAuthService implements AuthService<PlayerDto> {
 	    throw new InvalidCredentialsException("Invalid credentials");
 	}
 
-	Player player = playerRepo.findByAccount(account)
+	Association association = associationRepo.findByAccount(account)
 		.orElseThrow(() -> new RuntimeException("Account exists but not linked to a player"));
 
 	String token = jwtService.generateToken(account);
-	PlayerDto profile = userMapper.toDto(player);
+	AssociationProfile profile = userMapper.toDto(association);
 	return new LoginResponse<>(token, profile);
     }
 

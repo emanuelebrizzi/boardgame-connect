@@ -1,4 +1,4 @@
-package boardgameconnect.service;
+package boardgameconnect.service.auth.login;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -16,31 +16,32 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import boardgameconnect.dao.PlayerRepository;
+import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.UserAccountRepository;
-import boardgameconnect.dto.LoginRequest;
-import boardgameconnect.dto.LoginResponse;
-import boardgameconnect.dto.PlayerDto;
+import boardgameconnect.dto.AssociationProfile;
+import boardgameconnect.dto.auth.login.LoginRequest;
+import boardgameconnect.dto.auth.login.LoginResponse;
 import boardgameconnect.mapper.UserMapper;
+import boardgameconnect.model.Association;
 import boardgameconnect.model.Email;
-import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
+import boardgameconnect.service.JwtService;
 
 @ExtendWith(MockitoExtension.class)
-class PlayerAuthServiceTest {
+class AssociationLoginServiceTest {
 
     @Mock
     private UserAccountRepository accountRepository;
     @Mock
-    private PlayerRepository playerRepository;
+    private AssociationRepository associationRepository;
     @Mock
     private UserMapper userMapper;
     @Mock
     private JwtService jwtService;
 
     private PasswordEncoder passwordEncoder;
-    private PlayerAuthService playerAuthService;
+    private AssociationLoginService associationLoginService;
 
     @BeforeEach
     void setUp() {
@@ -57,8 +58,8 @@ class PlayerAuthServiceTest {
 	    }
 	};
 
-	playerAuthService = new PlayerAuthService(accountRepository, playerRepository, passwordEncoder, userMapper,
-		jwtService);
+	associationLoginService = new AssociationLoginService(accountRepository, associationRepository, passwordEncoder,
+		userMapper, jwtService);
     }
 
     @Test
@@ -68,54 +69,55 @@ class PlayerAuthServiceTest {
 
 	when(accountRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-	assertThatThrownBy(() -> playerAuthService.login(request)).isInstanceOf(RuntimeException.class)
+	assertThatThrownBy(() -> associationLoginService.login(request)).isInstanceOf(RuntimeException.class)
 		.hasMessage("Invalid credentials");
 
-	verifyNoMoreInteractions(playerRepository, userMapper, jwtService);
+	verifyNoMoreInteractions(associationRepository, userMapper, jwtService);
     }
 
     @Test
     void loginShouldThrowWhenPasswordIsInvalid() {
-	Email email = new Email("mario@example.com");
+	Email email = new Email("association@example.com");
 	String rawPassword = "password";
 	String encodedPassword = passwordEncoder.encode(rawPassword);
-	UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.PLAYER);
+	UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.ASSOCIATION);
 
 	when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
 
 	LoginRequest request = new LoginRequest(email, "wrong_password");
 
-	assertThatThrownBy(() -> playerAuthService.login(request)).isInstanceOf(RuntimeException.class)
+	assertThatThrownBy(() -> associationLoginService.login(request)).isInstanceOf(RuntimeException.class)
 		.hasMessage("Invalid credentials");
 
-	verifyNoMoreInteractions(playerRepository, userMapper, jwtService);
+	verifyNoMoreInteractions(associationRepository, userMapper);
     }
 
     @Test
     void loginShouldReturnResponseWhenCredentialsAreValid() {
-	Email email = new Email("mario@example.com");
+	Email email = new Email("association@example.com");
 	String rawPassword = "password";
 	String encodedPassword = passwordEncoder.encode(rawPassword);
-	UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.PLAYER);
-	Player player = new Player(account);
+	UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.ASSOCIATION);
+	Association association = new Association(account, "test_taxcode", "test_address");
 	String mockToken = "mocked-jwt-token";
-	PlayerDto expectedDto = new PlayerDto("id_123", "mario@example.com", "Mario", UserRole.PLAYER);
+	AssociationProfile expectedDto = new AssociationProfile("assoc_id", "association@example.com", "Assoc Name",
+		"test_taxcode", "Via Roma 1", UserRole.ASSOCIATION);
 
 	when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
-	when(playerRepository.findByAccount(account)).thenReturn(Optional.of(player));
+	when(associationRepository.findByAccount(account)).thenReturn(Optional.of(association));
 	when(jwtService.generateToken(account)).thenReturn(mockToken);
-	when(userMapper.toDto(player)).thenReturn(expectedDto);
+	when(userMapper.toDto(association)).thenReturn(expectedDto);
 
 	LoginRequest request = new LoginRequest(email, rawPassword);
-	LoginResponse<PlayerDto> response = playerAuthService.login(request);
+	LoginResponse<AssociationProfile> response = associationLoginService.login(request);
 
 	assertThat(response.accessToken()).isEqualTo(mockToken);
 	assertThat(response.profile()).isEqualTo(expectedDto);
 
-	InOrder inOrder = inOrder(accountRepository, playerRepository, userMapper, jwtService);
+	InOrder inOrder = inOrder(accountRepository, associationRepository, userMapper, jwtService);
 	inOrder.verify(accountRepository).findByEmail(email);
-	inOrder.verify(playerRepository).findByAccount(account);
+	inOrder.verify(associationRepository).findByAccount(account);
 	inOrder.verify(jwtService).generateToken(account);
-	inOrder.verify(userMapper).toDto(player);
+	inOrder.verify(userMapper).toDto(association);
     }
 }

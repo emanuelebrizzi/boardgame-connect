@@ -1,5 +1,7 @@
 package boardgameconnect.model;
 
+import java.util.Objects;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -49,6 +51,24 @@ public class Association {
 
     public String getAddress() {
 	return address;
+    }
+
+    @Override
+    public int hashCode() {
+	return Objects.hash(account, address, taxCode);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+	if (this == obj)
+	    return true;
+	if (obj == null)
+	    return false;
+	if (getClass() != obj.getClass())
+	    return false;
+	Association other = (Association) obj;
+	return Objects.equals(account, other.account) && Objects.equals(address, other.address)
+		&& Objects.equals(taxCode, other.taxCode);
     }
 
 }
