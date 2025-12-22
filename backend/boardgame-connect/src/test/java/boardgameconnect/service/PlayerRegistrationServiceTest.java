@@ -1,26 +1,22 @@
 package boardgameconnect.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.UserAccountRepository;
-import boardgameconnect.dto.PlayerDto;
 import boardgameconnect.dto.authorization.RegistrationRequest;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.Player;
@@ -36,63 +32,44 @@ class PlayerRegistrationServiceTest {
     private PlayerRepository playerRepo;
     @Mock
     private PasswordEncoder encoder;
-
+    @InjectMocks
     private PlayerRegistrationService registrationService;
 
-    @BeforeEach
-    void setUp() {
-	registrationService = new PlayerRegistrationService(accountRepo, playerRepo, encoder);
-    }
-
     @Test
-    void register_ShouldSaveAccountAndAssociation_WhenEmailIsNotRegistered() {
-
+    void registerShouldSaveAccountAndAssociationWhenEmailIsNotRegistered() {
 	Email email = new Email("mariorosi@dominio.it");
 	String rawPassword = "password123";
 	String encodedPassword = "encoded_password";
-
-	PlayerDto details = new PlayerDto(null, email.getEmail(), "Mario Rossi", UserRole.PLAYER);
-	RegistrationRequest<PlayerDto> request = new RegistrationRequest<PlayerDto>(email, rawPassword, details);
+	String name = "Mario Rossi";
+	Player player = new Player(new UserAccount(email, encodedPassword, name, UserRole.PLAYER));
+	RegistrationRequest<Void> request = new RegistrationRequest<>(email, rawPassword, name, null);
 
 	when(accountRepo.findByEmail(email)).thenReturn(Optional.empty());
 	when(encoder.encode(rawPassword)).thenReturn(encodedPassword);
+	when(playerRepo.save(player)).thenReturn(player);
 
 	registrationService.register(request);
-
-	ArgumentCaptor<UserAccount> accountCaptor = ArgumentCaptor.forClass(UserAccount.class);
-	verify(accountRepo).save(accountCaptor.capture());
-	UserAccount savedAccount = accountCaptor.getValue();
-
-	assertEquals(email, savedAccount.getEmail());
-	assertEquals(encodedPassword, savedAccount.getPassword());
-
-	ArgumentCaptor<Player> playerCaptor = ArgumentCaptor.forClass(Player.class);
-	verify(playerRepo).save(playerCaptor.capture());
-	Player savedPlayer = playerCaptor.getValue();
-
-	assertEquals(savedAccount, savedPlayer.getAccount());
+	InOrder inOrder = inOrder(accountRepo, encoder, playerRepo);
+	inOrder.verify(accountRepo).findByEmail(email);
+	inOrder.verify(encoder).encode(rawPassword);
+	inOrder.verify(playerRepo).save(player);
+	verifyNoMoreInteractions(accountRepo, encoder, playerRepo);
     }
 
     @Test
-    void register_ShouldThrowException_WhenEmailAlreadyExists() {
-
+    void registerShouldThrowExceptionWhenEmailAlreadyExists() {
 	Email existingEmail = new Email("existing.email@test.it");
 	String rawPassword = "password123";
+	String name = "Mario Rossi";
+	var userAccount = new UserAccount(existingEmail, rawPassword, name, UserRole.PLAYER);
 
-	PlayerDto details = new PlayerDto(null, existingEmail.getEmail(), "Mario Rossi", UserRole.PLAYER);
-	RegistrationRequest<PlayerDto> request = new RegistrationRequest<PlayerDto>(existingEmail, rawPassword,
-		details);
+	RegistrationRequest<Void> request = new RegistrationRequest<>(existingEmail, rawPassword, name, null);
 
-	UserAccount mockAccount = mock(UserAccount.class);
-	when(accountRepo.findByEmail(existingEmail)).thenReturn(Optional.of(mockAccount));
+	when(accountRepo.findByEmail(existingEmail)).thenReturn(Optional.of(userAccount));
 
-	RuntimeException exception = assertThrows(RuntimeException.class, () -> {
-	    registrationService.register(request);
-	});
+	assertThatThrownBy(() -> registrationService.register(request)).isInstanceOf(RuntimeException.class)
+		.hasMessage("Email already registered");
 
-	assertEquals("Email already registered", exception.getMessage());
-
-	verify(accountRepo, never()).save(any());
-	verify(playerRepo, never()).save(any());
+	verifyNoMoreInteractions(accountRepo, encoder, playerRepo);
     }
 }
