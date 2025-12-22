@@ -21,7 +21,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleInvalidCredentials(InvalidCredentialsException ex,
 	    HttpServletRequest request) {
-
 	log.warn("Login failed: {} at path {}", ex.getMessage(), request.getRequestURI());
 
 	var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.UNAUTHORIZED.value(),
@@ -30,10 +29,21 @@ public class GlobalExceptionHandler {
 	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    // Handle 409: Email already in use
+    @ExceptionHandler(EmailAlreadyInUseException.class)
+    public ResponseEntity<ErrorResponse> handleEmailAlreadyInUse(EmailAlreadyInUseException ex,
+	    HttpServletRequest request) {
+	log.warn("registration failed: {} at path {}", ex.getMessage(), request.getRequestURI());
+
+	var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.CONFLICT.value(),
+		HttpStatus.CONFLICT.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
+
+	return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
     // Handle 500: Generic Server Error
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
-
 	log.error("Unexpected error occurred at path {}: ", request.getRequestURI(), ex);
 
 	var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.INTERNAL_SERVER_ERROR.value(),
