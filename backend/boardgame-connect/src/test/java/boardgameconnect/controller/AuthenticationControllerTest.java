@@ -152,7 +152,7 @@ class AuthenticationControllerTest {
     }
 
     @Test
-    void registerPlayerWhenEmailIsAlreadyInUseShouldReturn409Error() throws Exception {
+    void registerPlayerWhenEmailIsAlreadyInUseShouldReturn409() throws Exception {
 	var email = new Email(PLAYER_EMAIL_STRING);
 	var password = "testPassword";
 	var name = PLAYER_NAME;
@@ -178,14 +178,15 @@ class AuthenticationControllerTest {
 		.content(objectMapper.writeValueAsString(request))).andExpect(status().isCreated());
     }
 
-//    @Test
-//    void registerPlayerWithInvalidDataShouldReturn400BadRequest() throws Exception {
-//	var request = new RegistrationRequest<>(null, "123", "", null);
-//
-//	mockMvc.perform(post(PLAYER_REGISTER_URI).contentType(MediaType.APPLICATION_JSON)
-//		.content(objectMapper.writeValueAsString(request))).andExpect(status().isBadRequest())
-//		.andExpect(jsonPath("$.status").value(400)).andExpect(jsonPath("$.path").value(PLAYER_REGISTER_URI));
-//
-//	verifyNoInteractions(playerRegistrationService);
-//    }
+    @Test
+    void registerPlayerWithInvalidDataShouldReturn400() throws Exception {
+	var request = new RegistrationRequest<>(null, "123", "", null);
+
+	mockMvc.perform(post(PLAYER_REGISTER_URI).contentType(MediaType.APPLICATION_JSON)
+		.content(objectMapper.writeValueAsString(request))).andExpect(status().isBadRequest())
+		.andExpect(status().isBadRequest()).andExpect(jsonPath("$.message").value("Invalid data"))
+		.andExpect(jsonPath("$.path").value(PLAYER_REGISTER_URI));
+
+	verifyNoInteractions(playerRegistrationService);
+    }
 }

@@ -1,5 +1,7 @@
 package boardgameconnect.dto.auth.register;
 
-public record AssociationDetails(String taxCode, String address) {
+import jakarta.validation.constraints.NotBlank;
+
+public record AssociationDetails(@NotBlank String taxCode, @NotBlank String address) {
 
 }

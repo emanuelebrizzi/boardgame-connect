@@ -16,6 +16,7 @@ import boardgameconnect.dto.auth.register.RegistrationRequest;
 import boardgameconnect.service.auth.login.AssociationLoginService;
 import boardgameconnect.service.auth.login.PlayerLoginService;
 import boardgameconnect.service.auth.register.PlayerRegistrationService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -44,7 +45,7 @@ public class AuthenticationController {
 
     @PostMapping("/register/player")
     @ResponseStatus(HttpStatus.CREATED)
-    public void registerPlayer(@RequestBody RegistrationRequest<Void> request) {
+    public void registerPlayer(@RequestBody @Valid RegistrationRequest<Void> request) {
 	playerRegistrationService.register(request);
     }
 }
