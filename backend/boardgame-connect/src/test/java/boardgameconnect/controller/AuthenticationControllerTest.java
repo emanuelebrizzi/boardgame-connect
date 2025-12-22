@@ -17,9 +17,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import boardgameconnect.dto.AssociationDto;
-import boardgameconnect.dto.LoginRequest;
-import boardgameconnect.dto.LoginResponse;
 import boardgameconnect.dto.PlayerDto;
+import boardgameconnect.dto.authorization.LoginRequest;
+import boardgameconnect.dto.authorization.LoginResponse;
 import boardgameconnect.exception.InvalidCredentialsException;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.UserRole;

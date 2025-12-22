@@ -1,6 +1,6 @@
 package boardgameconnect.service;
 
-import boardgameconnect.dto.RegistrationRequest;
+import boardgameconnect.dto.authorization.RegistrationRequest;
 
 public interface RegistrationService<T> {
     void register(RegistrationRequest<T> request);

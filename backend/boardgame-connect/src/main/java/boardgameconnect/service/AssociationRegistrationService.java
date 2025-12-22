@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.UserAccountRepository;
 import boardgameconnect.dto.AssociationDto;
-import boardgameconnect.dto.RegistrationRequest;
+import boardgameconnect.dto.authorization.RegistrationRequest;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;

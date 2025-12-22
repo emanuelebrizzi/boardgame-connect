@@ -1,4 +1,4 @@
-package boardgameconnect.dto;
+package boardgameconnect.dto.authorization;
 
 import boardgameconnect.model.Email;
 
