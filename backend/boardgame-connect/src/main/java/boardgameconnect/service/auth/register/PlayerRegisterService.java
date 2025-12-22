@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.UserAccountRepository;
 import boardgameconnect.dto.auth.register.RegisterRequest;
+import boardgameconnect.exception.EmailAlreadyInUseException;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
@@ -27,7 +28,7 @@ public class PlayerRegisterService implements RegisterService<Void> {
     @Override
     public void register(RegisterRequest<Void> request) {
 	if (accountRepo.findByEmail(request.email()).isPresent()) {
-	    throw new RuntimeException("Email already registered");
+	    throw new EmailAlreadyInUseException("Email already registered");
 	}
 
 	UserAccount account = new UserAccount(request.email(), encoder.encode(request.password()), request.name(),

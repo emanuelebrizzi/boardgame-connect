@@ -19,11 +19,11 @@ import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.UserAccountRepository;
 import boardgameconnect.dto.auth.register.AssociationDetails;
 import boardgameconnect.dto.auth.register.RegisterRequest;
+import boardgameconnect.exception.EmailAlreadyInUseException;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
-import boardgameconnect.service.auth.register.AssociationRegisterService;
 
 @ExtendWith(MockitoExtension.class)
 class AssociationRegisterServiceTest {
@@ -68,12 +68,11 @@ class AssociationRegisterServiceTest {
 	var userAccount = new UserAccount(existingEmail, rawPassword, name, UserRole.ASSOCIATION);
 
 	var details = new AssociationDetails("test_taxcode", "test_address");
-	RegisterRequest<AssociationDetails> request = new RegisterRequest<>(existingEmail, rawPassword, name,
-		details);
+	RegisterRequest<AssociationDetails> request = new RegisterRequest<>(existingEmail, rawPassword, name, details);
 
 	when(accountRepo.findByEmail(existingEmail)).thenReturn(Optional.of(userAccount));
 
-	assertThatThrownBy(() -> registerService.register(request)).isInstanceOf(RuntimeException.class)
+	assertThatThrownBy(() -> registerService.register(request)).isInstanceOf(EmailAlreadyInUseException.class)
 		.hasMessage("Email already registered");
 
 	verifyNoMoreInteractions(accountRepo, encoder, associationRepo);

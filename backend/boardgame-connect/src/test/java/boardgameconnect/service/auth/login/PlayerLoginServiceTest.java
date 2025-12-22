@@ -27,7 +27,6 @@ import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 import boardgameconnect.service.JwtService;
-import boardgameconnect.service.auth.login.PlayerLoginService;
 
 @ExtendWith(MockitoExtension.class)
 class PlayerLoginServiceTest {

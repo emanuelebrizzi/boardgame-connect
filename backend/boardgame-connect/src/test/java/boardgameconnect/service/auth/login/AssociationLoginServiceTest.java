@@ -27,7 +27,6 @@ import boardgameconnect.model.Email;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 import boardgameconnect.service.JwtService;
-import boardgameconnect.service.auth.login.AssociationLoginService;
 
 @ExtendWith(MockitoExtension.class)
 class AssociationLoginServiceTest {

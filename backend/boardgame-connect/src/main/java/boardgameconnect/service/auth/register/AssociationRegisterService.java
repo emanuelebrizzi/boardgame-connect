@@ -7,6 +7,7 @@ import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.UserAccountRepository;
 import boardgameconnect.dto.auth.register.AssociationDetails;
 import boardgameconnect.dto.auth.register.RegisterRequest;
+import boardgameconnect.exception.EmailAlreadyInUseException;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
@@ -28,7 +29,7 @@ public class AssociationRegisterService implements RegisterService<AssociationDe
     @Override
     public void register(RegisterRequest<AssociationDetails> request) {
 	if (accountRepo.findByEmail(request.email()).isPresent()) {
-	    throw new RuntimeException("Email already registered");
+	    throw new EmailAlreadyInUseException("Email already registered");
 	}
 
 	UserAccount account = new UserAccount(request.email(), encoder.encode(request.password()), request.name(),

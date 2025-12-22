@@ -18,11 +18,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.UserAccountRepository;
 import boardgameconnect.dto.auth.register.RegisterRequest;
+import boardgameconnect.exception.EmailAlreadyInUseException;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
-import boardgameconnect.service.auth.register.PlayerRegisterService;
 
 @ExtendWith(MockitoExtension.class)
 class PlayerRegisterServiceTest {
@@ -68,7 +68,7 @@ class PlayerRegisterServiceTest {
 
 	when(accountRepo.findByEmail(existingEmail)).thenReturn(Optional.of(userAccount));
 
-	assertThatThrownBy(() -> registerService.register(request)).isInstanceOf(RuntimeException.class)
+	assertThatThrownBy(() -> registerService.register(request)).isInstanceOf(EmailAlreadyInUseException.class)
 		.hasMessage("Email already registered");
 
 	verifyNoMoreInteractions(accountRepo, encoder, playerRepo);
