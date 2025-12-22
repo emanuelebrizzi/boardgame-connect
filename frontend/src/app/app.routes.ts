@@ -1,36 +1,36 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './auth/auth-guard';
-import { guestGuard } from './auth/guest-guard';
+import { authGuard } from './guards/auth-guard';
+import { guestGuard } from './guards/guest-guard';
 
 export const routes: Routes = [
   {
     path: '',
     canActivate: [guestGuard],
-    loadComponent: () => import('./home/home').then((m) => m.Home),
+    loadComponent: () => import('./components/home/home').then((m) => m.Home),
     pathMatch: 'full',
   },
   {
     path: 'login',
     canActivate: [guestGuard],
-    loadComponent: () => import('./auth/login/login').then((m) => m.Login),
+    loadComponent: () => import('./components/auth/login/login').then((m) => m.Login),
   },
   {
     path: 'reservations',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./player-dashboard/dashboard.component').then((m) => m.DashboardComponent),
+      import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
   },
   {
     path: 'reservations/:id',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./player-dashboard/show-reservations/reservation-detail/reservation-detail').then(
+      import('./components/dashboard/show-reservations/reservation-detail/reservation-detail').then(
         (m) => m.ReservationDetail
       ),
   },
   {
     path: 'error',
-    loadComponent: () => import('./error/error').then((m) => m.Error),
+    loadComponent: () => import('./components/error/error').then((m) => m.Error),
     data: {
       code: '404',
       title: 'Page Not Found',
@@ -39,7 +39,7 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    loadComponent: () => import('./error/error').then((m) => m.Error),
+    loadComponent: () => import('./components/error/error').then((m) => m.Error),
     data: {
       code: '404',
       title: 'Page Not Found',

@@ -1,4 +1,4 @@
-import { AuthService } from './../auth-service';
+import { AuthService } from '../../../services/auth/auth-service';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
-import { UserRole } from '../models';
+import { UserRole } from '../../../model/login';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Component({

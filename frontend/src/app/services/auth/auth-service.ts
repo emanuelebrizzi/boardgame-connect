@@ -1,7 +1,7 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { LoginRequest, LoginResponse, UserProfile, UserRole } from './models';
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { LoginRequest, LoginResponse, UserProfile, UserRole } from '../../model/login';
+import { catchError, Observable, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',

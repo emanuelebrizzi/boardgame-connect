@@ -16,12 +16,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { catchError, debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
 import { merge, of } from 'rxjs';
-import {
-  Reservation,
-  ReservationFilter,
-  ReservationState,
-} from './show-reservations/reservation-models';
-import { ReservationService } from './show-reservations/reservation.service';
+import { Reservation, ReservationFilter, ReservationState } from '../../model/reservation';
+import { ReservationService } from '../../services/reservation/reservation-service';
 import { ReservationCardComponent } from './show-reservations/reservation-card/reservation-card';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
