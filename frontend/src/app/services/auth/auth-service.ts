@@ -1,7 +1,9 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { LoginRequest, LoginResponse, UserProfile, UserRole } from '../../model/login';
-import { catchError, Observable, tap } from 'rxjs';
+import { LoginRequest, LoginResponse } from '../../model/login';
+import { catchError, Observable, tap, throwError } from 'rxjs';
+import { AssociationRegisterRequest, PlayerRegisterRequest } from '../../model/registration';
+import { UserProfile, UserRole } from '../../model/user';
 
 @Injectable({
   providedIn: 'root',
@@ -9,7 +11,7 @@ import { catchError, Observable, tap } from 'rxjs';
 export class AuthService {
   private readonly USER_KEY = 'user_session';
   private readonly TOKEN_KEY = 'access_token';
-  private readonly apiUrl = 'http://localhost:8080/api/v1';
+  private readonly API_URL = 'http://localhost:8080/api/v1/auth';
 
   private readonly http = inject(HttpClient);
 
@@ -18,11 +20,28 @@ export class AuthService {
   readonly isAuthenticated = computed(() => !!this.currentUser() && !!this.token());
 
   login(credentials: LoginRequest, role: UserRole): Observable<LoginResponse> {
-    const endpoint = `${this.apiUrl}/auth/login/${role.toLowerCase()}`;
+    const endpoint = `${this.API_URL}/login/${role.toLowerCase()}`;
 
     return this.http.post<LoginResponse>(endpoint, credentials).pipe(
       tap((response) => this.handleAuthSuccess(response)),
       catchError(this.handleError)
+    );
+  }
+
+  register(
+    role: UserRole,
+    request: PlayerRegisterRequest | AssociationRegisterRequest
+  ): Observable<void> {
+    const endpoint =
+      role === 'PLAYER'
+        ? `${this.API_URL}/register/player`
+        : `${this.API_URL}/register/association`;
+
+    return this.http.post<void>(endpoint, request).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Simple error propagation; in a real app, you might parse the error structure here
+        return throwError(() => error);
+      })
     );
   }
 
