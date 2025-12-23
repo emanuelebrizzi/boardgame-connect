@@ -4,11 +4,8 @@ import java.util.List;
 
 import boardgameconnect.dto.ReservationSummary;
 
-public class ReservationService {
+public interface ReservationService {
 
-    public List<ReservationSummary> getAvailableReservations(String state, String game, String association) {
-	// TODO Auto-generated method stub
-	return null;
-    }
+    public List<ReservationSummary> getAvailableReservations(String state, String game, String association);
 
 }
