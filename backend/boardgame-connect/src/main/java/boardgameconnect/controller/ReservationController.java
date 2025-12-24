@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import boardgameconnect.dto.ReservationSummary;
-import boardgameconnect.service.ReservationService;
+import boardgameconnect.service.reservation.ReservationService;
 
 @RestController
 @RequestMapping("/api/v1/reservations")
@@ -29,5 +29,4 @@ public class ReservationController {
 
 	return ResponseEntity.ok(reservations);
     }
-
 }

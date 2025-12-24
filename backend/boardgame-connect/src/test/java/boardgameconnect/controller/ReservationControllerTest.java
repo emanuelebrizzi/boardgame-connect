@@ -19,7 +19,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import boardgameconnect.dto.ReservationSummary;
-import boardgameconnect.service.ReservationService;
+import boardgameconnect.service.reservation.ReservationService;
 
 @WebMvcTest(ReservationController.class)
 class ReservationControllerTest {
@@ -63,8 +63,10 @@ class ReservationControllerTest {
     void getReservationsShouldReturnEmptyListWhenNoReservationsMatch() throws Exception {
 	when(reservationService.getAvailableReservations(anyString(), anyString(), anyString())).thenReturn(List.of());
 
-	mockMvc.perform(get(BASE_URI).param("state", "non-existent").contentType(MediaType.APPLICATION_JSON))
-		.andExpect(status().isOk()).andExpect(jsonPath("$", hasSize(0)));
+	mockMvc.perform(get(BASE_URI).param("state", "non-existent").param("sortBy", "game")
+
+		.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		.andExpect(jsonPath("$", hasSize(0)));
     }
 
     @Test
