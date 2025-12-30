@@ -3,6 +3,7 @@ package boardgameconnect.service.reservation;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -10,6 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,9 +19,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import boardgameconnect.dao.ReservationRepository;
+import boardgameconnect.dto.ReservationDetail;
 import boardgameconnect.dto.ReservationSummary;
+import boardgameconnect.exception.ReservationNotFoundException;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
@@ -40,6 +45,7 @@ class ReservationServiceImplTest {
     private static final String PLAYER_NAME = "Mario Rossi";
 
     private static final String BORDGAME_NAME = "Root";
+    private static final String RESERVATION_ID = "t_789";
 
     @Mock
     private ReservationRepository reservationRepository;
@@ -63,6 +69,7 @@ class ReservationServiceImplTest {
 	openReservation = new Reservation(creator, association, root, Instant.now(), Instant.now().plusSeconds(3600));
 	new Reservation(creator, association, root, Instant.now(), Instant.now().plusSeconds(3600));
 
+	ReflectionTestUtils.setField(openReservation, "id", RESERVATION_ID);
     }
 
     @Test
@@ -115,4 +122,31 @@ class ReservationServiceImplTest {
 
 	assertTrue(result.isEmpty());
     }
+
+    @Test
+    void getReservationByIdShouldReturnDetailWhenExists() {
+	when(reservationRepository.findById(RESERVATION_ID)).thenReturn(Optional.of(openReservation));
+
+	ReservationDetail detail = reservationService.getReservationById(RESERVATION_ID);
+
+	assertNotNull(detail);
+	assertAll(() -> assertEquals(RESERVATION_ID, detail.id()), () -> assertEquals(BORDGAME_NAME, detail.game()),
+		() -> assertEquals(ASSOCIATION_NAME, detail.association().name()),
+		() -> assertEquals(ASSOCIATION_ADDRESS, detail.association().address()),
+		() -> assertEquals(1, detail.players().size()),
+		() -> assertEquals(PLAYER_NAME, detail.players().get(0).name()),
+		() -> assertEquals("OPEN", detail.state()));
+	verify(reservationRepository).findById(RESERVATION_ID);
+    }
+
+    @Test
+    void getReservationByIdShouldThrowExceptionWhenNotFound() {
+	String unknownId = "non-existent";
+	when(reservationRepository.findById(unknownId)).thenReturn(Optional.empty());
+
+	assertThrows(ReservationNotFoundException.class, () -> {
+	    reservationService.getReservationById(unknownId);
+	});
+    }
+
 }

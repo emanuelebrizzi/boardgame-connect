@@ -18,7 +18,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import boardgameconnect.dto.AssociationSummary;
+import boardgameconnect.dto.PlayerSummary;
+import boardgameconnect.dto.ReservationDetail;
 import boardgameconnect.dto.ReservationSummary;
+import boardgameconnect.exception.ReservationNotFoundException;
 import boardgameconnect.service.reservation.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -67,6 +71,36 @@ class ReservationControllerTest {
 
 		.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 		.andExpect(jsonPath("$", hasSize(0)));
+    }
+
+    @Test
+    void getReservationByIdShouldReturnDetailWhenFound() throws Exception {
+	String reservationId = "t_789";
+	var association = new AssociationSummary("a_456", "La Gilda del Cassero", "Via Roma 1");
+	var players = List.of(new PlayerSummary("u_123", "Player1"), new PlayerSummary("u_456", "Player2"));
+
+	var detail = new ReservationDetail(reservationId, "Dune: Imperium", association, players, 2, 4,
+		Instant.parse("2025-11-25T21:00:00Z"), Instant.parse("2025-11-25T23:00:00Z"), "OPEN");
+
+	when(reservationService.getReservationById(reservationId)).thenReturn(detail);
+
+	mockMvc.perform(get(BASE_URI + "/" + reservationId).contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isOk()).andExpect(jsonPath("$.id", is(reservationId)))
+		.andExpect(jsonPath("$.game", is("Dune: Imperium")))
+		.andExpect(jsonPath("$.association.name", is("La Gilda del Cassero")))
+		.andExpect(jsonPath("$.association.address", is("Via Roma 1")))
+		.andExpect(jsonPath("$.players", hasSize(2))).andExpect(jsonPath("$.players[0].name", is("Player1")))
+		.andExpect(jsonPath("$.state", is("OPEN")));
+    }
+
+    @Test
+    void getReservationByIdShouldReturn404WhenNotFound() throws Exception {
+	String unknownId = "non-existent";
+	when(reservationService.getReservationById(unknownId))
+		.thenThrow(new ReservationNotFoundException("Reservation not found"));
+
+	mockMvc.perform(get(BASE_URI + "/" + unknownId).contentType(MediaType.APPLICATION_JSON))
+		.andExpect(status().isNotFound());
     }
 
     @Test

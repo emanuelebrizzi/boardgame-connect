@@ -6,7 +6,11 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import boardgameconnect.dao.ReservationRepository;
+import boardgameconnect.dto.AssociationSummary;
+import boardgameconnect.dto.PlayerSummary;
+import boardgameconnect.dto.ReservationDetail;
 import boardgameconnect.dto.ReservationSummary;
+import boardgameconnect.exception.ReservationNotFoundException;
 import boardgameconnect.model.Reservation;
 import boardgameconnect.model.ReservationStatus;
 
@@ -35,6 +39,22 @@ public class ReservationServiceImpl implements ReservationService {
 	return new ReservationSummary(res.getId(), res.getBoardgame().getName(),
 		res.getAssociation().getAccount().getName(), res.getPlayers().size(), res.getBoardgame().getMaxPlayer(),
 		res.getStartTime(), res.getEndTime());
+    }
+
+    @Override
+    public ReservationDetail getReservationById(String id) {
+	Reservation res = reservationRepository.findById(id)
+		.orElseThrow(() -> new ReservationNotFoundException("Prenotazione " + id + " non trovata"));
+
+	AssociationSummary assocSummary = new AssociationSummary(res.getAssociation().getId(),
+		res.getAssociation().getAccount().getName(), res.getAssociation().getAddress());
+
+	List<PlayerSummary> playerSummaries = res.getPlayers().stream()
+		.map(p -> new PlayerSummary(p.getId(), p.getAccount().getName())).toList();
+
+	return new ReservationDetail(res.getId(), res.getBoardgame().getName(), assocSummary, playerSummaries,
+		res.getBoardgame().getMinTime(), res.getBoardgame().getMaxPlayer(), res.getStartTime(),
+		res.getEndTime(), res.getStatus().name());
     }
 
 }
