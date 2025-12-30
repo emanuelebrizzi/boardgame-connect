@@ -43,6 +43,12 @@ public class GlobalExceptionHandler {
 	return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
+    // Handle 404: Resource Not Found
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleNotFound(ResourceNotFoundException ex) {
+	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
     // Handle 409: Email already in use
     @ExceptionHandler(EmailAlreadyInUseException.class)
     public ResponseEntity<ErrorResponse> handleEmailAlreadyInUse(EmailAlreadyInUseException ex,
@@ -66,16 +72,4 @@ public class GlobalExceptionHandler {
 
 	return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
-
-    // Handle 404: Reservation Not Found
-    @ExceptionHandler(ReservationNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleNotFound(ReservationNotFoundException ex, HttpServletRequest request) {
-	log.warn("Resource not found: {} at path {}", ex.getMessage(), request.getRequestURI());
-
-	var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.NOT_FOUND.value(),
-		HttpStatus.NOT_FOUND.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
-
-	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
-    }
-
 }
