@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -21,9 +23,14 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import boardgameconnect.dao.AssociationRepository;
+import boardgameconnect.dao.BoardgameRepository;
+import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.ReservationRepository;
+import boardgameconnect.dto.ReservationCreateRequest;
 import boardgameconnect.dto.ReservationDetail;
 import boardgameconnect.dto.ReservationSummary;
+import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.exception.ReservationNotFoundException;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
@@ -49,6 +56,12 @@ class ReservationServiceImplTest {
 
     @Mock
     private ReservationRepository reservationRepository;
+    @Mock
+    private BoardgameRepository boardgameRepository;
+    @Mock
+    private AssociationRepository associationRepository;
+    @Mock
+    private PlayerRepository playerRepository;
 
     @InjectMocks
     private ReservationServiceImpl reservationService;
@@ -149,4 +162,43 @@ class ReservationServiceImplTest {
 	});
     }
 
+    @Test
+    void createReservationShouldSaveAndReturnSummary() {
+	UserAccount assocAcc = new UserAccount(new Email("assoc@test.com"), "pass", "Assoc Name", UserRole.ASSOCIATION);
+	Association association = new Association(assocAcc, "TAX123", "Via Roma");
+
+	Boardgame game = new Boardgame("Root", 2, 4, 60, 30);
+
+	UserAccount playerAcc = new UserAccount(new Email("player@test.com"), "pass", "Mario", UserRole.PLAYER);
+	Player player = new Player(playerAcc);
+
+	String userId = "user_123";
+
+	ReservationCreateRequest request = new ReservationCreateRequest("bg_root", "assoc_inc", 4,
+		Instant.parse("2025-12-01T20:00:00Z"));
+
+	when(boardgameRepository.findById("bg_root")).thenReturn(Optional.of(game));
+	when(associationRepository.findById("assoc_inc")).thenReturn(Optional.of(association));
+	when(playerRepository.findById(userId)).thenReturn(Optional.of(player));
+
+	when(reservationRepository.save(any(Reservation.class))).thenAnswer(i -> {
+	    Reservation r = i.getArgument(0);
+	    ReflectionTestUtils.setField(r, "id", "new_res_id");
+	    return r;
+	});
+
+	reservationService.createReservation(request, userId);
+
+	verify(reservationRepository).save(any(Reservation.class));
+    }
+
+    @Test
+    void createReservationShouldThrowExceptionWhenGameNotFound() {
+	when(boardgameRepository.findById(anyString())).thenReturn(Optional.empty());
+
+	assertThrows(BoardgameNotFoundException.class, () -> {
+	    reservationService.createReservation(new ReservationCreateRequest("invalid", "assoc", 4, Instant.now()),
+		    "user");
+	});
+    }
 }

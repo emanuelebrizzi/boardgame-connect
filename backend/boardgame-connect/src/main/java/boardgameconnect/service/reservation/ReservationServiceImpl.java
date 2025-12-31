@@ -1,16 +1,29 @@
 package boardgameconnect.service.reservation;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import boardgameconnect.dao.AssociationRepository;
+import boardgameconnect.dao.BoardgameRepository;
+import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.ReservationRepository;
 import boardgameconnect.dto.AssociationSummary;
 import boardgameconnect.dto.PlayerSummary;
+import boardgameconnect.dto.ReservationCreateRequest;
 import boardgameconnect.dto.ReservationDetail;
 import boardgameconnect.dto.ReservationSummary;
+import boardgameconnect.exception.AssociationNotFoundException;
+import boardgameconnect.exception.BoardgameNotFoundException;
+import boardgameconnect.exception.PlayerNotFoundException;
 import boardgameconnect.exception.ReservationNotFoundException;
+import boardgameconnect.model.Association;
+import boardgameconnect.model.Boardgame;
+import boardgameconnect.model.Player;
 import boardgameconnect.model.Reservation;
 import boardgameconnect.model.ReservationStatus;
 
@@ -18,9 +31,17 @@ import boardgameconnect.model.ReservationStatus;
 public class ReservationServiceImpl implements ReservationService {
 
     private final ReservationRepository reservationRepository;
+    private final BoardgameRepository boardgameRepository;
+    private final AssociationRepository associationRepository;
+    private final PlayerRepository playerRepository;
 
-    public ReservationServiceImpl(ReservationRepository reservationRepository) {
+    public ReservationServiceImpl(ReservationRepository reservationRepository, BoardgameRepository boardgameRepository,
+	    AssociationRepository associationRepository, PlayerRepository playerRepository) {
 	this.reservationRepository = reservationRepository;
+	this.boardgameRepository = boardgameRepository;
+	this.associationRepository = associationRepository;
+	this.playerRepository = playerRepository;
+
     }
 
     @Override
@@ -55,6 +76,31 @@ public class ReservationServiceImpl implements ReservationService {
 	return new ReservationDetail(res.getId(), res.getBoardgame().getName(), assocSummary, playerSummaries,
 		res.getBoardgame().getMinTime(), res.getBoardgame().getMaxPlayer(), res.getStartTime(),
 		res.getEndTime(), res.getStatus().name());
+    }
+
+    @Override
+    @Transactional
+    public void createReservation(ReservationCreateRequest request, String currentUserId) {
+	Boardgame game = boardgameRepository.findById(request.boardgameId()).orElseThrow(
+		() -> new BoardgameNotFoundException("Gioco non trovato con ID: " + request.boardgameId()));
+
+	Association association = associationRepository.findById(request.associationId()).orElseThrow(
+		() -> new AssociationNotFoundException("Associazione non trovata con ID: " + request.associationId()));
+
+	Player creator = playerRepository.findById(currentUserId).orElseThrow(
+		() -> new PlayerNotFoundException("Profilo giocatore non trovato per l'utente: " + currentUserId));
+
+	long durationMinutes = game.calculateDuration(request.maxPlayers());
+	Instant endTime = request.startTime().plus(Duration.ofMinutes(durationMinutes));
+
+	Reservation reservation = new Reservation(creator, association, game, request.startTime(), endTime);
+
+	if (request.maxPlayers() > game.getMaxPlayer()) {
+	    throw new IllegalArgumentException(
+		    "Il numero di giocatori inserito supera il massimo consentito per " + game.getName());
+	}
+
+	reservationRepository.save(reservation);
     }
 
 }

@@ -2,9 +2,14 @@ package boardgameconnect.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -12,17 +17,22 @@ import java.time.Instant;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import boardgameconnect.dto.AssociationSummary;
 import boardgameconnect.dto.PlayerSummary;
+import boardgameconnect.dto.ReservationCreateRequest;
 import boardgameconnect.dto.ReservationDetail;
 import boardgameconnect.dto.ReservationSummary;
 import boardgameconnect.exception.ReservationNotFoundException;
+import boardgameconnect.model.UserAccount;
 import boardgameconnect.service.reservation.ReservationService;
 
 @WebMvcTest(ReservationController.class)
@@ -35,6 +45,9 @@ class ReservationControllerTest {
 
     @MockitoBean
     private ReservationService reservationService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @Test
     void getReservationsShouldReturnListOfAvailableReservations() throws Exception {
@@ -112,5 +125,35 @@ class ReservationControllerTest {
 		.andExpect(status().isInternalServerError()).andExpect(jsonPath("$.status").value(500))
 		.andExpect(jsonPath("$.error").value("Internal Server Error"))
 		.andExpect(jsonPath("$.message").value("An internal error occurred"));
+    }
+
+    @Test
+    void createReservation_ShouldReturnCreated() throws Exception {
+	String userId = "user-789";
+	ReservationCreateRequest validRequest = new ReservationCreateRequest("game-123", "assoc-456", 4,
+		Instant.parse("2025-12-31T23:59:00Z"));
+
+	UserAccount mockUser = Mockito.mock(UserAccount.class);
+	when(mockUser.getId()).thenReturn(userId);
+
+	mockMvc.perform(post(BASE_URI).with(csrf())
+
+		.with(org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors
+			.authentication(
+				new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
+					mockUser, null, java.util.Collections.emptyList())))
+		.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(validRequest)))
+		.andExpect(status().isCreated());
+
+	verify(reservationService).createReservation(any(ReservationCreateRequest.class), eq(userId));
+    }
+
+    @Test
+    void createReservationShouldReturn400WhenDataIsInvalid() throws Exception {
+
+	String invalidRequest = "{ }";
+
+	mockMvc.perform(post(BASE_URI).contentType(MediaType.APPLICATION_JSON).content(invalidRequest))
+		.andExpect(status().isBadRequest());
     }
 }

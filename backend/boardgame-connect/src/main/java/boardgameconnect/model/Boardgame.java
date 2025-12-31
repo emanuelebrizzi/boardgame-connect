@@ -5,6 +5,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
 
 @Entity
 @Table(name = "boardgames")
@@ -47,6 +48,11 @@ public class Boardgame {
 
     public int getTimePerPlayer() {
 	return timeInMinPerPlayer;
+    }
+
+    public long calculateDuration(@Min(2) int maxPlayers) {
+	// TODO Auto-generated method stub
+	return 0;
     }
 
 }
