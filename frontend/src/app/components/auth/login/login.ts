@@ -6,7 +6,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
-import { UserRole } from '../../../model/login';
+import { UserRole } from '../../../model/user';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 
 @Component({
