@@ -4,6 +4,7 @@ import { LoginRequest, LoginResponse } from '../../model/login';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 import { AssociationRegisterRequest, PlayerRegisterRequest } from '../../model/registration';
 import { UserProfile, UserRole } from '../../model/user';
+import { environment } from '../../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,7 @@ import { UserProfile, UserRole } from '../../model/user';
 export class AuthService {
   private readonly USER_KEY = 'user_session';
   private readonly TOKEN_KEY = 'access_token';
-  private readonly API_URL = 'http://localhost:8080/api/v1/auth';
+  private readonly API_URL = `${environment.apiUrl}/auth`;
 
   private readonly http = inject(HttpClient);
 

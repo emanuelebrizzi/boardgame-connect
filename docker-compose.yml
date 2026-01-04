@@ -1,0 +1,55 @@
+services:
+  db:
+    image: postgres:18-alpine
+    container_name: boardgame_db
+    environment:
+      - POSTGRES_USER=myuser
+      - POSTGRES_PASSWORD=mypassword
+      - POSTGRES_DB=boardgamedb
+    ports:
+    - "5432:5432"
+    volumes:
+    - db-data:/var/lib/postgresql/data
+    networks:
+    - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d boardgamedb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
+
+  backend:
+    build: ./backend/boardgame-connect
+    container_name: boardgame_backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/boardgamedb
+      - SPRING_DATASOURCE_USERNAME=myuser
+      - SPRING_DATASOURCE_PASSWORD=mypassword
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+    restart: on-failure
+
+  frontend:
+    build: ./frontend
+    container_name: boardgame_frontend
+    ports:
+      - "80:80"  # Access app at http://localhost
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: always
+
+volumes:
+  db-data:
+
+networks:
+  app-network:
+    driver: bridge
