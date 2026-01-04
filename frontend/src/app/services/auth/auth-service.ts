@@ -39,7 +39,6 @@ export class AuthService {
 
     return this.http.post<void>(endpoint, request).pipe(
       catchError((error: HttpErrorResponse) => {
-        // Simple error propagation; in a real app, you might parse the error structure here
         return throwError(() => error);
       })
     );
