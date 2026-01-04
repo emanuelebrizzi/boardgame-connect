@@ -1,0 +1,49 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'frontend/**'
+  pull_request:
+    branches: [ main ]
+    paths-ignore:
+      - '**.md'
+      - 'frontend/**'
+
+jobs:
+  build:
+    name: Build with Java ${{ matrix.java-version }}
+    runs-on: ubuntu-24.04
+
+    defaults:
+      run:
+        working-directory: ./backend/boardgame-connect
+
+    strategy:
+      matrix:
+        java-version: [17, 21]
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ matrix.java-version }}
+        uses: actions/setup-java@v4
+        with:
+          java-version: ${{ matrix.java-version }}
+          distribution: 'temurin'
+      
+      - name: Cache Maven packages
+        uses: actions/cache@v4
+        with:
+          path: |
+              ~/.m2
+              ~/.sonar/cache
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '**/*.yml') }}
+          restore-keys: ${{ runner.os }}-m2-
+      
+      - name: Build and test with Maven
+        run: mvn verify
+
