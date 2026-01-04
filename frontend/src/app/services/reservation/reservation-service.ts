@@ -7,7 +7,7 @@ import { Reservation, ReservationDetail, ReservationFilter } from '../../model/r
   providedIn: 'root',
 })
 export class ReservationService {
-  readonly apiURL = 'http://localhost:3000';
+  private readonly API_URL = '/api/v1';
 
   private http = inject(HttpClient);
 
@@ -28,7 +28,7 @@ export class ReservationService {
       }
     }
 
-    return this.http.get<ReservationDetail[]>(`${this.apiURL}/reservations`, { params }).pipe(
+    return this.http.get<ReservationDetail[]>(`${this.API_URL}/reservations`, { params }).pipe(
       map((reservations) =>
         reservations.map((r) => ({
           id: r.id,
@@ -45,6 +45,6 @@ export class ReservationService {
   }
 
   getReservation(id: string): Observable<ReservationDetail> {
-    return this.http.get<ReservationDetail>(`${this.apiURL}/reservations/${id}`);
+    return this.http.get<ReservationDetail>(`${this.API_URL}/reservations/${id}`);
   }
 }
