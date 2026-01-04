@@ -14,25 +14,21 @@ on:
 
 jobs:
   build:
-    name: Build with Java ${{ matrix.java-version }}
+    name: Build with Java 21
     runs-on: ubuntu-24.04
 
     defaults:
       run:
         working-directory: ./backend/boardgame-connect
 
-    strategy:
-      matrix:
-        java-version: [17, 21]
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Java ${{ matrix.java-version }}
+      - name: Set up Java
         uses: actions/setup-java@v4
         with:
-          java-version: ${{ matrix.java-version }}
+          java-version: 21
           distribution: 'temurin'
       
       - name: Cache Maven packages
@@ -40,7 +36,6 @@ jobs:
         with:
           path: |
               ~/.m2
-              ~/.sonar/cache
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml', '**/*.yml') }}
           restore-keys: ${{ runner.os }}-m2-
       
