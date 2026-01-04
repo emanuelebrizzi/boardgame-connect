@@ -1,7 +1,7 @@
 services:
   db:
     image: postgres:18-alpine
-    restart: always
+    container_name: boardgame_db
     environment:
       - POSTGRES_USER=myuser
       - POSTGRES_PASSWORD=mypassword
@@ -17,9 +17,11 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    restart: always
 
   backend:
     build: ./backend/boardgame-connect
+    container_name: boardgame_backend
     ports:
       - "8080:8080"
     environment:
@@ -32,6 +34,18 @@ services:
         condition: service_healthy
     networks:
       - app-network
+    restart: on-failure
+
+  frontend:
+    build: ./frontend
+    container_name: boardgame_frontend
+    ports:
+      - "80:80"  # Access app at http://localhost
+    depends_on:
+      - backend
+    networks:
+      - app-network
+    restart: always
 
 volumes:
   db-data:
