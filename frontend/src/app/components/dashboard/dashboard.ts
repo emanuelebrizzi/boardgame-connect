@@ -22,7 +22,7 @@ import { ReservationCardComponent } from './show-reservations/reservation-card/r
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
-  selector: 'player-dashboard',
+  selector: 'app-dashboard',
   imports: [
     ReactiveFormsModule,
     MatFormFieldModule,
@@ -37,7 +37,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
   styleUrl: './dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DashboardComponent implements OnInit {
+export class Dashboard implements OnInit {
   private readonly service = inject(ReservationService);
   private readonly destroyRef = inject(DestroyRef);
 

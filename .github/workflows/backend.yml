@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    name: Build with Java 21
+    name: Build and test with Java 21
     runs-on: ubuntu-24.04
 
     defaults:
