@@ -1,4 +1,4 @@
-import { AuthService } from '../../../services/auth/auth-service';
+import { AuthService } from '../../../services/auth-service';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';

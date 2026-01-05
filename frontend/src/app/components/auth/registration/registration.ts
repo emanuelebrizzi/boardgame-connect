@@ -7,7 +7,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../services/auth/auth-service';
+import { AuthService } from '../../../services/auth-service';
 import { ErrorResponse } from '../../../error-response';
 import { HttpErrorResponse } from '@angular/common/http';
 
