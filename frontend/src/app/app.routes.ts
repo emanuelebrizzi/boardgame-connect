@@ -1,6 +1,8 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
+import { associationGuard } from './guards/role-guard';
+import { CreateBoardgame } from './components/boardgame/create-boardgame/create-boardgame';
 
 export const routes: Routes = [
   {
@@ -33,6 +35,11 @@ export const routes: Routes = [
       import('./components/dashboard/show-reservations/reservation-detail/reservation-detail').then(
         (m) => m.ReservationDetail
       ),
+  },
+  {
+    path: 'boardgames/create',
+    component: CreateBoardgame,
+    canActivate: [associationGuard],
   },
   {
     path: 'error',
