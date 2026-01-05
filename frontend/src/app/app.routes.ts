@@ -1,8 +1,8 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './guards/auth-guard';
 import { guestGuard } from './guards/guest-guard';
-import { associationGuard } from './guards/role-guard';
-import { CreateBoardgame } from './components/boardgame/create-boardgame/create-boardgame';
+import { associationGuard, playerGuard } from './guards/role-guard';
+import { dashboardDispatcherGuard } from './guards/dashboard-guard';
 
 export const routes: Routes = [
   {
@@ -23,10 +23,35 @@ export const routes: Routes = [
       import('./components/auth/registration/registration').then((m) => m.Registration),
   },
   {
-    path: 'reservations',
+    path: 'dashboard',
     canActivate: [authGuard],
-    loadComponent: () =>
-      import('./components/dashboard/dashboard').then((m) => m.DashboardComponent),
+    children: [
+      {
+        path: 'player',
+        loadComponent: () =>
+          import('./components/dashboard/player-dashboard/player-dashboard').then(
+            (m) => m.PlayerDashboard
+          ),
+        canActivate: [playerGuard],
+      },
+      {
+        path: 'association',
+        loadComponent: () =>
+          import('./components/dashboard/association-dashboard/association-dashboard').then(
+            (m) => m.AssociationDashboard
+          ),
+        canActivate: [associationGuard],
+      },
+      {
+        path: '',
+        pathMatch: 'full',
+        canActivate: [dashboardDispatcherGuard],
+        loadComponent: () =>
+          import('./components/dashboard/player-dashboard/player-dashboard').then(
+            (m) => m.PlayerDashboard
+          ),
+      },
+    ],
   },
   {
     path: 'reservations/:id',
@@ -38,7 +63,10 @@ export const routes: Routes = [
   },
   {
     path: 'boardgames/create',
-    component: CreateBoardgame,
+    loadComponent: () =>
+      import('./components/boardgame/create-boardgame/create-boardgame').then(
+        (m) => m.CreateBoardgame
+      ),
     canActivate: [associationGuard],
   },
   {

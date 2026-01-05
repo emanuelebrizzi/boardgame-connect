@@ -11,5 +11,17 @@ export const associationGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  return router.createUrlTree(['/dashboard']);
+  return router.createUrlTree(['/dashboard/player']);
+};
+
+export const playerGuard: CanActivateFn = () => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
+  const user = authService.currentUser();
+
+  if (user && user.role === 'PLAYER') {
+    return true;
+  }
+
+  return router.createUrlTree(['/dashboard/association']);
 };

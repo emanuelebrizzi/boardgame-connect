@@ -49,7 +49,7 @@ export class Login {
     this.authService.login(credentials, role).subscribe({
       next: () => {
         this.isLoading.set(false);
-        this.router.navigate(['/reservations']);
+        this.router.navigate(['/dashboard']);
       },
 
       error: (err) => {
