@@ -1,10 +1,10 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { LoginRequest, LoginResponse } from '../../model/login';
+import { LoginRequest, LoginResponse } from '../model/login';
 import { catchError, Observable, tap, throwError } from 'rxjs';
-import { AssociationRegisterRequest, PlayerRegisterRequest } from '../../model/registration';
-import { UserProfile, UserRole } from '../../model/user';
-import { environment } from '../../../environments/environment';
+import { AssociationRegisterRequest, PlayerRegisterRequest } from '../model/registration';
+import { UserProfile, UserRole } from '../model/user';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',

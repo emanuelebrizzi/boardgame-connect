@@ -1,81 +1,83 @@
-<mat-card class="register-card">
-  <mat-card-header>
-    <mat-card-title>Create Account</mat-card-title>
-  </mat-card-header>
+<div class="page-centered">
+  <mat-card class="register-card app-card">
+    <mat-card-header>
+      <mat-card-title>Create Account</mat-card-title>
+    </mat-card-header>
 
-  <form [formGroup]="registerForm" (ngSubmit)="processRegistrationForm()">
-    <div class="role-selector">
-      <mat-button-toggle-group
-        [value]="role()"
-        (change)="onRoleChange($event)"
-        appearance="legacy"
-        name="role"
-        aria-label="Select Account Type"
+    <form [formGroup]="registerForm" (ngSubmit)="processRegistrationForm()">
+      <div class="role-selector">
+        <mat-button-toggle-group
+          [value]="role()"
+          (change)="onRoleChange($event)"
+          appearance="legacy"
+          name="role"
+          aria-label="Select Account Type"
+        >
+          <mat-button-toggle value="PLAYER">Player</mat-button-toggle>
+          <mat-button-toggle value="ASSOCIATION">Association</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <mat-form-field>
+        <mat-label>Full Name</mat-label>
+        <input matInput formControlName="name" placeholder="Name or Organization Name" />
+        @if (registerForm.controls.name.hasError('required')) {
+        <mat-error>Name is required</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" placeholder="name@example.com" />
+        @if (registerForm.controls.email.hasError('required')) {
+        <mat-error>Email is required</mat-error>
+        } @else if (registerForm.controls.email.hasError('email')) {
+        <mat-error>Invalid email address</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" />
+        @if (registerForm.controls.password.hasError('required')) {
+        <mat-error>Password is required</mat-error>
+        } @else if (registerForm.controls.password.hasError('minlength')) {
+        <mat-error>Password must be at least 6 characters</mat-error>
+        }
+      </mat-form-field>
+
+      @if (role() === 'ASSOCIATION') {
+      <div class="association-fields">
+        <mat-form-field>
+          <mat-label>Tax Code</mat-label>
+          <input matInput formControlName="taxCode" placeholder="Tax ID / P.IVA" />
+          @if (registerForm.controls.taxCode.hasError('required')) {
+          <mat-error>Tax Code is required</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field>
+          <mat-label>Address</mat-label>
+          <input matInput formControlName="address" placeholder="Headquarters Address" />
+          @if (registerForm.controls.address.hasError('required')) {
+          <mat-error>Address is required</mat-error>
+          }
+        </mat-form-field>
+      </div>
+      } @if (errorMessage()) {
+      <div class="error-feedback" role="alert">{{ errorMessage() }}</div>
+      }
+
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="registerForm.invalid || isLoading()"
       >
-        <mat-button-toggle value="PLAYER">Player</mat-button-toggle>
-        <mat-button-toggle value="ASSOCIATION">Association</mat-button-toggle>
-      </mat-button-toggle-group>
-    </div>
+        @if (isLoading()) { Registering... } @else { Sign Up }
+      </button>
 
-    <mat-form-field>
-      <mat-label>Full Name</mat-label>
-      <input matInput formControlName="name" placeholder="Name or Organization Name" />
-      @if (registerForm.controls.name.hasError('required')) {
-      <mat-error>Name is required</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field>
-      <mat-label>Email</mat-label>
-      <input matInput formControlName="email" placeholder="name@example.com" />
-      @if (registerForm.controls.email.hasError('required')) {
-      <mat-error>Email is required</mat-error>
-      } @else if (registerForm.controls.email.hasError('email')) {
-      <mat-error>Invalid email address</mat-error>
-      }
-    </mat-form-field>
-
-    <mat-form-field>
-      <mat-label>Password</mat-label>
-      <input matInput type="password" formControlName="password" />
-      @if (registerForm.controls.password.hasError('required')) {
-      <mat-error>Password is required</mat-error>
-      } @else if (registerForm.controls.password.hasError('minlength')) {
-      <mat-error>Password must be at least 6 characters</mat-error>
-      }
-    </mat-form-field>
-
-    @if (role() === 'ASSOCIATION') {
-    <div class="association-fields">
-      <mat-form-field>
-        <mat-label>Tax Code</mat-label>
-        <input matInput formControlName="taxCode" placeholder="Tax ID / P.IVA" />
-        @if (registerForm.controls.taxCode.hasError('required')) {
-        <mat-error>Tax Code is required</mat-error>
-        }
-      </mat-form-field>
-
-      <mat-form-field>
-        <mat-label>Address</mat-label>
-        <input matInput formControlName="address" placeholder="Headquarters Address" />
-        @if (registerForm.controls.address.hasError('required')) {
-        <mat-error>Address is required</mat-error>
-        }
-      </mat-form-field>
-    </div>
-    } @if (errorMessage()) {
-    <div class="error-feedback" role="alert">{{ errorMessage() }}</div>
-    }
-
-    <button
-      mat-raised-button
-      color="primary"
-      type="submit"
-      [disabled]="registerForm.invalid || isLoading()"
-    >
-      @if (isLoading()) { Registering... } @else { Sign Up }
-    </button>
-
-    <div class="login-link">Already have an account? <a routerLink="/login">Sign In</a></div>
-  </form>
-</mat-card>
+      <div class="login-link">Already have an account? <a routerLink="/login">Sign In</a></div>
+    </form>
+  </mat-card>
+</div>

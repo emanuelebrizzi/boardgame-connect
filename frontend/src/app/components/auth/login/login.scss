@@ -1,15 +1,5 @@
-:host {
-  display: flex;
-  justify-content: center;
-  padding-top: 80px;
-  padding-bottom: 40px;
-}
-
 .login-card {
-  width: 100%;
-  max-width: 420px;
-  margin: 0 16px; // prevent touching edges on mobile
-  padding: 16px;
+  max-width: var(--app-card-width-sm);
 }
 
 mat-card-header {

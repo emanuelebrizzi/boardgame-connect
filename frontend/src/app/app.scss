@@ -2,13 +2,16 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  background-color: var(--mat-sys-surface-container-lowest);
 }
 
 .app-header {
   position: sticky;
   top: 0;
   z-index: 100;
+  background-color: var(--mat-sys-surface);
+  border-bottom: 1px solid var(--mat-sys-outline-variant);
+  color: var(--mat-sys-on-surface);
 }
 
 .branding {
@@ -43,7 +46,7 @@
   transition: background 0.2s;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--mat-sys-surface-container-high);
   }
 }
 
@@ -60,15 +63,15 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background-color: #006064;
+  background-color: var(--mat-sys-primary);
   /* Darker Cyan */
-  color: white;
+  color: var(--mat-sys-on-primary);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
+  border: 1px solid var(--mat-sys-outline-variant);
 }
 
 .guest-actions {
@@ -88,10 +91,10 @@
 }
 
 .app-footer {
-  background: white;
+  background: var(--mat-sys-surface);
   padding: 24px;
+  color: var(--mat-sys-on-surface-variant);
   text-align: center;
-  color: #757575;
   font-size: 0.875rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--mat-sys-outline-variant);
 }

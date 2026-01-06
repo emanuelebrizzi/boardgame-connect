@@ -1,15 +1,5 @@
-:host {
-  display: flex;
-  justify-content: center;
-  padding-top: 60px;
-  padding-bottom: 40px;
-}
-
 .register-card {
-  width: 100%;
-  max-width: 450px; // Slightly wider than login to accommodate address fields gracefully
-  margin: 0 16px;
-  padding: 24px 16px;
+  max-width: var(--app-card-width-md);
 }
 
 mat-card-header {

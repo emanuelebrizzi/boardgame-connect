@@ -1,21 +1,5 @@
-:host {
-  display: flex;
-  justify-content: center;
-  padding-top: 60px;
-  padding-bottom: 40px;
-}
-
-.container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
 .create-card {
-  width: 100%;
-  max-width: 500px; // Leggermente più largo per accomodare la riga doppia
-  margin: 0 16px;
-  padding: 24px 16px;
+  max-width: var(--app-card-width-lg);
 }
 
 mat-card-header {
