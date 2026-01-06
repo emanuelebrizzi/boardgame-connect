@@ -5,17 +5,7 @@
     </mat-card-header>
 
     <form [formGroup]="loginForm" (ngSubmit)="processLoginForm()">
-      <div class="role-selector">
-        <mat-button-toggle-group
-          [value]="loginType()"
-          (change)="loginType.set($event.value)"
-          appearance="legacy"
-          name="role"
-        >
-          <mat-button-toggle value="PLAYER">Player</mat-button-toggle>
-          <mat-button-toggle value="ASSOCIATION">Association</mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
+      <app-role-selector [(role)]="role" />
 
       <mat-form-field>
         <mat-label>Email</mat-label>

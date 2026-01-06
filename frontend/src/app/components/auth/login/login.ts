@@ -8,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 import { UserRole } from '../../../model/user';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { RoleSelector } from '../../role-selector/role-selector';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +19,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     MatInputModule,
     MatButtonModule,
     MatButtonToggleModule,
+    RoleSelector,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -30,7 +32,7 @@ export class Login {
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
-  readonly loginType = signal<UserRole>('PLAYER');
+  readonly role = signal<UserRole>('PLAYER');
 
   readonly loginForm = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -44,7 +46,7 @@ export class Login {
     this.errorMessage.set('');
 
     const credentials = this.loginForm.getRawValue();
-    const role = this.loginType();
+    const role = this.role();
 
     this.authService.login(credentials, role).subscribe({
       next: () => {

@@ -1,0 +1,10 @@
+<mat-button-toggle-group
+  [value]="role()"
+  (change)="role.set($event.value)"
+  appearance="legacy"
+  name="role"
+  aria-label="Select Account Type"
+>
+  <mat-button-toggle value="PLAYER">Player</mat-button-toggle>
+  <mat-button-toggle value="ASSOCIATION">Association</mat-button-toggle>
+</mat-button-toggle-group>

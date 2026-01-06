@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserRole } from '../../../model/user';
 import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
@@ -10,6 +10,7 @@ import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../services/auth-service';
 import { ErrorResponse } from '../../../error-response';
 import { HttpErrorResponse } from '@angular/common/http';
+import { RoleSelector } from '../../role-selector/role-selector';
 
 @Component({
   selector: 'app-registration',
@@ -21,6 +22,7 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatButtonModule,
     MatButtonToggleModule,
     RouterLink,
+    RoleSelector,
   ],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
@@ -42,10 +44,11 @@ export class Registration {
     address: [''],
   });
 
-  onRoleChange(event: MatButtonToggleChange): void {
-    const newRole = event.value as UserRole;
-    this.role.set(newRole);
-    this.updateValidators(newRole);
+  constructor() {
+    effect(() => {
+      const currentRole = this.role();
+      this.updateValidators(currentRole);
+    });
   }
 
   private updateValidators(role: UserRole): void {

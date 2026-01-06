@@ -5,18 +5,7 @@
     </mat-card-header>
 
     <form [formGroup]="registerForm" (ngSubmit)="processRegistrationForm()">
-      <div class="role-selector">
-        <mat-button-toggle-group
-          [value]="role()"
-          (change)="onRoleChange($event)"
-          appearance="legacy"
-          name="role"
-          aria-label="Select Account Type"
-        >
-          <mat-button-toggle value="PLAYER">Player</mat-button-toggle>
-          <mat-button-toggle value="ASSOCIATION">Association</mat-button-toggle>
-        </mat-button-toggle-group>
-      </div>
+      <app-role-selector [(role)]="role" />
 
       <mat-form-field>
         <mat-label>Full Name</mat-label>

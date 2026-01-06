@@ -17,23 +17,6 @@ mat-form-field {
   width: 100%;
 }
 
-.role-selector {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 8px;
-
-  mat-button-toggle-group {
-    width: 100%;
-    border-radius: 24px;
-    overflow: hidden;
-
-    mat-button-toggle {
-      flex: 1;
-      font-weight: 500;
-    }
-  }
-}
-
 .association-fields {
   display: flex;
   flex-direction: column;
