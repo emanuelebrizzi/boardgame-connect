@@ -51,7 +51,6 @@ public class Boardgame {
 	}
 
 	public long calculateDuration(@Min(2) int maxPlayers) {
-		// TODO Auto-generated method stub
 		return minTimeInMin + (maxPlayers * timeInMinPerPlayer);
 	}
 

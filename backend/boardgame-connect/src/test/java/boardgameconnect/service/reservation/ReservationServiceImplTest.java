@@ -80,7 +80,6 @@ class ReservationServiceImplTest {
 		Player creator = new Player(playerAcc);
 
 		openReservation = new Reservation(creator, association, root, Instant.now(), Instant.now().plusSeconds(3600));
-		new Reservation(creator, association, root, Instant.now(), Instant.now().plusSeconds(3600));
 
 		ReflectionTestUtils.setField(openReservation, "id", RESERVATION_ID);
 	}
@@ -88,9 +87,7 @@ class ReservationServiceImplTest {
 	@Test
 	void getAvailableReservationsShouldFilterByDefaultStatusOpen() {
 		when(reservationRepository.findAll()).thenReturn(List.of(openReservation));
-
 		List<ReservationSummary> result = reservationService.getAvailableReservations(null, null, null);
-
 		assertEquals(1, result.size());
 		verify(reservationRepository, times(1)).findAll();
 	}
@@ -180,7 +177,6 @@ class ReservationServiceImplTest {
 		when(boardgameRepository.findById("bg_root")).thenReturn(Optional.of(game));
 		when(associationRepository.findById("assoc_inc")).thenReturn(Optional.of(association));
 		when(playerRepository.findById(userId)).thenReturn(Optional.of(player));
-
 		when(reservationRepository.save(any(Reservation.class))).thenAnswer(i -> {
 			Reservation r = i.getArgument(0);
 			ReflectionTestUtils.setField(r, "id", "new_res_id");

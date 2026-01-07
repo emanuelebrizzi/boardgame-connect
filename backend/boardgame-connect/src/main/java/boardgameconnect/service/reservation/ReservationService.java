@@ -5,6 +5,7 @@ import java.util.List;
 import boardgameconnect.dto.ReservationCreateRequest;
 import boardgameconnect.dto.ReservationDetail;
 import boardgameconnect.dto.ReservationSummary;
+import boardgameconnect.model.Email;
 
 public interface ReservationService {
 
@@ -12,5 +13,5 @@ public interface ReservationService {
 
 	public ReservationDetail getReservationById(String id);
 
-	public void createReservation(ReservationCreateRequest request, String currentUserId);
+	public void createReservation(ReservationCreateRequest request, Email userEmail);
 }

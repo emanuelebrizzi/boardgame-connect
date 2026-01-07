@@ -23,6 +23,7 @@ import boardgameconnect.exception.PlayerNotFoundException;
 import boardgameconnect.exception.ReservationNotFoundException;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
+import boardgameconnect.model.Email;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.Reservation;
 import boardgameconnect.model.ReservationStatus;
@@ -46,7 +47,6 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	public List<ReservationSummary> getAvailableReservations(String state, String game, String association) {
-
 		return reservationRepository.findAll().stream()
 				.filter(res -> state == null ? res.getStatus() == ReservationStatus.OPEN
 						: res.getStatus().name().equalsIgnoreCase(state))
@@ -65,7 +65,7 @@ public class ReservationServiceImpl implements ReservationService {
 	@Override
 	public ReservationDetail getReservationById(String id) {
 		Reservation res = reservationRepository.findById(id)
-				.orElseThrow(() -> new ReservationNotFoundException("Prenotazione " + id + " non trovata"));
+				.orElseThrow(() -> new ReservationNotFoundException("Reservation " + id + "not found"));
 
 		AssociationSummary assocSummary = new AssociationSummary(res.getAssociation().getId(),
 				res.getAssociation().getAccount().getName(), res.getAssociation().getAddress());
@@ -80,15 +80,15 @@ public class ReservationServiceImpl implements ReservationService {
 
 	@Override
 	@Transactional
-	public void createReservation(ReservationCreateRequest request, String currentUserId) {
+	public void createReservation(ReservationCreateRequest request, Email userEmail) {
 		Boardgame game = boardgameRepository.findById(request.boardgameId()).orElseThrow(
-				() -> new BoardgameNotFoundException("Gioco non trovato con ID: " + request.boardgameId()));
+				() -> new BoardgameNotFoundException("Boardgame not found with ID: " + request.boardgameId()));
 
 		Association association = associationRepository.findById(request.associationId()).orElseThrow(
-				() -> new AssociationNotFoundException("Associazione non trovata con ID: " + request.associationId()));
+				() -> new AssociationNotFoundException("Association not found with ID: " + request.associationId()));
 
-		Player creator = playerRepository.findById(currentUserId).orElseThrow(
-				() -> new PlayerNotFoundException("Profilo giocatore non trovato per l'utente: " + currentUserId));
+		Player creator = playerRepository.findByEmail(userEmail)
+				.orElseThrow(() -> new PlayerNotFoundException("Player profile not found for email: " + userEmail));
 
 		long durationMinutes = game.calculateDuration(request.maxPlayers());
 		Instant endTime = request.startTime().plus(Duration.ofMinutes(durationMinutes));
@@ -96,11 +96,11 @@ public class ReservationServiceImpl implements ReservationService {
 		Reservation reservation = new Reservation(creator, association, game, request.startTime(), endTime);
 
 		if (request.maxPlayers() > game.getMaxPlayer()) {
-			throw new IllegalArgumentException(
-					"Il numero di giocatori inserito supera il massimo consentito per " + game.getName());
+			throw new IllegalArgumentException("Invalid player numbers " + game.getName());
 		}
 
 		reservationRepository.save(reservation);
+
 	}
 
 }

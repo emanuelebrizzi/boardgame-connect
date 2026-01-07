@@ -9,6 +9,7 @@ import boardgameconnect.exception.BusinessLogicException;
 import boardgameconnect.exception.ForbiddenActionException;
 import boardgameconnect.exception.PlayerNotFoundException;
 import boardgameconnect.exception.ReservationNotFoundException;
+import boardgameconnect.model.Email;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.Reservation;
 
@@ -25,10 +26,10 @@ public class ParticipationServiceImpl implements ParticipationService {
 
 	@Override
 	@Transactional
-	public void join(String reservationId, String userId) {
+	public void join(String reservationId, Email email) {
 		Reservation reservation = reservationRepository.findById(reservationId)
 				.orElseThrow(() -> new ReservationNotFoundException("Prenotazione non trovata"));
-		Player player = playerRepository.findById(userId)
+		Player player = playerRepository.findByEmail(email)
 				.orElseThrow(() -> new PlayerNotFoundException("Giocatore non trovato"));
 
 		if (reservation.getPlayers().contains(player)) {
@@ -41,11 +42,11 @@ public class ParticipationServiceImpl implements ParticipationService {
 
 	@Override
 	@Transactional
-	public void leave(String reservationId, String userId) {
+	public void leave(String reservationId, Email email) {
 		Reservation reservation = reservationRepository.findById(reservationId)
 				.orElseThrow(() -> new ReservationNotFoundException("Prenotazione non trovata"));
 
-		boolean removed = reservation.getPlayers().removeIf(p -> p.getId().equals(userId));
+		boolean removed = reservation.getPlayers().removeIf(p -> p.getAccount().getEmail().equals(email));
 
 		if (!removed) {
 			throw new ForbiddenActionException("Non partecipi a questa prenotazione");
