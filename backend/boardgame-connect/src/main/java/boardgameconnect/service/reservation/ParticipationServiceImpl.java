@@ -51,6 +51,10 @@ public class ParticipationServiceImpl implements ParticipationService {
 			throw new ForbiddenActionException("Non partecipi a questa prenotazione");
 		}
 
-		reservationRepository.delete(reservation);
+		if (reservation.getPlayers().isEmpty()) {
+			reservationRepository.delete(reservation);
+		} else {
+			reservationRepository.save(reservation);
+		}
 	}
 }

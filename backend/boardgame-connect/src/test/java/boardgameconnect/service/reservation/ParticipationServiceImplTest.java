@@ -108,17 +108,40 @@ class ParticipationServiceImplTest {
 	}
 
 	@Test
-	void leaveShouldRemoveReservationWhenPlayerIsParticipant() {
+	void leaveShouldDeleteReservationWhenLastPlayerLeaves() {
 		mockReservation.getPlayers().add(mockPlayer);
 		when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(mockReservation));
 
 		participationService.leave(reservationId, userId);
 
+		assertTrue(mockReservation.getPlayers().isEmpty());
 		verify(reservationRepository, times(1)).delete(mockReservation);
+		verify(reservationRepository, never()).save(any());
+	}
+
+	@Test
+	void leaveShouldSaveReservationWhenOtherPlayersRemain() {
+		Player anotherPlayer = new Player(new UserAccount());
+		ReflectionTestUtils.setField(anotherPlayer, "id", "other-user");
+
+		mockReservation.getPlayers().add(mockPlayer);
+		mockReservation.getPlayers().add(anotherPlayer);
+
+		when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(mockReservation));
+
+		participationService.leave(reservationId, userId);
+
+		assertEquals(1, mockReservation.getPlayers().size());
+		verify(reservationRepository, times(1)).save(mockReservation);
+		verify(reservationRepository, never()).delete(any());
 	}
 
 	@Test
 	void leaveShouldThrowForbiddenWhenUserIsNotParticipant() {
+		Player anotherPlayer = new Player(new UserAccount());
+		ReflectionTestUtils.setField(anotherPlayer, "id", "other-user");
+		mockReservation.getPlayers().add(anotherPlayer);
+
 		when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(mockReservation));
 
 		ForbiddenActionException exception = assertThrows(ForbiddenActionException.class, () -> {
@@ -127,6 +150,7 @@ class ParticipationServiceImplTest {
 
 		assertEquals("Non partecipi a questa prenotazione", exception.getMessage());
 		verify(reservationRepository, never()).delete(any());
+		verify(reservationRepository, never()).save(any());
 	}
 
 	@Test
@@ -136,5 +160,9 @@ class ParticipationServiceImplTest {
 		assertThrows(ReservationNotFoundException.class, () -> {
 			participationService.leave(reservationId, userId);
 		});
+
+		verify(reservationRepository, never()).delete(any());
+		verify(reservationRepository, never()).save(any());
 	}
+
 }
