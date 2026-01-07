@@ -13,6 +13,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { RoleSelector } from '../../role-selector/role-selector';
 import { SubmitButton } from '../../submit-button/submit-button';
 import { FormAlert } from '../../form-alert/form-alert';
+import { extractErrorMessage } from '../../../utils/error-handler';
 
 @Component({
   selector: 'app-registration',
@@ -111,20 +112,8 @@ export class Registration {
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
-        this.errorMessage.set(this.getErrorMessage(err));
+        this.errorMessage.set(extractErrorMessage(err));
       },
     });
-  }
-
-  private getErrorMessage(err: HttpErrorResponse): string {
-    const apiError = err.error as ErrorResponse;
-    if (apiError?.message) {
-      return apiError.message;
-    }
-    if (err.status === 401) return 'Unauthorized access.';
-    if (err.status === 403) return 'You do not have permission.';
-    if (err.status === 409) return 'Resource already exists.';
-
-    return 'An unexpected error occurred.';
   }
 }

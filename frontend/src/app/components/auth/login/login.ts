@@ -11,6 +11,7 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RoleSelector } from '../../role-selector/role-selector';
 import { SubmitButton } from '../../submit-button/submit-button';
 import { FormAlert } from '../../form-alert/form-alert';
+import { extractErrorMessage } from '../../../utils/error-handler';
 
 @Component({
   selector: 'app-login',
@@ -60,7 +61,7 @@ export class Login {
 
       error: (err) => {
         this.isLoading.set(false);
-        this.errorMessage.set(err.message);
+        this.errorMessage.set(extractErrorMessage(err));
       },
     });
   }
