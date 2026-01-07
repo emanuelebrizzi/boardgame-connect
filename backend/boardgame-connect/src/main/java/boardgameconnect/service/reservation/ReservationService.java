@@ -8,9 +8,9 @@ import boardgameconnect.dto.ReservationSummary;
 
 public interface ReservationService {
 
-    public List<ReservationSummary> getAvailableReservations(String state, String game, String association);
+	public List<ReservationSummary> getAvailableReservations(String state, String game, String association);
 
-    public ReservationDetail getReservationById(String id);
+	public ReservationDetail getReservationById(String id);
 
-    public void createReservation(ReservationCreateRequest request, String currentUserId);
+	public void createReservation(ReservationCreateRequest request, String currentUserId);
 }

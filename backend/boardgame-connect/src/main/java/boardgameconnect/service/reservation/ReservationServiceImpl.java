@@ -30,77 +30,77 @@ import boardgameconnect.model.ReservationStatus;
 @Service
 public class ReservationServiceImpl implements ReservationService {
 
-    private final ReservationRepository reservationRepository;
-    private final BoardgameRepository boardgameRepository;
-    private final AssociationRepository associationRepository;
-    private final PlayerRepository playerRepository;
+	private final ReservationRepository reservationRepository;
+	private final BoardgameRepository boardgameRepository;
+	private final AssociationRepository associationRepository;
+	private final PlayerRepository playerRepository;
 
-    public ReservationServiceImpl(ReservationRepository reservationRepository, BoardgameRepository boardgameRepository,
-	    AssociationRepository associationRepository, PlayerRepository playerRepository) {
-	this.reservationRepository = reservationRepository;
-	this.boardgameRepository = boardgameRepository;
-	this.associationRepository = associationRepository;
-	this.playerRepository = playerRepository;
+	public ReservationServiceImpl(ReservationRepository reservationRepository, BoardgameRepository boardgameRepository,
+			AssociationRepository associationRepository, PlayerRepository playerRepository) {
+		this.reservationRepository = reservationRepository;
+		this.boardgameRepository = boardgameRepository;
+		this.associationRepository = associationRepository;
+		this.playerRepository = playerRepository;
 
-    }
-
-    @Override
-    public List<ReservationSummary> getAvailableReservations(String state, String game, String association) {
-
-	return reservationRepository.findAll().stream()
-		.filter(res -> state == null ? res.getStatus() == ReservationStatus.OPEN
-			: res.getStatus().name().equalsIgnoreCase(state))
-		.filter(res -> game == null || res.getBoardgame().getName().equalsIgnoreCase(game))
-		.filter(res -> association == null
-			|| res.getAssociation().getAccount().getName().equalsIgnoreCase(association))
-		.map(this::mapToSummary).collect(Collectors.toList());
-    }
-
-    private ReservationSummary mapToSummary(Reservation res) {
-	return new ReservationSummary(res.getId(), res.getBoardgame().getName(),
-		res.getAssociation().getAccount().getName(), res.getPlayers().size(), res.getBoardgame().getMaxPlayer(),
-		res.getStartTime(), res.getEndTime());
-    }
-
-    @Override
-    public ReservationDetail getReservationById(String id) {
-	Reservation res = reservationRepository.findById(id)
-		.orElseThrow(() -> new ReservationNotFoundException("Prenotazione " + id + " non trovata"));
-
-	AssociationSummary assocSummary = new AssociationSummary(res.getAssociation().getId(),
-		res.getAssociation().getAccount().getName(), res.getAssociation().getAddress());
-
-	List<PlayerSummary> playerSummaries = res.getPlayers().stream()
-		.map(p -> new PlayerSummary(p.getId(), p.getAccount().getName())).toList();
-
-	return new ReservationDetail(res.getId(), res.getBoardgame().getName(), assocSummary, playerSummaries,
-		res.getBoardgame().getMinTime(), res.getBoardgame().getMaxPlayer(), res.getStartTime(),
-		res.getEndTime(), res.getStatus().name());
-    }
-
-    @Override
-    @Transactional
-    public void createReservation(ReservationCreateRequest request, String currentUserId) {
-	Boardgame game = boardgameRepository.findById(request.boardgameId()).orElseThrow(
-		() -> new BoardgameNotFoundException("Gioco non trovato con ID: " + request.boardgameId()));
-
-	Association association = associationRepository.findById(request.associationId()).orElseThrow(
-		() -> new AssociationNotFoundException("Associazione non trovata con ID: " + request.associationId()));
-
-	Player creator = playerRepository.findById(currentUserId).orElseThrow(
-		() -> new PlayerNotFoundException("Profilo giocatore non trovato per l'utente: " + currentUserId));
-
-	long durationMinutes = game.calculateDuration(request.maxPlayers());
-	Instant endTime = request.startTime().plus(Duration.ofMinutes(durationMinutes));
-
-	Reservation reservation = new Reservation(creator, association, game, request.startTime(), endTime);
-
-	if (request.maxPlayers() > game.getMaxPlayer()) {
-	    throw new IllegalArgumentException(
-		    "Il numero di giocatori inserito supera il massimo consentito per " + game.getName());
 	}
 
-	reservationRepository.save(reservation);
-    }
+	@Override
+	public List<ReservationSummary> getAvailableReservations(String state, String game, String association) {
+
+		return reservationRepository.findAll().stream()
+				.filter(res -> state == null ? res.getStatus() == ReservationStatus.OPEN
+						: res.getStatus().name().equalsIgnoreCase(state))
+				.filter(res -> game == null || res.getBoardgame().getName().equalsIgnoreCase(game))
+				.filter(res -> association == null
+						|| res.getAssociation().getAccount().getName().equalsIgnoreCase(association))
+				.map(this::mapToSummary).collect(Collectors.toList());
+	}
+
+	private ReservationSummary mapToSummary(Reservation res) {
+		return new ReservationSummary(res.getId(), res.getBoardgame().getName(),
+				res.getAssociation().getAccount().getName(), res.getPlayers().size(), res.getBoardgame().getMaxPlayer(),
+				res.getStartTime(), res.getEndTime());
+	}
+
+	@Override
+	public ReservationDetail getReservationById(String id) {
+		Reservation res = reservationRepository.findById(id)
+				.orElseThrow(() -> new ReservationNotFoundException("Prenotazione " + id + " non trovata"));
+
+		AssociationSummary assocSummary = new AssociationSummary(res.getAssociation().getId(),
+				res.getAssociation().getAccount().getName(), res.getAssociation().getAddress());
+
+		List<PlayerSummary> playerSummaries = res.getPlayers().stream()
+				.map(p -> new PlayerSummary(p.getId(), p.getAccount().getName())).toList();
+
+		return new ReservationDetail(res.getId(), res.getBoardgame().getName(), assocSummary, playerSummaries,
+				res.getBoardgame().getMinTime(), res.getBoardgame().getMaxPlayer(), res.getStartTime(),
+				res.getEndTime(), res.getStatus().name());
+	}
+
+	@Override
+	@Transactional
+	public void createReservation(ReservationCreateRequest request, String currentUserId) {
+		Boardgame game = boardgameRepository.findById(request.boardgameId()).orElseThrow(
+				() -> new BoardgameNotFoundException("Gioco non trovato con ID: " + request.boardgameId()));
+
+		Association association = associationRepository.findById(request.associationId()).orElseThrow(
+				() -> new AssociationNotFoundException("Associazione non trovata con ID: " + request.associationId()));
+
+		Player creator = playerRepository.findById(currentUserId).orElseThrow(
+				() -> new PlayerNotFoundException("Profilo giocatore non trovato per l'utente: " + currentUserId));
+
+		long durationMinutes = game.calculateDuration(request.maxPlayers());
+		Instant endTime = request.startTime().plus(Duration.ofMinutes(durationMinutes));
+
+		Reservation reservation = new Reservation(creator, association, game, request.startTime(), endTime);
+
+		if (request.maxPlayers() > game.getMaxPlayer()) {
+			throw new IllegalArgumentException(
+					"Il numero di giocatori inserito supera il massimo consentito per " + game.getName());
+		}
+
+		reservationRepository.save(reservation);
+	}
 
 }
