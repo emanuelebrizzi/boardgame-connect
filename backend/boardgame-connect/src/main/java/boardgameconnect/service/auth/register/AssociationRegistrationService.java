@@ -15,27 +15,27 @@ import boardgameconnect.model.UserRole;
 @Service
 public class AssociationRegistrationService implements RegistrationService<AssociationDetails> {
 
-    private final UserAccountRepository accountRepo;
-    private final AssociationRepository associationRepo;
-    private final PasswordEncoder encoder;
+	private final UserAccountRepository accountRepo;
+	private final AssociationRepository associationRepo;
+	private final PasswordEncoder encoder;
 
-    public AssociationRegistrationService(UserAccountRepository accountRepo, AssociationRepository associationRepo,
-	    PasswordEncoder encoder) {
-	this.accountRepo = accountRepo;
-	this.associationRepo = associationRepo;
-	this.encoder = encoder;
-    }
-
-    @Override
-    public void register(RegistrationRequest<AssociationDetails> request) {
-	if (accountRepo.findByEmail(request.email()).isPresent()) {
-	    throw new EmailAlreadyInUseException("Email already registered");
+	public AssociationRegistrationService(UserAccountRepository accountRepo, AssociationRepository associationRepo,
+			PasswordEncoder encoder) {
+		this.accountRepo = accountRepo;
+		this.associationRepo = associationRepo;
+		this.encoder = encoder;
 	}
 
-	UserAccount account = new UserAccount(request.email(), encoder.encode(request.password()), request.name(),
-		UserRole.ASSOCIATION);
+	@Override
+	public void register(RegistrationRequest<AssociationDetails> request) {
+		if (accountRepo.findByEmail(request.email()).isPresent()) {
+			throw new EmailAlreadyInUseException("Email already registered");
+		}
 
-	Association association = new Association(account, request.details().taxCode(), request.details().address());
-	associationRepo.save(association);
-    }
+		UserAccount account = new UserAccount(request.email(), encoder.encode(request.password()), request.name(),
+				UserRole.ASSOCIATION);
+
+		Association association = new Association(account, request.details().taxCode(), request.details().address());
+		associationRepo.save(association);
+	}
 }

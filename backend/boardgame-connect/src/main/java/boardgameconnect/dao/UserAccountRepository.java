@@ -10,5 +10,5 @@ import boardgameconnect.model.UserAccount;
 
 @Repository
 public interface UserAccountRepository extends JpaRepository<UserAccount, String> {
-    Optional<UserAccount> findByEmail(Email email);
+	Optional<UserAccount> findByEmail(Email email);
 }

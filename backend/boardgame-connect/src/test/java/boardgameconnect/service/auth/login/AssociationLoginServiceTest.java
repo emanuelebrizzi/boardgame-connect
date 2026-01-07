@@ -31,93 +31,93 @@ import boardgameconnect.service.JwtService;
 @ExtendWith(MockitoExtension.class)
 class AssociationLoginServiceTest {
 
-    @Mock
-    private UserAccountRepository accountRepository;
-    @Mock
-    private AssociationRepository associationRepository;
-    @Mock
-    private UserMapper userMapper;
-    @Mock
-    private JwtService jwtService;
+	@Mock
+	private UserAccountRepository accountRepository;
+	@Mock
+	private AssociationRepository associationRepository;
+	@Mock
+	private UserMapper userMapper;
+	@Mock
+	private JwtService jwtService;
 
-    private PasswordEncoder passwordEncoder;
-    private AssociationLoginService associationLoginService;
+	private PasswordEncoder passwordEncoder;
+	private AssociationLoginService associationLoginService;
 
-    @BeforeEach
-    void setUp() {
-	// Simple encoder for fast testing
-	passwordEncoder = new PasswordEncoder() {
-	    @Override
-	    public String encode(CharSequence rawPassword) {
-		return "ENC_" + rawPassword;
-	    }
+	@BeforeEach
+	void setUp() {
+		// Simple encoder for fast testing
+		passwordEncoder = new PasswordEncoder() {
+			@Override
+			public String encode(CharSequence rawPassword) {
+				return "ENC_" + rawPassword;
+			}
 
-	    @Override
-	    public boolean matches(CharSequence rawPassword, String encodedPassword) {
-		return encodedPassword.equals("ENC_" + rawPassword);
-	    }
-	};
+			@Override
+			public boolean matches(CharSequence rawPassword, String encodedPassword) {
+				return encodedPassword.equals("ENC_" + rawPassword);
+			}
+		};
 
-	associationLoginService = new AssociationLoginService(accountRepository, associationRepository, passwordEncoder,
-		userMapper, jwtService);
-    }
+		associationLoginService = new AssociationLoginService(accountRepository, associationRepository, passwordEncoder,
+				userMapper, jwtService);
+	}
 
-    @Test
-    void loginShouldThrowWhenAccountNotFound() {
-	Email email = new Email("unknown@example.com");
-	LoginRequest request = new LoginRequest(email, "password");
+	@Test
+	void loginShouldThrowWhenAccountNotFound() {
+		Email email = new Email("unknown@example.com");
+		LoginRequest request = new LoginRequest(email, "password");
 
-	when(accountRepository.findByEmail(email)).thenReturn(Optional.empty());
+		when(accountRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-	assertThatThrownBy(() -> associationLoginService.login(request)).isInstanceOf(RuntimeException.class)
-		.hasMessage("Invalid credentials");
+		assertThatThrownBy(() -> associationLoginService.login(request)).isInstanceOf(RuntimeException.class)
+				.hasMessage("Invalid credentials");
 
-	verifyNoMoreInteractions(associationRepository, userMapper, jwtService);
-    }
+		verifyNoMoreInteractions(associationRepository, userMapper, jwtService);
+	}
 
-    @Test
-    void loginShouldThrowWhenPasswordIsInvalid() {
-	Email email = new Email("association@example.com");
-	String rawPassword = "password";
-	String encodedPassword = passwordEncoder.encode(rawPassword);
-	UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.ASSOCIATION);
+	@Test
+	void loginShouldThrowWhenPasswordIsInvalid() {
+		Email email = new Email("association@example.com");
+		String rawPassword = "password";
+		String encodedPassword = passwordEncoder.encode(rawPassword);
+		UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.ASSOCIATION);
 
-	when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
+		when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
 
-	LoginRequest request = new LoginRequest(email, "wrong_password");
+		LoginRequest request = new LoginRequest(email, "wrong_password");
 
-	assertThatThrownBy(() -> associationLoginService.login(request)).isInstanceOf(RuntimeException.class)
-		.hasMessage("Invalid credentials");
+		assertThatThrownBy(() -> associationLoginService.login(request)).isInstanceOf(RuntimeException.class)
+				.hasMessage("Invalid credentials");
 
-	verifyNoMoreInteractions(associationRepository, userMapper);
-    }
+		verifyNoMoreInteractions(associationRepository, userMapper);
+	}
 
-    @Test
-    void loginShouldReturnResponseWhenCredentialsAreValid() {
-	Email email = new Email("association@example.com");
-	String rawPassword = "password";
-	String encodedPassword = passwordEncoder.encode(rawPassword);
-	UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.ASSOCIATION);
-	Association association = new Association(account, "test_taxcode", "test_address");
-	String mockToken = "mocked-jwt-token";
-	AssociationProfile expectedDto = new AssociationProfile("assoc_id", "association@example.com", "Assoc Name",
-		"test_taxcode", "Via Roma 1", UserRole.ASSOCIATION);
+	@Test
+	void loginShouldReturnResponseWhenCredentialsAreValid() {
+		Email email = new Email("association@example.com");
+		String rawPassword = "password";
+		String encodedPassword = passwordEncoder.encode(rawPassword);
+		UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.ASSOCIATION);
+		Association association = new Association(account, "test_taxcode", "test_address");
+		String mockToken = "mocked-jwt-token";
+		AssociationProfile expectedDto = new AssociationProfile("assoc_id", "association@example.com", "Assoc Name",
+				"test_taxcode", "Via Roma 1", UserRole.ASSOCIATION);
 
-	when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
-	when(associationRepository.findByAccount(account)).thenReturn(Optional.of(association));
-	when(jwtService.generateToken(account)).thenReturn(mockToken);
-	when(userMapper.toDto(association)).thenReturn(expectedDto);
+		when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
+		when(associationRepository.findByAccount(account)).thenReturn(Optional.of(association));
+		when(jwtService.generateToken(account)).thenReturn(mockToken);
+		when(userMapper.toDto(association)).thenReturn(expectedDto);
 
-	LoginRequest request = new LoginRequest(email, rawPassword);
-	LoginResponse<AssociationProfile> response = associationLoginService.login(request);
+		LoginRequest request = new LoginRequest(email, rawPassword);
+		LoginResponse<AssociationProfile> response = associationLoginService.login(request);
 
-	assertThat(response.accessToken()).isEqualTo(mockToken);
-	assertThat(response.profile()).isEqualTo(expectedDto);
+		assertThat(response.accessToken()).isEqualTo(mockToken);
+		assertThat(response.profile()).isEqualTo(expectedDto);
 
-	InOrder inOrder = inOrder(accountRepository, associationRepository, userMapper, jwtService);
-	inOrder.verify(accountRepository).findByEmail(email);
-	inOrder.verify(associationRepository).findByAccount(account);
-	inOrder.verify(jwtService).generateToken(account);
-	inOrder.verify(userMapper).toDto(association);
-    }
+		InOrder inOrder = inOrder(accountRepository, associationRepository, userMapper, jwtService);
+		inOrder.verify(accountRepository).findByEmail(email);
+		inOrder.verify(associationRepository).findByAccount(account);
+		inOrder.verify(jwtService).generateToken(account);
+		inOrder.verify(userMapper).toDto(association);
+	}
 }

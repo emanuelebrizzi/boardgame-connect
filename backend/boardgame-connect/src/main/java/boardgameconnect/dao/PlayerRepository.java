@@ -8,5 +8,5 @@ import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
 
 public interface PlayerRepository extends JpaRepository<Player, String> {
-    Optional<Player> findByAccount(UserAccount account);
+	Optional<Player> findByAccount(UserAccount account);
 }

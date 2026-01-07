@@ -11,8 +11,5 @@ public class Table {
 	public TableSize getSize() {
 		return size;
 	}
-	
-	
+
 }
-
-

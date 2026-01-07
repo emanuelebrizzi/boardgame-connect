@@ -22,37 +22,37 @@ import boardgameconnect.model.UserRole;
 @DataJpaTest
 @Testcontainers
 public class PlayerRepositoryIT {
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
+	@Container
+	static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-	registry.add("spring.datasource.url", postgres::getJdbcUrl);
-	registry.add("spring.datasource.username", postgres::getUsername);
-	registry.add("spring.datasource.password", postgres::getPassword);
-    }
+	@DynamicPropertySource
+	static void configureProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.datasource.url", postgres::getJdbcUrl);
+		registry.add("spring.datasource.username", postgres::getUsername);
+		registry.add("spring.datasource.password", postgres::getPassword);
+	}
 
-    @Autowired
-    private UserAccountRepository userAccountRepository;
+	@Autowired
+	private UserAccountRepository userAccountRepository;
 
-    @Autowired
-    private PlayerRepository playerRepository;
+	@Autowired
+	private PlayerRepository playerRepository;
 
-    @BeforeEach
-    void setUp() {
-	userAccountRepository.deleteAll();
-	playerRepository.deleteAll();
-    }
+	@BeforeEach
+	void setUp() {
+		userAccountRepository.deleteAll();
+		playerRepository.deleteAll();
+	}
 
-    @Test
-    void shouldFindPlayerByUserAccount() {
-	var email = new Email("player@boardgame.com");
-	var account = new UserAccount(email, "securePassword123", "John Doe", UserRole.PLAYER);
-	var player = new Player(account);
-	playerRepository.save(player);
+	@Test
+	void shouldFindPlayerByUserAccount() {
+		var email = new Email("player@boardgame.com");
+		var account = new UserAccount(email, "securePassword123", "John Doe", UserRole.PLAYER);
+		var player = new Player(account);
+		playerRepository.save(player);
 
-	Optional<Player> result = playerRepository.findByAccount(account);
+		Optional<Player> result = playerRepository.findByAccount(account);
 
-	assertThat(result.get()).isEqualTo(player);
-    }
+		assertThat(result.get()).isEqualTo(player);
+	}
 }

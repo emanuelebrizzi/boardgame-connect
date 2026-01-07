@@ -9,23 +9,23 @@ import org.junit.jupiter.api.Test;
 public class EmailTest {
 
 	@Test
-	void testCreateEmailWhenEmailStringIsValidShouldCreateEmail() {
+	void createEmailShouldCreateEmailWhenEmailStringIsValid() {
 		Email email = new Email("user@domain.com");
 		assertEquals("user@domain.com", email.getEmail());
 	}
 
 	@Test
-	void testCreateEmailWhenEmailStringIsNullStringShouldSThrow() {
+	void createEmailShouldSThrowWhenEmailStringIsNullString() {
 		assertThrows(IllegalArgumentException.class, () -> new Email(null), "Invalid email format");
 	}
 
 	@Test
-	void testCreateEmailWhenEmailStringIsEmptyStringShouldSThrow() {
+	void createEmailStringShouldSThrowWhenEmailStringIsEmpty() {
 		assertThrows(IllegalArgumentException.class, () -> new Email(""), "Invalid email format");
 	}
 
 	@Test
-	void testCreateEmailWhenEmailStringIsInvalidEmailShouldSThrow() {
+	void createEmailShouldSThrowWhenEmailStringIsInvalidEmail() {
 		assertThrows(IllegalArgumentException.class, () -> new Email("Invalidmail"), "Invalid email format");
 		assertThrows(IllegalArgumentException.class, () -> new Email("Invalidmail@invaliddomain"),
 				"Invalid email format");
@@ -34,7 +34,7 @@ public class EmailTest {
 	}
 
 	@Test
-	void testEqualsWhenEmailsWithDifferOnlyByCaseShouldReturnTrue() {
+	void equalsShouldReturnTrueWhenEmailsWithDifferOnlyByCase() {
 		Email email1 = new Email("USER@DOMAIN.COM");
 		Email email2 = new Email("user@domain.com");
 		assertTrue(email1.equals(email2));

@@ -10,8 +10,8 @@ import boardgameconnect.model.Boardgame;
 @Repository
 public interface BoardgameRepository extends JpaRepository<Boardgame, String> {
 
-    Optional<Boardgame> findByNameIgnoreCase(String name);
+	Optional<Boardgame> findByNameIgnoreCase(String name);
 
-    boolean existsByNameIgnoreCase(String name);
+	boolean existsByNameIgnoreCase(String name);
 
 }

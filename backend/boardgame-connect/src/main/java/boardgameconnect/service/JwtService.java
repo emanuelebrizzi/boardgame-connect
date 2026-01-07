@@ -15,22 +15,22 @@ import jakarta.annotation.PostConstruct;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secret;
+	@Value("${jwt.secret}")
+	private String secret;
 
-    @Value("${jwt.expiration}")
-    private long jwtExpiration;
+	@Value("${jwt.expiration}")
+	private long jwtExpiration;
 
-    private Key secretKey;
+	private Key secretKey;
 
-    @PostConstruct
-    public void init() {
-	this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-    }
+	@PostConstruct
+	public void init() {
+		this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+	}
 
-    public String generateToken(UserAccount account) {
-	return Jwts.builder().setSubject(account.getEmail().toString()).claim("role", account.getUserRole())
-		.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-		.signWith(secretKey, SignatureAlgorithm.HS256).compact();
-    }
+	public String generateToken(UserAccount account) {
+		return Jwts.builder().setSubject(account.getEmail().toString()).claim("role", account.getUserRole())
+				.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
+				.signWith(secretKey, SignatureAlgorithm.HS256).compact();
+	}
 }

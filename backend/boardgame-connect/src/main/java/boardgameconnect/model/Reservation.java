@@ -20,67 +20,67 @@ import jakarta.persistence.Table;
 @Table(name = "reservations")
 public class Reservation {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	private String id;
 
-    @ManyToMany
-    @JoinTable(name = "reservation_players", joinColumns = @JoinColumn(name = "reservation_id"), inverseJoinColumns = @JoinColumn(name = "player_id"))
-    private List<Player> players = new ArrayList<>();
+	@ManyToMany
+	@JoinTable(name = "reservation_players", joinColumns = @JoinColumn(name = "reservation_id"), inverseJoinColumns = @JoinColumn(name = "player_id"))
+	private List<Player> players = new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(name = "association_id")
-    private Association association;
+	@ManyToOne
+	@JoinColumn(name = "association_id")
+	private Association association;
 
-    @ManyToOne
-    @JoinColumn(name = "boardgame_id")
-    private Boardgame boardgame;
+	@ManyToOne
+	@JoinColumn(name = "boardgame_id")
+	private Boardgame boardgame;
 
-    @Enumerated(EnumType.STRING)
-    private ReservationStatus status;
+	@Enumerated(EnumType.STRING)
+	private ReservationStatus status;
 
-    private Instant startTime;
+	private Instant startTime;
 
-    private Instant endTime;
+	private Instant endTime;
 
-    public Reservation() {
-    }
+	public Reservation() {
+	}
 
-    public Reservation(Player creator, Association association, Boardgame boardgame, Instant startTime,
-	    Instant endTime) {
-	this.players.add(creator);
-	this.association = association;
-	this.boardgame = boardgame;
-	this.startTime = startTime;
-	this.endTime = endTime;
-	this.status = ReservationStatus.OPEN;
-    }
+	public Reservation(Player creator, Association association, Boardgame boardgame, Instant startTime,
+			Instant endTime) {
+		this.players.add(creator);
+		this.association = association;
+		this.boardgame = boardgame;
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.status = ReservationStatus.OPEN;
+	}
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public List<Player> getPlayers() {
-	return players;
-    }
+	public List<Player> getPlayers() {
+		return players;
+	}
 
-    public Association getAssociation() {
-	return association;
-    }
+	public Association getAssociation() {
+		return association;
+	}
 
-    public Boardgame getBoardgame() {
-	return boardgame;
-    }
+	public Boardgame getBoardgame() {
+		return boardgame;
+	}
 
-    public ReservationStatus getStatus() {
-	return status;
-    }
+	public ReservationStatus getStatus() {
+		return status;
+	}
 
-    public Instant getStartTime() {
-	return startTime;
-    }
+	public Instant getStartTime() {
+		return startTime;
+	}
 
-    public Instant getEndTime() {
-	return endTime;
-    }
+	public Instant getEndTime() {
+		return endTime;
+	}
 }
