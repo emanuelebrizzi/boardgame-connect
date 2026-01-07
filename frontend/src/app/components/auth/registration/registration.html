@@ -53,9 +53,9 @@
           }
         </mat-form-field>
       </div>
-      } @if (errorMessage()) {
-      <div class="error-feedback" role="alert">{{ errorMessage() }}</div>
       }
+
+      <app-form-alert [message]="errorMessage()" />
 
       <app-submit-button
         [isLoading]="isLoading()"

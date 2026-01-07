@@ -10,6 +10,7 @@ import { UserRole } from '../../../model/user';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RoleSelector } from '../../role-selector/role-selector';
 import { SubmitButton } from '../../submit-button/submit-button';
+import { FormAlert } from '../../form-alert/form-alert';
 
 @Component({
   selector: 'app-login',
@@ -22,6 +23,7 @@ import { SubmitButton } from '../../submit-button/submit-button';
     MatButtonToggleModule,
     RoleSelector,
     SubmitButton,
+    FormAlert,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',

@@ -1,7 +1,7 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UserRole } from '../../../model/user';
-import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -12,6 +12,7 @@ import { ErrorResponse } from '../../../error-response';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RoleSelector } from '../../role-selector/role-selector';
 import { SubmitButton } from '../../submit-button/submit-button';
+import { FormAlert } from '../../form-alert/form-alert';
 
 @Component({
   selector: 'app-registration',
@@ -25,6 +26,7 @@ import { SubmitButton } from '../../submit-button/submit-button';
     RouterLink,
     RoleSelector,
     SubmitButton,
+    FormAlert,
   ],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
