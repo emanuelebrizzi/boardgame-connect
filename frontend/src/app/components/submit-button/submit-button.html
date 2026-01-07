@@ -1,0 +1,16 @@
+<button
+  mat-raised-button
+  color="primary"
+  type="submit"
+  [disabled]="isDisabled() || isLoading()"
+  class="submit-btn"
+>
+  @if (isLoading()) {
+  <div class="loading-content">
+    <mat-spinner diameter="20" color="accent" />
+    <span>{{ loadingText() }}</span>
+  </div>
+  } @else {
+  <ng-content />
+  }
+</button>

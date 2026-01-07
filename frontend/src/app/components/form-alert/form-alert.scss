@@ -1,0 +1,11 @@
+.error-feedback {
+  background-color: var(--app-color-error-container);
+  color: var(--app-color-on-error-container);
+  border: 1px solid var(--app-color-error-border);
+
+  padding: 12px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 0.9rem;
+  margin-top: 16px;
+}

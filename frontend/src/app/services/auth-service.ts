@@ -1,10 +1,10 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { LoginRequest, LoginResponse } from '../../model/login';
-import { catchError, Observable, tap, throwError } from 'rxjs';
-import { AssociationRegisterRequest, PlayerRegisterRequest } from '../../model/registration';
-import { UserProfile, UserRole } from '../../model/user';
-import { environment } from '../../../environments/environment';
+import { LoginRequest, LoginResponse } from '../model/login';
+import { Observable, tap } from 'rxjs';
+import { AssociationRegisterRequest, PlayerRegisterRequest } from '../model/registration';
+import { UserProfile, UserRole } from '../model/user';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
@@ -23,10 +23,9 @@ export class AuthService {
   login(credentials: LoginRequest, role: UserRole): Observable<LoginResponse> {
     const endpoint = `${this.API_URL}/login/${role.toLowerCase()}`;
 
-    return this.http.post<LoginResponse>(endpoint, credentials).pipe(
-      tap((response) => this.handleAuthSuccess(response)),
-      catchError(this.handleError)
-    );
+    return this.http
+      .post<LoginResponse>(endpoint, credentials)
+      .pipe(tap((response) => this.handleAuthSuccess(response)));
   }
 
   register(
@@ -38,11 +37,7 @@ export class AuthService {
         ? `${this.API_URL}/register/player`
         : `${this.API_URL}/register/association`;
 
-    return this.http.post<void>(endpoint, request).pipe(
-      catchError((error: HttpErrorResponse) => {
-        return throwError(() => error);
-      })
-    );
+    return this.http.post<void>(endpoint, request);
   }
 
   logout(): void {
@@ -66,10 +61,5 @@ export class AuthService {
     this.token.set(response.accessToken);
     localStorage.setItem(this.USER_KEY, JSON.stringify(response.profile));
     localStorage.setItem(this.TOKEN_KEY, response.accessToken);
-  }
-
-  private handleError(error: HttpErrorResponse): Observable<never> {
-    const message = error.error?.message || 'An unexpected error occurred';
-    throw new Error(message);
   }
 }

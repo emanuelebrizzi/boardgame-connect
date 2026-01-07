@@ -1,4 +1,4 @@
-import { ReservationService } from '../../../../services/reservation/reservation-service';
+import { ReservationService } from '../../../../services/reservation-service';
 import { DatePipe } from '@angular/common';
 import { Component, inject, input } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';

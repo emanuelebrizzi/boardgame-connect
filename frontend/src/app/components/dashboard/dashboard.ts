@@ -17,7 +17,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { catchError, debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
 import { merge, of } from 'rxjs';
 import { Reservation, ReservationFilter, ReservationState } from '../../model/reservation';
-import { ReservationService } from '../../services/reservation/reservation-service';
+import { ReservationService } from '../../services/reservation-service';
 import { ReservationCardComponent } from './show-reservations/reservation-card/reservation-card';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 

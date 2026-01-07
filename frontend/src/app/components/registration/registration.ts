@@ -1,15 +1,18 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, effect, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserRole } from '../../../model/user';
-import { MatButtonToggleChange, MatButtonToggleModule } from '@angular/material/button-toggle';
+import { UserRole } from '../../model/user';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../services/auth/auth-service';
-import { ErrorResponse } from '../../../error-response';
+import { AuthService } from '../../services/auth-service';
 import { HttpErrorResponse } from '@angular/common/http';
+import { RoleSelector } from '../role-selector/role-selector';
+import { SubmitButton } from '../submit-button/submit-button';
+import { FormAlert } from '../form-alert/form-alert';
+import { extractErrorMessage } from '../../utils/error-handler';
 
 @Component({
   selector: 'app-registration',
@@ -21,6 +24,9 @@ import { HttpErrorResponse } from '@angular/common/http';
     MatButtonModule,
     MatButtonToggleModule,
     RouterLink,
+    RoleSelector,
+    SubmitButton,
+    FormAlert,
   ],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',
@@ -42,10 +48,11 @@ export class Registration {
     address: [''],
   });
 
-  onRoleChange(event: MatButtonToggleChange): void {
-    const newRole = event.value as UserRole;
-    this.role.set(newRole);
-    this.updateValidators(newRole);
+  constructor() {
+    effect(() => {
+      const currentRole = this.role();
+      this.updateValidators(currentRole);
+    });
   }
 
   private updateValidators(role: UserRole): void {
@@ -104,20 +111,8 @@ export class Registration {
       },
       error: (err: HttpErrorResponse) => {
         this.isLoading.set(false);
-        this.errorMessage.set(this.getErrorMessage(err));
+        this.errorMessage.set(extractErrorMessage(err));
       },
     });
-  }
-
-  private getErrorMessage(err: HttpErrorResponse): string {
-    const apiError = err.error as ErrorResponse;
-    if (apiError?.message) {
-      return apiError.message;
-    }
-    if (err.status === 401) return 'Unauthorized access.';
-    if (err.status === 403) return 'You do not have permission.';
-    if (err.status === 409) return 'Resource already exists.';
-
-    return 'An unexpected error occurred.';
   }
 }

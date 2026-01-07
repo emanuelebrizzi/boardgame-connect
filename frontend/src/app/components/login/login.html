@@ -1,0 +1,40 @@
+<div class="page-centered">
+  <mat-card class="login-card app-card">
+    <mat-card-header>
+      <mat-card-title>Welcome Back</mat-card-title>
+    </mat-card-header>
+
+    <form [formGroup]="loginForm" (ngSubmit)="processLoginForm()">
+      <app-role-selector [(role)]="role" />
+
+      <mat-form-field>
+        <mat-label>Email</mat-label>
+        <input matInput formControlName="email" placeholder="name@example.com" />
+
+        @if (loginForm.get('email')?.hasError('required')) {
+        <mat-error>Email is required</mat-error>
+        } @else if (loginForm.get('email')?.hasError('email')) {
+        <mat-error>Invalid email address</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field>
+        <mat-label>Password</mat-label>
+        <input matInput type="password" formControlName="password" />
+        @if (loginForm.get('password')?.hasError('required')) {
+        <mat-error>Password is required</mat-error>
+        }
+      </mat-form-field>
+
+      <app-form-alert [message]="errorMessage()" />
+
+      <app-submit-button
+        [isLoading]="isLoading()"
+        [isDisabled]="loginForm.invalid"
+        loadingText="Signing In..."
+      >
+        Sign In
+      </app-submit-button>
+    </form>
+  </mat-card>
+</div>

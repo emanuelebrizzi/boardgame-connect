@@ -17,6 +17,9 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { SubmitButton } from '../../submit-button/submit-button';
+import { FormAlert } from '../../form-alert/form-alert';
+import { extractErrorMessage } from '../../../utils/error-handler';
 
 const minMaxValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const min = control.get('minPlayers')?.value;
@@ -39,6 +42,8 @@ const minMaxValidator: ValidatorFn = (control: AbstractControl): ValidationError
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    SubmitButton,
+    FormAlert,
   ],
   templateUrl: './create-boardgame.html',
   styleUrl: './create-boardgame.scss',
@@ -89,16 +94,7 @@ export class CreateBoardgame {
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        const apiError = err.error as ErrorResponse;
-        if (apiError?.message) {
-          this.errorMessage.set(apiError.message);
-        }
-
-        if (err.status === 409 || err.error?.message?.includes('exists')) {
-          this.errorMessage.set('Already existing boardgame.');
-        } else {
-          this.errorMessage.set('Unexpected error during the creation. Try again later.');
-        }
+        this.errorMessage.set(extractErrorMessage(err));
       },
     });
   }

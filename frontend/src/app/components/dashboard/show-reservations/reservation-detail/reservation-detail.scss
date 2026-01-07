@@ -20,7 +20,7 @@
 }
 
 .error-icon-wrapper {
-  background-color: #ffebee;
+  background-color: var(--app-color-error-container);
   padding: 16px;
   border-radius: 50%;
   margin-bottom: 16px;
@@ -30,7 +30,7 @@
   font-size: 48px;
   width: 48px;
   height: 48px;
-  color: #f44336;
+  color: var(--app-color-on-error-container);
 }
 
 /* Card Styling */

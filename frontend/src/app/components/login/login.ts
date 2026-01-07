@@ -1,4 +1,4 @@
-import { AuthService } from '../../../services/auth/auth-service';
+import { AuthService } from '../../services/auth-service';
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -6,8 +6,12 @@ import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
-import { UserRole } from '../../../model/user';
+import { UserRole } from '../../model/user';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { RoleSelector } from '../role-selector/role-selector';
+import { SubmitButton } from '../submit-button/submit-button';
+import { FormAlert } from '../form-alert/form-alert';
+import { extractErrorMessage } from '../../utils/error-handler';
 
 @Component({
   selector: 'app-login',
@@ -18,6 +22,9 @@ import { MatButtonToggleModule } from '@angular/material/button-toggle';
     MatInputModule,
     MatButtonModule,
     MatButtonToggleModule,
+    RoleSelector,
+    SubmitButton,
+    FormAlert,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
@@ -30,7 +37,7 @@ export class Login {
 
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
-  readonly loginType = signal<UserRole>('PLAYER');
+  readonly role = signal<UserRole>('PLAYER');
 
   readonly loginForm = this.formBuilder.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -44,7 +51,7 @@ export class Login {
     this.errorMessage.set('');
 
     const credentials = this.loginForm.getRawValue();
-    const role = this.loginType();
+    const role = this.role();
 
     this.authService.login(credentials, role).subscribe({
       next: () => {
@@ -54,7 +61,7 @@ export class Login {
 
       error: (err) => {
         this.isLoading.set(false);
-        this.errorMessage.set(err.message);
+        this.errorMessage.set(extractErrorMessage(err));
       },
     });
   }

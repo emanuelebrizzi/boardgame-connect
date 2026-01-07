@@ -1,21 +1,5 @@
-:host {
-  display: flex;
-  justify-content: center;
-  padding-top: 60px;
-  padding-bottom: 40px;
-}
-
-.container {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-}
-
 .create-card {
-  width: 100%;
-  max-width: 500px; // Leggermente più largo per accomodare la riga doppia
-  margin: 0 16px;
-  padding: 24px 16px;
+  max-width: var(--app-card-width-lg);
 }
 
 mat-card-header {
@@ -40,16 +24,6 @@ mat-form-field {
   mat-form-field {
     flex: 1;
   }
-}
-
-.error-feedback {
-  background-color: #ffebee;
-  color: #c62828;
-  padding: 12px;
-  border-radius: 4px;
-  text-align: center;
-  font-size: 14px;
-  margin-bottom: 8px;
 }
 
 .actions {

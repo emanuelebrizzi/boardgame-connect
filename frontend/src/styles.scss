@@ -13,6 +13,28 @@ html {
   height: 100%;
 }
 
+:root {
+  /* Semantic Design Tokens */
+  --app-color-error-container: #ffebee;
+  --app-color-on-error-container: #c62828;
+  --app-color-error-border: #ffcdd2;
+
+  /* Layout Tokens */
+  --app-card-width-sm: 420px;
+  --app-card-width-md: 450px;
+  --app-spacing-page-top: 80px;
+
+  --app-card-width-md: 450px;
+  --app-card-width-lg: 500px;
+
+  // Maybe I can remove them with default theme colors
+  --app-bg-default: #f5f5f5;
+  --app-bg-surface: #ffffff;
+  --app-border-color: #e0e0e0;
+
+  --app-spacing-card-padding: 24px 16px;
+}
+
 body {
   // Default the application to a light color theme. This can be changed to
   // `dark` to enable the dark color theme, or to `light dark` to defer to the
@@ -35,3 +57,41 @@ body {
   margin: 0 auto;
   padding: 16px;
 }
+
+.page-centered {
+  display: flex;
+  justify-content: center;
+  padding-top: var(--app-spacing-page-top);
+  padding-bottom: 40px;
+  width: 100%;
+}
+
+/* Common Card reset */
+.app-card {
+  width: 100%;
+  margin: 0 16px;
+  padding: var(--app-spacing-card-padding);
+}
+
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--app-border-color);
+
+  h1 {
+    margin: 0;
+    font-weight: 300;
+    font-size: 2rem;
+    color: var(--mat-sys-on-surface);
+  }
+
+  p {
+    margin: 4px 0 0;
+    color: var(--mat-sys-on-surface-variant);
+  }
+}
+

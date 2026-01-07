@@ -1,15 +1,15 @@
-<div class="filters-card mat-elevation-z1 mb-6">
+<div class="filters-card mat-elevation-z1">
   <div class="filters-grid">
     <mat-form-field appearance="outline" class="filter-item">
       <mat-label>Game Name</mat-label>
       <input matInput [formControl]="nameFilter" placeholder="e.g. Root" />
-      <mat-icon matSuffix class="text-gray-400">videogame_asset</mat-icon>
+      <mat-icon matSuffix>videogame_asset</mat-icon>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="filter-item">
       <mat-label>Association</mat-label>
       <input matInput [formControl]="assocFilter" placeholder="e.g. Gilda" />
-      <mat-icon matSuffix class="text-gray-400">store</mat-icon>
+      <mat-icon matSuffix>store</mat-icon>
     </mat-form-field>
 
     <mat-form-field appearance="outline" class="filter-item status-filter">
@@ -21,8 +21,7 @@
       </mat-select>
     </mat-form-field>
 
-    <div class="filter-actions flex gap-2">
-      <!-- CLEAR BUTTON -->
+    <div class="filter-actions">
       <button
         mat-stroked-button
         color="warn"
@@ -33,7 +32,6 @@
         <mat-icon>filter_alt_off</mat-icon>
       </button>
 
-      <!-- REFRESH BUTTON -->
       <button mat-stroked-button color="primary" (click)="loadData()" aria-label="Refresh list">
         <mat-icon>refresh</mat-icon>
       </button>
@@ -42,24 +40,20 @@
 </div>
 
 @if (isLoading()) {
-<div class="flex justify-center py-12" role="status">
+<div class="state-message" role="status">
   <mat-spinner diameter="40"></mat-spinner>
-  <span class="sr-only">Loading reservations...</span>
+  <span class="visually-hidden">Loading reservations...</span>
 </div>
 } @else if (hasError()) {
-<div
-  class="flex flex-col items-center justify-center py-12 text-center animate-fade-in"
-  role="alert"
->
-  <div class="bg-red-50 p-6 rounded-full mb-6 text-red-500">
-    <mat-icon class="text-6xl !w-16 !h-16">dns</mat-icon>
+<div class="state-message error" role="alert">
+  <div class="icon-circle">
+    <mat-icon>dns</mat-icon>
   </div>
-
-  <h2 class="text-2xl font-bold text-gray-800 mb-2">Connection Failed</h2>
-  <p class="text-gray-600 max-w-md mb-8">{{ error() }}</p>
+  <h2>Connection Failed</h2>
+  <p>{{ error() }}</p>
 
   <button mat-flat-button color="primary" (click)="loadData()">
-    <mat-icon>refresh</mat-icon> TRY AGAIN
+    <mat-icon>refresh</mat-icon> Retry Connection
   </button>
 </div>
 } @else {
@@ -67,8 +61,8 @@
   @for (item of reservations(); track item.id) {
   <app-reservation-card [reservation]="item" />
   } @empty {
-  <div class="col-span-full flex flex-col items-center py-12 text-gray-500">
-    <mat-icon class="text-4xl mb-2">event_busy</mat-icon>
+  <div class="empty-state">
+    <mat-icon>event_busy</mat-icon>
     <p>No tables found matching your filters.</p>
   </div>
   }

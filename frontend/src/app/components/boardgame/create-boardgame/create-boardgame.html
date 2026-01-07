@@ -1,5 +1,5 @@
-<div class="container">
-  <mat-card class="create-card">
+<div class="page-centered">
+  <mat-card class="create-card app-card">
     <mat-card-header>
       <mat-card-title>Add a new boardgame</mat-card-title>
     </mat-card-header>
@@ -58,22 +58,17 @@
         }
       </mat-form-field>
 
-      @if (errorMessage()) {
-      <div class="error-feedback" role="alert">
-        {{ errorMessage() }}
-      </div>
-      }
+      <app-form-alert [message]="errorMessage()" />
 
       <div class="actions">
         <button mat-button type="button" routerLink="/dashboard/association">Cancel</button>
-        <button
-          mat-raised-button
-          color="primary"
-          type="submit"
-          [disabled]="form.invalid || isSubmitting()"
+        <app-submit-button
+          [isLoading]="isSubmitting()"
+          [isDisabled]="form.invalid"
+          loadingText="Saving..."
         >
-          {{ isSubmitting() ? 'Saving...' : 'Add Game' }}
-        </button>
+          Add Game
+        </app-submit-button>
       </div>
     </form>
   </mat-card>
