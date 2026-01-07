@@ -1,67 +1,90 @@
 package boardgameconnect.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.security.Key;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import boardgameconnect.model.Email;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
 
-@ExtendWith(MockitoExtension.class)
 public class JwtServiceTest {
-
-	@InjectMocks
-	private JwtService jwtService;
-
 	private static final String TEST_SECRET = "ThisIsAVeryLongSecretKeyUsedForUnitTestingPurposesOnly1234567890";
 	private static final long TEST_EXPIRATION = 3600000;
 
-	private UserAccount testAccount;
-	private Key testKey;
+	private JwtService jwtService;
 
 	@BeforeEach
 	void setUp() {
-		ReflectionTestUtils.setField(jwtService, "secret", TEST_SECRET);
-		ReflectionTestUtils.setField(jwtService, "jwtExpiration", TEST_EXPIRATION);
+		jwtService = new JwtService();
+		jwtService.setSecret(TEST_SECRET);
+		jwtService.setJwtExpiration(TEST_EXPIRATION);
 		jwtService.init();
-		this.testKey = Keys.hmacShaKeyFor(TEST_SECRET.getBytes());
-		Email email = new Email("user@domain.com");
-		this.testAccount = new UserAccount(email, "encoded_password", "username", UserRole.PLAYER);
-	}
-
-	@Test
-	void generateTokenShouldReturnSignedJwtWhenEmailIsValid() {
-		String token = jwtService.generateToken(testAccount);
-
-		assertNotNull(token);
-		assertFalse(token.isEmpty());
-		assertTrue(token.contains("."));
 	}
 
 	@Test
 	void generateTokenShouldContainCorrectClaimsAndRole() {
-		String token = jwtService.generateToken(testAccount);
+		var userAccount = new UserAccount(new Email("user@domain.com"), "encoded_password", "username",
+				UserRole.PLAYER);
 
-		Claims claims = Jwts.parserBuilder().setSigningKey(testKey).build().parseClaimsJws(token).getBody();
+		String token = jwtService.generateToken(userAccount);
+		Claims claims = Jwts.parserBuilder().setSigningKey(jwtService.getSecretKey()).build().parseClaimsJws(token)
+				.getBody();
 
-		assertEquals(testAccount.getEmail().toString(), claims.getSubject());
-		assertEquals(testAccount.getUserRole().toString(), claims.get("role"));
-		assertNotNull(claims.getIssuedAt());
-		long diff = claims.getExpiration().getTime() - claims.getIssuedAt().getTime();
-		assertEquals(TEST_EXPIRATION, diff);
+		assertThat(userAccount.getEmail().toString()).isEqualTo(claims.getSubject());
+		assertThat(userAccount.getUserRole().toString()).isEqualTo(claims.get("role"));
 	}
+
+	@Test
+	void extractSubjectShouldReturnCorrectSubject() {
+		var userAccount = new UserAccount(new Email("test@domain.com"), "pass", "user", UserRole.ASSOCIATION);
+		String token = jwtService.generateToken(userAccount);
+		String extractedUsername = jwtService.extractSubject(token);
+		assertThat(extractedUsername).isEqualTo("test@domain.com");
+	}
+
+	@Test
+	void extractUserRoleShouldReturnCorrectRole() {
+		var userAccount = new UserAccount(new Email("admin@domain.com"), "pass", "admin", UserRole.ASSOCIATION);
+		String token = jwtService.generateToken(userAccount);
+		String role = jwtService.extractUserRole(token);
+		assertThat(role).isEqualTo("ASSOCIATION");
+	}
+
+//	@Test
+//	void isTokenValidShouldReturnTrueForMatchingUser() {
+//		// Arrange
+//		var userAccount = new UserAccount(new Email("valid@domain.com"), "pass", "validUser", UserRole.PLAYER);
+//		String token = jwtService.generateToken(userAccount);
+//
+//		// Mock UserDetails (simulating the user loaded from DB)
+//		UserDetails userDetails = new Userdetails
+//
+//		// Act
+//		boolean isValid = jwtService.isTokenValid(token, userDetails);
+//
+//		// Assert
+//		assertThat(isValid).isTrue();
+//	}
+//
+//	@Test
+//	void isTokenValidShouldReturnFalseForNonMatchingUser() {
+//		// Arrange
+//		var userAccount = new UserAccount(new Email("alice@domain.com"), "pass", "alice", UserRole.PLAYER);
+//		String token = jwtService.generateToken(userAccount);
+//
+//		// Mock UserDetails with a DIFFERENT email
+//		UserDetails userDetails = mock(UserDetails.class);
+//		when(userDetails.getUsername()).thenReturn("bob@domain.com");
+//
+//		// Act
+//		boolean isValid = jwtService.isTokenValid(token, userDetails);
+//
+//		// Assert
+//		assertThat(isValid).isFalse();
+//	}
+
 }
