@@ -17,6 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { SubmitButton } from '../../submit-button/submit-button';
 
 const minMaxValidator: ValidatorFn = (control: AbstractControl): ValidationErrors | null => {
   const min = control.get('minPlayers')?.value;
@@ -39,6 +40,7 @@ const minMaxValidator: ValidatorFn = (control: AbstractControl): ValidationError
     MatInputModule,
     MatButtonModule,
     MatIconModule,
+    SubmitButton,
   ],
   templateUrl: './create-boardgame.html',
   styleUrl: './create-boardgame.scss',

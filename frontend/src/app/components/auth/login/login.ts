@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { UserRole } from '../../../model/user';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RoleSelector } from '../../role-selector/role-selector';
+import { SubmitButton } from '../../submit-button/submit-button';
 
 @Component({
   selector: 'app-login',
@@ -20,6 +21,7 @@ import { RoleSelector } from '../../role-selector/role-selector';
     MatButtonModule,
     MatButtonToggleModule,
     RoleSelector,
+    SubmitButton,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',

@@ -57,14 +57,12 @@
       <div class="error-feedback" role="alert">{{ errorMessage() }}</div>
       }
 
-      <button
-        mat-raised-button
-        color="primary"
-        type="submit"
-        [disabled]="registerForm.invalid || isLoading()"
+      <app-submit-button
+        [isLoading]="isLoading()"
+        [isDisabled]="registerForm.invalid"
+        loadingText="Registering user..."
+        >Sign Up</app-submit-button
       >
-        @if (isLoading()) { Registering... } @else { Sign Up }
-      </button>
 
       <div class="login-link">Already have an account? <a routerLink="/login">Sign In</a></div>
     </form>

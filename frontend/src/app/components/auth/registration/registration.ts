@@ -11,6 +11,7 @@ import { AuthService } from '../../../services/auth-service';
 import { ErrorResponse } from '../../../error-response';
 import { HttpErrorResponse } from '@angular/common/http';
 import { RoleSelector } from '../../role-selector/role-selector';
+import { SubmitButton } from '../../submit-button/submit-button';
 
 @Component({
   selector: 'app-registration',
@@ -23,6 +24,7 @@ import { RoleSelector } from '../../role-selector/role-selector';
     MatButtonToggleModule,
     RouterLink,
     RoleSelector,
+    SubmitButton,
   ],
   templateUrl: './registration.html',
   styleUrl: './registration.scss',

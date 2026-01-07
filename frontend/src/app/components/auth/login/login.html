@@ -30,9 +30,13 @@
       <div class="error-feedback">{{ errorMessage() }}</div>
       }
 
-      <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid">
+      <app-submit-button
+        [isLoading]="isLoading()"
+        [isDisabled]="loginForm.invalid"
+        loadingText="Signing In..."
+      >
         Sign In
-      </button>
+      </app-submit-button>
     </form>
   </mat-card>
 </div>
