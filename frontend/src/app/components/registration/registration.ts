@@ -1,19 +1,18 @@
 import { Component, effect, inject, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { UserRole } from '../../../model/user';
+import { UserRole } from '../../model/user';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../../services/auth-service';
-import { ErrorResponse } from '../../../error-response';
+import { AuthService } from '../../services/auth-service';
 import { HttpErrorResponse } from '@angular/common/http';
-import { RoleSelector } from '../../role-selector/role-selector';
-import { SubmitButton } from '../../submit-button/submit-button';
-import { FormAlert } from '../../form-alert/form-alert';
-import { extractErrorMessage } from '../../../utils/error-handler';
+import { RoleSelector } from '../role-selector/role-selector';
+import { SubmitButton } from '../submit-button/submit-button';
+import { FormAlert } from '../form-alert/form-alert';
+import { extractErrorMessage } from '../../utils/error-handler';
 
 @Component({
   selector: 'app-registration',
