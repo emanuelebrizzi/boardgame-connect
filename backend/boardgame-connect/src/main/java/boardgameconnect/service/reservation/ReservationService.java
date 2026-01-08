@@ -9,9 +9,13 @@ import boardgameconnect.model.Email;
 
 public interface ReservationService {
 
-	public List<ReservationSummary> getAvailableReservations(String state, String game, String association);
+	List<ReservationSummary> getAvailableReservations(String state, String game, String association);
 
-	public ReservationDetail getReservationById(String id);
+	ReservationDetail getReservationById(String id);
 
-	public void createReservation(ReservationCreateRequest request, Email userEmail);
+	void createReservation(ReservationCreateRequest request, Email userEmail);
+
+	void join(String reservationId, Email email);
+
+	void leave(String reservationId, Email email);
 }

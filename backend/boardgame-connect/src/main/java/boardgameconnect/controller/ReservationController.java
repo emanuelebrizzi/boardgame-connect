@@ -19,7 +19,6 @@ import boardgameconnect.dto.ReservationCreateRequest;
 import boardgameconnect.dto.ReservationDetail;
 import boardgameconnect.dto.ReservationSummary;
 import boardgameconnect.model.Email;
-import boardgameconnect.service.reservation.ParticipationService;
 import boardgameconnect.service.reservation.ReservationService;
 import jakarta.validation.Valid;
 
@@ -28,11 +27,9 @@ import jakarta.validation.Valid;
 public class ReservationController {
 
 	private final ReservationService reservationService;
-	private final ParticipationService participationService;
 
-	public ReservationController(ReservationService reservationService, ParticipationService participationService) {
+	public ReservationController(ReservationService reservationService) {
 		this.reservationService = reservationService;
-		this.participationService = participationService;
 	}
 
 	@GetMapping
@@ -60,18 +57,20 @@ public class ReservationController {
 	}
 
 	@PostMapping("/{id}/join")
+	@PreAuthorize("hasRole('PLAYER')")
 	public ResponseEntity<Void> join(@PathVariable String id) {
 		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 		var email = new Email(userEmail);
-		participationService.join(id, email);
+		reservationService.join(id, email);
 		return ResponseEntity.ok().build();
 	}
 
 	@DeleteMapping("/{id}/leave")
+	@PreAuthorize("hasRole('PLAYER')")
 	public ResponseEntity<Void> leave(@PathVariable String id) {
 		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
 		var email = new Email(userEmail);
-		participationService.leave(id, email);
+		reservationService.leave(id, email);
 		return ResponseEntity.noContent().build();
 	}
 

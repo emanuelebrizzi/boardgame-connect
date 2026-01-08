@@ -48,7 +48,6 @@ public class SecurityConfig {
 		JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 		grantedAuthoritiesConverter.setAuthorityPrefix("ROLE_"); // Prepend "ROLE_" to match Spring Security standards
 		grantedAuthoritiesConverter.setAuthoritiesClaimName("role"); // Custom claim in the JWT
-
 		jwtConverter.setJwtGrantedAuthoritiesConverter(grantedAuthoritiesConverter);
 		return jwtConverter;
 	}

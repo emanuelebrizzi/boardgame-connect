@@ -22,6 +22,10 @@ import boardgameconnect.model.UserRole;
 @DataJpaTest
 @Testcontainers
 public class PlayerRepositoryIT {
+	private static final String EMAIL_STRING = "test@example.com";
+	private static final String NAME = "test";
+	private static final String PASSWORD = "test";
+
 	@Container
 	static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 
@@ -45,14 +49,23 @@ public class PlayerRepositoryIT {
 	}
 
 	@Test
-	void shouldFindPlayerByUserAccount() {
-		var email = new Email("player@boardgame.com");
-		var account = new UserAccount(email, "securePassword123", "John Doe", UserRole.PLAYER);
+	void findByAccountShouldReturnExistingPlayer() {
+		var email = new Email(EMAIL_STRING);
+		var account = new UserAccount(email, PASSWORD, NAME, UserRole.PLAYER);
 		var player = new Player(account);
 		playerRepository.save(player);
-
 		Optional<Player> result = playerRepository.findByAccount(account);
-
 		assertThat(result.get()).isEqualTo(player);
 	}
+
+	@Test
+	void findByAccountEmailShouldReturnExistingPlayer() {
+		var email = new Email(EMAIL_STRING);
+		var account = new UserAccount(email, PASSWORD, NAME, UserRole.PLAYER);
+		var player = new Player(account);
+		playerRepository.save(player);
+		Optional<Player> result = playerRepository.findByAccountEmail(email);
+		assertThat(result.get()).isEqualTo(player);
+	}
+
 }

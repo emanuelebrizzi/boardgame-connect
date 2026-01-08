@@ -41,10 +41,9 @@ class UserAccountRepositoryIT {
 	}
 
 	@Test
-	void shouldFindUserByEmail() {
+	void findByEmailShouldReturnExistingAccount() {
 		Email email = new Email("player@boardgame.com");
-		UserAccount account = new UserAccount(email, "securePassword123", // In a real app, this should be encoded!
-				"John Doe", UserRole.PLAYER);
+		UserAccount account = new UserAccount(email, "securePassword123", "John Doe", UserRole.PLAYER);
 		userAccountRepository.save(account);
 
 		Optional<UserAccount> result = userAccountRepository.findByEmail(email);

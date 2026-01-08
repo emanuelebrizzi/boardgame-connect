@@ -9,6 +9,7 @@ import boardgameconnect.dto.PlayerProfile;
 import boardgameconnect.dto.auth.login.LoginRequest;
 import boardgameconnect.dto.auth.login.LoginResponse;
 import boardgameconnect.exception.InvalidCredentialsException;
+import boardgameconnect.exception.PlayerNotFoundException;
 import boardgameconnect.mapper.UserMapper;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.UserAccount;
@@ -41,7 +42,7 @@ public class PlayerLoginService implements LoginService<PlayerProfile> {
 		}
 
 		Player player = playerRepo.findByAccount(account)
-				.orElseThrow(() -> new RuntimeException("Account exists but not linked to a player"));
+				.orElseThrow(() -> new PlayerNotFoundException("Account exists but not linked to a player"));
 
 		String token = jwtService.generateToken(account);
 		PlayerProfile profile = userMapper.toDto(player);

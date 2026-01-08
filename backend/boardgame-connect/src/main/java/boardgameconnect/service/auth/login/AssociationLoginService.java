@@ -8,6 +8,7 @@ import boardgameconnect.dao.UserAccountRepository;
 import boardgameconnect.dto.AssociationProfile;
 import boardgameconnect.dto.auth.login.LoginRequest;
 import boardgameconnect.dto.auth.login.LoginResponse;
+import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.InvalidCredentialsException;
 import boardgameconnect.mapper.UserMapper;
 import boardgameconnect.model.Association;
@@ -42,7 +43,7 @@ public class AssociationLoginService implements LoginService<AssociationProfile>
 		}
 
 		Association association = associationRepo.findByAccount(account)
-				.orElseThrow(() -> new RuntimeException("Account exists but not linked to a player"));
+				.orElseThrow(() -> new AssociationNotFoundException("Account exists but not linked to a player"));
 
 		String token = jwtService.generateToken(account);
 		AssociationProfile profile = userMapper.toDto(association);

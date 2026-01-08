@@ -45,14 +45,12 @@ class AssociationRepositoryIT {
 	}
 
 	@Test
-	void shouldFindPlayerByUserAccount() {
+	void findByAccountShouldReturnExistingAssociation() {
 		var email = new Email("info@ludoteca.com");
 		var account = new UserAccount(email, "securePassword123", "Ludoteca Svelta", UserRole.ASSOCIATION);
 		var association = new Association(account, "test_taxcode", "test_address");
-
 		associationRepository.save(association);
 		Optional<Association> result = associationRepository.findByAccount(account);
-
 		assertThat(result.get()).isEqualTo(association);
 	}
 

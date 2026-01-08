@@ -19,6 +19,8 @@ import boardgameconnect.dto.ReservationDetail;
 import boardgameconnect.dto.ReservationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameNotFoundException;
+import boardgameconnect.exception.ForbiddenActionException;
+import boardgameconnect.exception.PlayerAlreadyJoinedException;
 import boardgameconnect.exception.PlayerNotFoundException;
 import boardgameconnect.exception.ReservationNotFoundException;
 import boardgameconnect.model.Association;
@@ -29,15 +31,16 @@ import boardgameconnect.model.Reservation;
 import boardgameconnect.model.ReservationStatus;
 
 @Service
-public class ReservationServiceImpl implements ReservationService {
+public class BoardgameReservationService implements ReservationService {
 
 	private final ReservationRepository reservationRepository;
 	private final BoardgameRepository boardgameRepository;
 	private final AssociationRepository associationRepository;
 	private final PlayerRepository playerRepository;
 
-	public ReservationServiceImpl(ReservationRepository reservationRepository, BoardgameRepository boardgameRepository,
-			AssociationRepository associationRepository, PlayerRepository playerRepository) {
+	public BoardgameReservationService(ReservationRepository reservationRepository,
+			BoardgameRepository boardgameRepository, AssociationRepository associationRepository,
+			PlayerRepository playerRepository) {
 		this.reservationRepository = reservationRepository;
 		this.boardgameRepository = boardgameRepository;
 		this.associationRepository = associationRepository;
@@ -87,7 +90,7 @@ public class ReservationServiceImpl implements ReservationService {
 		Association association = associationRepository.findById(request.associationId()).orElseThrow(
 				() -> new AssociationNotFoundException("Association not found with ID: " + request.associationId()));
 
-		Player creator = playerRepository.findByEmail(userEmail)
+		Player creator = playerRepository.findByAccountEmail(userEmail)
 				.orElseThrow(() -> new PlayerNotFoundException("Player profile not found for email: " + userEmail));
 
 		long durationMinutes = game.calculateDuration(request.maxPlayers());
@@ -101,6 +104,41 @@ public class ReservationServiceImpl implements ReservationService {
 
 		reservationRepository.save(reservation);
 
+	}
+
+	@Override
+	@Transactional
+	public void join(String reservationId, Email email) {
+		Reservation reservation = reservationRepository.findById(reservationId)
+				.orElseThrow(() -> new ReservationNotFoundException("Reservation not found"));
+		Player player = playerRepository.findByAccountEmail(email)
+				.orElseThrow(() -> new PlayerNotFoundException("Player not found"));
+
+		if (reservation.getPlayers().contains(player)) {
+			throw new PlayerAlreadyJoinedException("You have already joined this game");
+		}
+
+		reservation.getPlayers().add(player);
+		reservationRepository.save(reservation);
+	}
+
+	@Override
+	@Transactional
+	public void leave(String reservationId, Email email) {
+		Reservation reservation = reservationRepository.findById(reservationId)
+				.orElseThrow(() -> new ReservationNotFoundException("Reservation not found"));
+
+		boolean removed = reservation.getPlayers().removeIf(p -> p.getAccount().getEmail().equals(email));
+
+		if (!removed) {
+			throw new ForbiddenActionException("You are not part of this reservation");
+		}
+
+		if (reservation.getPlayers().isEmpty()) {
+			reservationRepository.delete(reservation);
+		} else {
+			reservationRepository.save(reservation);
+		}
 	}
 
 }

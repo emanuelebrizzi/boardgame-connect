@@ -11,12 +11,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import boardgameconnect.config.SecurityConfig;
 import boardgameconnect.dto.AssociationProfile;
 import boardgameconnect.dto.PlayerProfile;
 import boardgameconnect.dto.auth.login.LoginRequest;
@@ -33,6 +36,7 @@ import boardgameconnect.service.auth.register.AssociationRegistrationService;
 import boardgameconnect.service.auth.register.PlayerRegistrationService;
 
 @WebMvcTest(AuthenticationController.class)
+@Import(SecurityConfig.class)
 class AuthenticationControllerTest {
 
 	private static final String ASSOCIATION_LOGIN_URI = "/api/v1/auth/login/association";
@@ -65,6 +69,9 @@ class AuthenticationControllerTest {
 
 	@MockitoBean
 	private AssociationRegistrationService associationRegistrationService;
+
+	@MockitoBean
+	private JwtDecoder jwtDecoder;
 
 	@Test
 	void loginPlayerShouldReturnTokenAndPlayerProfile() throws Exception {

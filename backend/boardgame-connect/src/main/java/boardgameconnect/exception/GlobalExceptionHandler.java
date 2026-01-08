@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -32,8 +33,8 @@ public class GlobalExceptionHandler {
 	}
 
 	// Handle 400: Business Logic
-	@ExceptionHandler(BusinessLogicException.class)
-	public ResponseEntity<ErrorResponse> handleBusinessLogic(BusinessLogicException ex, HttpServletRequest request) {
+	@ExceptionHandler(PlayerAlreadyJoinedException.class)
+	public ResponseEntity<ErrorResponse> handleBusinessLogic(PlayerAlreadyJoinedException ex, HttpServletRequest request) {
 		log.warn("Business logic violation at path {}: {}", request.getRequestURI(), ex.getMessage());
 
 		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
@@ -57,6 +58,13 @@ public class GlobalExceptionHandler {
 	// Handle 403: Forbidden
 	@ExceptionHandler(ForbiddenActionException.class)
 	public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenActionException ex, HttpServletRequest request) {
+		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(),
+				HttpStatus.FORBIDDEN.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
+		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
+	}
+
+	@ExceptionHandler(AccessDeniedException.class)
+	public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
 		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(),
 				HttpStatus.FORBIDDEN.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);

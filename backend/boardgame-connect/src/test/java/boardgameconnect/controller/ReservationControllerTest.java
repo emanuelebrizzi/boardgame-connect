@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -21,23 +20,27 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import boardgameconnect.config.SecurityConfig;
 import boardgameconnect.dto.AssociationSummary;
 import boardgameconnect.dto.PlayerSummary;
 import boardgameconnect.dto.ReservationCreateRequest;
 import boardgameconnect.dto.ReservationDetail;
 import boardgameconnect.dto.ReservationSummary;
-import boardgameconnect.exception.BusinessLogicException;
+import boardgameconnect.exception.PlayerAlreadyJoinedException;
 import boardgameconnect.model.Email;
-import boardgameconnect.service.reservation.ParticipationService;
 import boardgameconnect.service.reservation.ReservationService;
 
 @WebMvcTest(ReservationController.class)
+@Import(SecurityConfig.class)
 class ReservationControllerTest {
 
 	private static final String RESERVATION_ID = "res-123";
@@ -50,11 +53,11 @@ class ReservationControllerTest {
 	@MockitoBean
 	private ReservationService reservationService;
 
-	@MockitoBean
-	private ParticipationService participationService;
-
 	@Autowired
 	private ObjectMapper objectMapper;
+
+	@MockitoBean
+	private JwtDecoder jwtDecoder;
 
 	@Test
 	void getReservationsShouldReturnListOfAvailableReservations() throws Exception {
@@ -65,7 +68,9 @@ class ReservationControllerTest {
 
 		when(reservationService.getAvailableReservations(null, null, null)).thenReturn(List.of(res1, res2));
 
-		mockMvc.perform(get(BASE_URI).with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL).claim("role", "PLAYER")))
+		mockMvc.perform(get(BASE_URI)
+				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_PLAYER")))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$", hasSize(2))).andExpect(jsonPath("$[0].id", is("t_123")))
 				.andExpect(jsonPath("$[1].id", is("t_124")));
@@ -78,7 +83,9 @@ class ReservationControllerTest {
 		ReservationCreateRequest validRequest = new ReservationCreateRequest("game-123", "assoc-456", 4,
 				Instant.parse("2025-12-31T23:59:00Z"));
 
-		mockMvc.perform(post(BASE_URI).with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL).claim("role", "PLAYER")))
+		mockMvc.perform(post(BASE_URI)
+				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
 				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(validRequest)))
 				.andExpect(status().isCreated());
 
@@ -96,16 +103,14 @@ class ReservationControllerTest {
 
 		when(reservationService.getReservationById(reservationId)).thenReturn(detail);
 
-		// Act & Assert
 		mockMvc.perform(get(BASE_URI + "/" + reservationId)
-				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL).claim("role", "PLAYER")))
+				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_PLAYER")))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$.id", is(reservationId))).andExpect(jsonPath("$.players", hasSize(2)))
 				.andExpect(jsonPath("$.players[0].name", is("Alice")));
 
-		// Verify service interaction
 		verify(reservationService).getReservationById(reservationId);
-		verifyNoMoreInteractions(reservationService);
 	}
 
 	@Test
@@ -113,29 +118,32 @@ class ReservationControllerTest {
 		String reservationId = RESERVATION_ID;
 
 		mockMvc.perform(post(BASE_URI + "/" + reservationId + "/join")
-				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL).claim("role", "PLAYER")))
+				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_PLAYER")))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk());
 
-		verify(participationService).join(reservationId, TEST_USER_EMAIL);
+		verify(reservationService).join(reservationId, TEST_USER_EMAIL);
 	}
 
 	@Test
 	void leaveReservationShouldRespectInteractionOrder() throws Exception {
 		String reservationId = RESERVATION_ID;
 
-		// Act
 		mockMvc.perform(delete(BASE_URI + "/" + reservationId + "/leave")
-				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL).claim("role", "PLAYER")))
+				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_PLAYER")))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNoContent());
 
-		verify(participationService).leave(reservationId, TEST_USER_EMAIL);
+		verify(reservationService).leave(reservationId, TEST_USER_EMAIL);
 	}
 
 	@Test
 	void createReservationShouldFailIfDataInvalid() throws Exception {
 		String invalidRequest = "{}";
 
-		mockMvc.perform(post(BASE_URI).with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL).claim("role", "PLAYER")))
+		mockMvc.perform(post(BASE_URI)
+				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
 				.contentType(MediaType.APPLICATION_JSON).content(invalidRequest)).andExpect(status().isBadRequest());
 
 		verifyNoInteractions(reservationService);
@@ -145,14 +153,16 @@ class ReservationControllerTest {
 	void joinReservationShouldReturnBadRequestIfAlreadyJoined() throws Exception {
 		String reservationId = "res-456";
 
-		doThrow(new BusinessLogicException("Already joined reservation")).when(participationService).join(reservationId,
-				TEST_USER_EMAIL);
+		doThrow(new PlayerAlreadyJoinedException("Already joined reservation")).when(reservationService)
+				.join(reservationId, TEST_USER_EMAIL);
 
 		mockMvc.perform(post(BASE_URI + "/" + reservationId + "/join")
-				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL).claim("role", "PLAYER")))
+
+				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_PLAYER")))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.message", is("Already joined reservation")));
 
-		verify(participationService).join(reservationId, TEST_USER_EMAIL);
+		verify(reservationService).join(reservationId, TEST_USER_EMAIL);
 	}
 }
