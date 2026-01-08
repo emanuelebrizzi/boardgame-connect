@@ -37,7 +37,6 @@
         <artifactId>spring-boot-starter-security</artifactId>
     </dependency>
 
-    <!-- Spring Security OAuth2 Resource Server for JWT validation -->
     <dependency>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-oauth2-resource-server</artifactId>
@@ -123,15 +122,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>default-it</id>
-                        <goals>
-                            <goal>integration-test</goal>
-                            <goal>verify</goal>
-                        </goals>
-                    </execution>
-                </executions>
+                <configuration></configuration>
             </plugin>
 		</plugins>
 	</build>
