@@ -20,30 +20,28 @@ public class Boardgame {
 	private int maxPlayer;
 	private int minTimeInMin;
 	private int timeInMinPerPlayer;
+	private String imagePath;
 
-	public Boardgame(String name, int minPlayer, int maxPlayer, int minTimeInMin, int timeInMinPerPlayer) {
+	public Boardgame() {
+	}
+
+	public Boardgame(String name, int minPlayer, int maxPlayer, int minTimeInMin, int timeInMinPerPlayer,
+			String imagePath) {
 		super();
 		this.name = name;
 		this.minPlayer = minPlayer;
 		this.maxPlayer = maxPlayer;
 		this.minTimeInMin = minTimeInMin;
 		this.timeInMinPerPlayer = timeInMinPerPlayer;
+		this.imagePath = imagePath;
 	}
 
 	public String getName() {
 		return name;
 	}
 
-	public int getMinPlayer() {
-		return minPlayer;
-	}
-
 	public int getMaxPlayer() {
 		return maxPlayer;
-	}
-
-	public int getMinTime() {
-		return minTimeInMin;
 	}
 
 	public int getTimePerPlayer() {
@@ -52,6 +50,54 @@ public class Boardgame {
 
 	public long calculateDuration(@Min(2) int maxPlayers) {
 		return minTimeInMin + (maxPlayers * timeInMinPerPlayer);
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getMinPlayer() {
+		return minPlayer;
+	}
+
+	public void setMinPlayer(int minPlayer) {
+		this.minPlayer = minPlayer;
+	}
+
+	public void setMaxPlayer(int maxPlayer) {
+		this.maxPlayer = maxPlayer;
+	}
+
+	public int getMinTimeInMin() {
+		return minTimeInMin;
+	}
+
+	public void setMinTimeInMin(int minTimeInMin) {
+		this.minTimeInMin = minTimeInMin;
+	}
+
+	public int getTimeInMinPerPlayer() {
+		return timeInMinPerPlayer;
+	}
+
+	public void setTimeInMinPerPlayer(int timeInMinPerPlayer) {
+		this.timeInMinPerPlayer = timeInMinPerPlayer;
+	}
+
+	public String getImagePath() {
+		return imagePath;
+	}
+
+	public void setImagePath(String imagePath) {
+		this.imagePath = imagePath;
 	}
 
 }
