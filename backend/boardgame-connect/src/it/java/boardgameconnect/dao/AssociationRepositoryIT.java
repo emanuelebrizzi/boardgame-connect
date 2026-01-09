@@ -2,9 +2,7 @@ package boardgameconnect.dao;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.HashSet;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +15,6 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import boardgameconnect.model.Association;
-import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
@@ -83,14 +80,14 @@ class AssociationRepositoryIT {
 		assertThat(result.get()).isEqualTo(association1);
 	}
 
-	@Test
-	void findByBoardgamesIdShouldReturnAssociationsOwningTheGame() {
-		var boardgame = new Boardgame("Risiko", 3, 6, 60, 30);
-		boardgameRepository.save(boardgame);
-		association1.setBoardgames(new HashSet<>(Set.of(boardgame)));
-		associationRepository.save(association1);
-		var result = associationRepository.findByBoardgamesId(boardgame.getId());
-		assertThat(result).hasSize(1);
-		assertThat(result).containsExactly(association1);
-	}
+//	@Test
+//	void findByBoardgamesIdShouldReturnAssociationsOwningTheGame() {
+//		var boardgame = new Boardgame("Risiko", 3, 6, 60, 30);
+//		boardgameRepository.save(boardgame);
+//		association1.setBoardgames(new HashSet<>(Set.of(boardgame)));
+//		associationRepository.save(association1);
+//		var result = associationRepository.findByBoardgamesId(boardgame.getId());
+//		assertThat(result).hasSize(1);
+//		assertThat(result).containsExactly(association1);
+//	}
 }

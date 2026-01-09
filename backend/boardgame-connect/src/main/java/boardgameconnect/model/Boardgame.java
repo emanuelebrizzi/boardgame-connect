@@ -30,10 +30,6 @@ public class Boardgame {
 		this.timeInMinPerPlayer = timeInMinPerPlayer;
 	}
 
-	public String getId() {
-		return id;
-	}
-
 	public String getName() {
 		return name;
 	}
