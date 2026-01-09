@@ -103,7 +103,6 @@ public class BoardgameReservationService implements ReservationService {
 		}
 
 		reservationRepository.save(reservation);
-
 	}
 
 	@Override
