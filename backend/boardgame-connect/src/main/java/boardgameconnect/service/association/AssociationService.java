@@ -6,6 +6,8 @@ import boardgameconnect.dto.AssociationSummary;
 
 public interface AssociationService {
 
-	List<AssociationSummary> getAllAssociations();
+	List<AssociationSummary> getAssociations();
+
+	List<AssociationSummary> getAssociations(String boardgameId);
 
 }

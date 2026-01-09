@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import boardgameconnect.dto.AssociationSummary;
@@ -23,8 +24,14 @@ public class AssociationController {
 
 	@GetMapping
 	@PreAuthorize("hasAnyRole('PLAYER', 'ASSOCIATION')")
-	public ResponseEntity<List<AssociationSummary>> getAssociations() {
-		List<AssociationSummary> associations = associationService.getAllAssociations();
-		return ResponseEntity.ok(associations);
+	public ResponseEntity<List<AssociationSummary>> getAllAssociations() {
+		return ResponseEntity.ok(associationService.getAssociations());
 	}
+
+	@GetMapping(params = "boardgameId")
+	@PreAuthorize("hasAnyRole('PLAYER', 'ASSOCIATION')")
+	public ResponseEntity<List<AssociationSummary>> getAssociationsByGame(@RequestParam String boardgameId) {
+		return ResponseEntity.ok(associationService.getAssociations(boardgameId));
+	}
+
 }
