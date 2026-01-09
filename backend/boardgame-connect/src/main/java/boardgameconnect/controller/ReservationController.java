@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import boardgameconnect.dto.ReservationCreateRequest;
-import boardgameconnect.dto.ReservationDetail;
-import boardgameconnect.dto.ReservationFilterRequest;
-import boardgameconnect.dto.ReservationSummary;
+import boardgameconnect.dto.reservation.ReservationDetail;
+import boardgameconnect.dto.reservation.ReservationFilterRequest;
+import boardgameconnect.dto.reservation.ReservationSummary;
 import boardgameconnect.model.Email;
 import boardgameconnect.service.reservation.ReservationService;
 import jakarta.validation.Valid;
