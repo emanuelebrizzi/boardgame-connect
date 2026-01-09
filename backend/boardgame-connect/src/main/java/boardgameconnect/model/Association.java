@@ -1,14 +1,19 @@
 package boardgameconnect.model;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -24,9 +29,14 @@ public class Association {
 	@JoinColumn(name = "account_id", referencedColumnName = "id")
 	private UserAccount account;
 
-	@Column(name = "tax_code", nullable = false)
+	@Column(nullable = false)
 	private String taxCode;
+	@Column(nullable = false)
 	private String address;
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(name = "association_boardgames", joinColumns = @JoinColumn(name = "association_id"), inverseJoinColumns = @JoinColumn(name = "boardgame_id"))
+	private Set<Boardgame> boardgames = new HashSet<>();
 
 	public Association() {
 	}
@@ -51,6 +61,14 @@ public class Association {
 
 	public String getAddress() {
 		return address;
+	}
+
+	public Set<Boardgame> getBoardgames() {
+		return boardgames;
+	}
+
+	public void setBoardgames(Set<Boardgame> boardgames) {
+		this.boardgames = boardgames;
 	}
 
 	@Override
