@@ -48,6 +48,7 @@ class BoardgameReservationServiceTest {
 	private static final String PLAYER_NAME = "Mario Rossi";
 
 	private static final String BORDGAME_NAME = "Root";
+	private static final String BORDGAME_URL = "url-img-root.jpg";
 	private static final String RESERVATION_ID = "t_789";
 
 	@Mock
@@ -70,7 +71,7 @@ class BoardgameReservationServiceTest {
 				UserRole.ASSOCIATION);
 		Association association = new Association(assocAcc, ASSOCIATION_TAXCODE, ASSOCIATION_ADDRESS);
 
-		Boardgame root = new Boardgame(BORDGAME_NAME, 2, 4, 60, 30);
+		Boardgame root = new Boardgame(BORDGAME_NAME, 2, 4, 60, 30, BORDGAME_URL);
 
 		UserAccount playerAcc = new UserAccount(new Email(PLAYER_EMAIL_STRING), "pass", PLAYER_NAME, UserRole.PLAYER);
 		Player creator = new Player(playerAcc);

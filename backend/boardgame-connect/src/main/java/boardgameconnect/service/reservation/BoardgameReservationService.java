@@ -77,7 +77,7 @@ public class BoardgameReservationService implements ReservationService {
 				.map(p -> new PlayerSummary(p.getId(), p.getAccount().getName())).toList();
 
 		return new ReservationDetail(res.getId(), res.getBoardgame().getName(), assocSummary, playerSummaries,
-				res.getBoardgame().getMinTime(), res.getBoardgame().getMaxPlayer(), res.getStartTime(),
+				res.getBoardgame().getMinTimeInMin(), res.getBoardgame().getMaxPlayer(), res.getStartTime(),
 				res.getEndTime(), res.getStatus().name());
 	}
 
