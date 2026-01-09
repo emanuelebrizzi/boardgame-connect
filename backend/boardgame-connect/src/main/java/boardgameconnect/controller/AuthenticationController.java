@@ -24,39 +24,39 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
 
-    private final PlayerLoginService playerService;
-    private final AssociationLoginService associationService;
-    private final PlayerRegistrationService playerRegistrationService;
-    private final AssociationRegistrationService associationRegistrationService;
+	private final PlayerLoginService playerService;
+	private final AssociationLoginService associationService;
+	private final PlayerRegistrationService playerRegistrationService;
+	private final AssociationRegistrationService associationRegistrationService;
 
-    public AuthenticationController(PlayerLoginService playerService, AssociationLoginService associationService,
-	    PlayerRegistrationService playerRegistrationService,
-	    AssociationRegistrationService associationRegistrationService) {
-	this.playerService = playerService;
-	this.associationService = associationService;
-	this.playerRegistrationService = playerRegistrationService;
-	this.associationRegistrationService = associationRegistrationService;
-    }
+	public AuthenticationController(PlayerLoginService playerService, AssociationLoginService associationService,
+			PlayerRegistrationService playerRegistrationService,
+			AssociationRegistrationService associationRegistrationService) {
+		this.playerService = playerService;
+		this.associationService = associationService;
+		this.playerRegistrationService = playerRegistrationService;
+		this.associationRegistrationService = associationRegistrationService;
+	}
 
-    @PostMapping("/login/player")
-    public ResponseEntity<LoginResponse<PlayerProfile>> loginPlayer(@RequestBody LoginRequest request) {
-	return ResponseEntity.ok(playerService.login(request));
-    }
+	@PostMapping("/login/player")
+	public ResponseEntity<LoginResponse<PlayerProfile>> loginPlayer(@RequestBody LoginRequest request) {
+		return ResponseEntity.ok(playerService.login(request));
+	}
 
-    @PostMapping("/login/association")
-    public ResponseEntity<LoginResponse<AssociationProfile>> loginAssociation(@RequestBody LoginRequest request) {
-	return ResponseEntity.ok(associationService.login(request));
-    }
+	@PostMapping("/login/association")
+	public ResponseEntity<LoginResponse<AssociationProfile>> loginAssociation(@RequestBody LoginRequest request) {
+		return ResponseEntity.ok(associationService.login(request));
+	}
 
-    @PostMapping("/register/player")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void registerPlayer(@RequestBody @Valid RegistrationRequest<Void> request) {
-	playerRegistrationService.register(request);
-    }
+	@PostMapping("/register/player")
+	@ResponseStatus(HttpStatus.CREATED)
+	public void registerPlayer(@RequestBody @Valid RegistrationRequest<Void> request) {
+		playerRegistrationService.register(request);
+	}
 
-    @PostMapping("/register/association")
-    @ResponseStatus(HttpStatus.CREATED)
-    public void registerAssociation(@RequestBody @Valid RegistrationRequest<AssociationDetails> request) {
-	associationRegistrationService.register(request);
-    }
+	@PostMapping("/register/association")
+	@ResponseStatus(HttpStatus.CREATED)
+	public void registerAssociation(@RequestBody @Valid RegistrationRequest<AssociationDetails> request) {
+		associationRegistrationService.register(request);
+	}
 }

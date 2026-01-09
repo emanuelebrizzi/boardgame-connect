@@ -22,34 +22,33 @@ import boardgameconnect.model.UserRole;
 @Testcontainers
 class UserAccountRepositoryIT {
 
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
+	@Container
+	static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-	registry.add("spring.datasource.url", postgres::getJdbcUrl);
-	registry.add("spring.datasource.username", postgres::getUsername);
-	registry.add("spring.datasource.password", postgres::getPassword);
-    }
+	@DynamicPropertySource
+	static void configureProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.datasource.url", postgres::getJdbcUrl);
+		registry.add("spring.datasource.username", postgres::getUsername);
+		registry.add("spring.datasource.password", postgres::getPassword);
+	}
 
-    @Autowired
-    private UserAccountRepository userAccountRepository;
+	@Autowired
+	private UserAccountRepository userAccountRepository;
 
-    @BeforeEach
-    void setUp() {
-	userAccountRepository.deleteAll();
-    }
+	@BeforeEach
+	void setUp() {
+		userAccountRepository.deleteAll();
+	}
 
-    @Test
-    void shouldFindUserByEmail() {
-	Email email = new Email("player@boardgame.com");
-	UserAccount account = new UserAccount(email, "securePassword123", // In a real app, this should be encoded!
-		"John Doe", UserRole.PLAYER);
-	userAccountRepository.save(account);
+	@Test
+	void findByEmailShouldReturnExistingAccount() {
+		Email email = new Email("player@boardgame.com");
+		UserAccount account = new UserAccount(email, "securePassword123", "John Doe", UserRole.PLAYER);
+		userAccountRepository.save(account);
 
-	Optional<UserAccount> result = userAccountRepository.findByEmail(email);
+		Optional<UserAccount> result = userAccountRepository.findByEmail(email);
 
-	assertThat(result.get()).isEqualTo(account);
-    }
+		assertThat(result.get()).isEqualTo(account);
+	}
 
 }

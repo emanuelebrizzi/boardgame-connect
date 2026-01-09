@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 public class TableTest {
 
 	@Test
-	void testCreateEmailWhenEmailStringIsValidShouldCreateEmail() {
+	void createEmailShouldCreateEmailWhenEmailStringIsValid() {
 		Table t = new Table(TableSize.SMALL);
 		assertEquals(TableSize.SMALL, t.getSize());
 	}

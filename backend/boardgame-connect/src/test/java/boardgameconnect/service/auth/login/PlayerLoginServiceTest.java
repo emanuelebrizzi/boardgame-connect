@@ -31,92 +31,92 @@ import boardgameconnect.service.JwtService;
 @ExtendWith(MockitoExtension.class)
 class PlayerLoginServiceTest {
 
-    @Mock
-    private UserAccountRepository accountRepository;
-    @Mock
-    private PlayerRepository playerRepository;
-    @Mock
-    private UserMapper userMapper;
-    @Mock
-    private JwtService jwtService;
+	@Mock
+	private UserAccountRepository accountRepository;
+	@Mock
+	private PlayerRepository playerRepository;
+	@Mock
+	private UserMapper userMapper;
+	@Mock
+	private JwtService jwtService;
 
-    private PasswordEncoder passwordEncoder;
-    private PlayerLoginService playerLoginService;
+	private PasswordEncoder passwordEncoder;
+	private PlayerLoginService playerLoginService;
 
-    @BeforeEach
-    void setUp() {
-	// Simple encoder for fast testing
-	passwordEncoder = new PasswordEncoder() {
-	    @Override
-	    public String encode(CharSequence rawPassword) {
-		return "ENC_" + rawPassword;
-	    }
+	@BeforeEach
+	void setUp() {
+		// Simple encoder for fast testing
+		passwordEncoder = new PasswordEncoder() {
+			@Override
+			public String encode(CharSequence rawPassword) {
+				return "ENC_" + rawPassword;
+			}
 
-	    @Override
-	    public boolean matches(CharSequence rawPassword, String encodedPassword) {
-		return encodedPassword.equals("ENC_" + rawPassword);
-	    }
-	};
+			@Override
+			public boolean matches(CharSequence rawPassword, String encodedPassword) {
+				return encodedPassword.equals("ENC_" + rawPassword);
+			}
+		};
 
-	playerLoginService = new PlayerLoginService(accountRepository, playerRepository, passwordEncoder, userMapper,
-		jwtService);
-    }
+		playerLoginService = new PlayerLoginService(accountRepository, playerRepository, passwordEncoder, userMapper,
+				jwtService);
+	}
 
-    @Test
-    void loginShouldThrowWhenAccountNotFound() {
-	Email email = new Email("unknown@example.com");
-	LoginRequest request = new LoginRequest(email, "password");
+	@Test
+	void loginShouldThrowWhenAccountNotFound() {
+		Email email = new Email("unknown@example.com");
+		LoginRequest request = new LoginRequest(email, "password");
 
-	when(accountRepository.findByEmail(email)).thenReturn(Optional.empty());
+		when(accountRepository.findByEmail(email)).thenReturn(Optional.empty());
 
-	assertThatThrownBy(() -> playerLoginService.login(request)).isInstanceOf(RuntimeException.class)
-		.hasMessage("Invalid credentials");
+		assertThatThrownBy(() -> playerLoginService.login(request)).isInstanceOf(RuntimeException.class)
+				.hasMessage("Invalid credentials");
 
-	verifyNoMoreInteractions(playerRepository, userMapper, jwtService);
-    }
+		verifyNoMoreInteractions(playerRepository, userMapper, jwtService);
+	}
 
-    @Test
-    void loginShouldThrowWhenPasswordIsInvalid() {
-	Email email = new Email("mario@example.com");
-	String rawPassword = "password";
-	String encodedPassword = passwordEncoder.encode(rawPassword);
-	UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.PLAYER);
+	@Test
+	void loginShouldThrowWhenPasswordIsInvalid() {
+		Email email = new Email("mario@example.com");
+		String rawPassword = "password";
+		String encodedPassword = passwordEncoder.encode(rawPassword);
+		UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.PLAYER);
 
-	when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
+		when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
 
-	LoginRequest request = new LoginRequest(email, "wrong_password");
+		LoginRequest request = new LoginRequest(email, "wrong_password");
 
-	assertThatThrownBy(() -> playerLoginService.login(request)).isInstanceOf(RuntimeException.class)
-		.hasMessage("Invalid credentials");
+		assertThatThrownBy(() -> playerLoginService.login(request)).isInstanceOf(RuntimeException.class)
+				.hasMessage("Invalid credentials");
 
-	verifyNoMoreInteractions(playerRepository, userMapper, jwtService);
-    }
+		verifyNoMoreInteractions(playerRepository, userMapper, jwtService);
+	}
 
-    @Test
-    void loginShouldReturnResponseWhenCredentialsAreValid() {
-	Email email = new Email("mario@example.com");
-	String rawPassword = "password";
-	String encodedPassword = passwordEncoder.encode(rawPassword);
-	UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.PLAYER);
-	Player player = new Player(account);
-	String mockToken = "mocked-jwt-token";
-	PlayerProfile expectedDto = new PlayerProfile("id_123", "mario@example.com", "Mario", UserRole.PLAYER);
+	@Test
+	void loginShouldReturnResponseWhenCredentialsAreValid() {
+		Email email = new Email("mario@example.com");
+		String rawPassword = "password";
+		String encodedPassword = passwordEncoder.encode(rawPassword);
+		UserAccount account = new UserAccount(email, encodedPassword, "example", UserRole.PLAYER);
+		Player player = new Player(account);
+		String mockToken = "mocked-jwt-token";
+		PlayerProfile expectedDto = new PlayerProfile("id_123", "mario@example.com", "Mario", UserRole.PLAYER);
 
-	when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
-	when(playerRepository.findByAccount(account)).thenReturn(Optional.of(player));
-	when(jwtService.generateToken(account)).thenReturn(mockToken);
-	when(userMapper.toDto(player)).thenReturn(expectedDto);
+		when(accountRepository.findByEmail(email)).thenReturn(Optional.of(account));
+		when(playerRepository.findByAccount(account)).thenReturn(Optional.of(player));
+		when(jwtService.generateToken(account)).thenReturn(mockToken);
+		when(userMapper.toDto(player)).thenReturn(expectedDto);
 
-	LoginRequest request = new LoginRequest(email, rawPassword);
-	LoginResponse<PlayerProfile> response = playerLoginService.login(request);
+		LoginRequest request = new LoginRequest(email, rawPassword);
+		LoginResponse<PlayerProfile> response = playerLoginService.login(request);
 
-	assertThat(response.accessToken()).isEqualTo(mockToken);
-	assertThat(response.profile()).isEqualTo(expectedDto);
+		assertThat(response.accessToken()).isEqualTo(mockToken);
+		assertThat(response.profile()).isEqualTo(expectedDto);
 
-	InOrder inOrder = inOrder(accountRepository, playerRepository, userMapper, jwtService);
-	inOrder.verify(accountRepository).findByEmail(email);
-	inOrder.verify(playerRepository).findByAccount(account);
-	inOrder.verify(jwtService).generateToken(account);
-	inOrder.verify(userMapper).toDto(player);
-    }
+		InOrder inOrder = inOrder(accountRepository, playerRepository, userMapper, jwtService);
+		inOrder.verify(accountRepository).findByEmail(email);
+		inOrder.verify(playerRepository).findByAccount(account);
+		inOrder.verify(jwtService).generateToken(account);
+		inOrder.verify(userMapper).toDto(player);
+	}
 }

@@ -14,28 +14,28 @@ import boardgameconnect.model.UserRole;
 @Service
 public class PlayerRegistrationService implements RegistrationService<Void> {
 
-    private final UserAccountRepository accountRepo;
-    private final PlayerRepository playerRepo;
-    private final PasswordEncoder encoder;
+	private final UserAccountRepository accountRepo;
+	private final PlayerRepository playerRepo;
+	private final PasswordEncoder encoder;
 
-    public PlayerRegistrationService(UserAccountRepository accountRepo, PlayerRepository playerRepo,
-	    PasswordEncoder encoder) {
-	this.accountRepo = accountRepo;
-	this.playerRepo = playerRepo;
-	this.encoder = encoder;
-    }
-
-    @Override
-    public void register(RegistrationRequest<Void> request) {
-	if (accountRepo.findByEmail(request.email()).isPresent()) {
-	    throw new EmailAlreadyInUseException("Email already registered");
+	public PlayerRegistrationService(UserAccountRepository accountRepo, PlayerRepository playerRepo,
+			PasswordEncoder encoder) {
+		this.accountRepo = accountRepo;
+		this.playerRepo = playerRepo;
+		this.encoder = encoder;
 	}
 
-	UserAccount account = new UserAccount(request.email(), encoder.encode(request.password()), request.name(),
-		UserRole.PLAYER);
+	@Override
+	public void register(RegistrationRequest<Void> request) {
+		if (accountRepo.findByEmail(request.email()).isPresent()) {
+			throw new EmailAlreadyInUseException("Email already registered");
+		}
 
-	Player player = new Player(account);
-	playerRepo.save(player);
+		UserAccount account = new UserAccount(request.email(), encoder.encode(request.password()), request.name(),
+				UserRole.PLAYER);
 
-    }
+		Player player = new Player(account);
+		playerRepo.save(player);
+
+	}
 }

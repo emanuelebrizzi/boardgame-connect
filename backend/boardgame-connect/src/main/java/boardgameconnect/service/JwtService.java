@@ -10,27 +10,34 @@ import boardgameconnect.model.UserAccount;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import jakarta.annotation.PostConstruct;
 
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret}")
-    private String secret;
+	@Value("${jwt.secret}")
+	private String secret;
 
-    @Value("${jwt.expiration}")
-    private long jwtExpiration;
+	@Value("${jwt.expiration}")
+	private long jwtExpiration;
 
-    private Key secretKey;
+	void setSecret(String secret) {
+		this.secret = secret;
+	}
 
-    @PostConstruct
-    public void init() {
-	this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
-    }
+	void setJwtExpiration(long jwtExpiration) {
+		this.jwtExpiration = jwtExpiration;
+	}
 
-    public String generateToken(UserAccount account) {
-	return Jwts.builder().setSubject(account.getEmail().toString()).claim("role", account.getUserRole())
-		.setIssuedAt(new Date()).setExpiration(new Date(System.currentTimeMillis() + jwtExpiration))
-		.signWith(secretKey, SignatureAlgorithm.HS256).compact();
-    }
+	Key getSigningKey() {
+		return Keys.hmacShaKeyFor(secret.getBytes());
+	}
+
+	public String generateToken(UserAccount account) {
+		return Jwts.builder().setSubject(account.getEmail().toString()) // Email as token subject
+				.claim("role", account.getUserRole().name()) // Add user role as claim
+				.setIssuedAt(new Date()) // Token issue time
+				.setExpiration(new Date(System.currentTimeMillis() + jwtExpiration)) // Token expiration
+				.signWith(getSigningKey(), SignatureAlgorithm.HS256) // Signing with HMAC-SHA256
+				.compact();
+	}
 }

@@ -15,80 +15,80 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "users")
 public class UserAccount {
-    @Id
-    @GeneratedValue(strategy = UUID)
-    private String id;
+	@Id
+	@GeneratedValue(strategy = UUID)
+	private String id;
 
-    @Column(nullable = false, unique = true)
+	@Column(nullable = false, unique = true)
 //    @Convert(converter = EmailConverter.class)
-    private Email email;
+	private Email email;
 
-    @Column(nullable = false)
-    private String password;
+	@Column(nullable = false)
+	private String password;
 
-    @Column(nullable = false)
-    private String name;
+	@Column(nullable = false)
+	private String name;
 
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
+	@Enumerated(EnumType.STRING)
+	private UserRole role;
 
-    public UserAccount() {
-    }
+	public UserAccount() {
+	}
 
-    public UserAccount(Email email, String password, String name, UserRole role) {
-	this.email = email;
-	this.password = password;
-	this.name = name;
-	this.role = role;
-    }
+	public UserAccount(Email email, String password, String name, UserRole role) {
+		this.email = email;
+		this.password = password;
+		this.name = name;
+		this.role = role;
+	}
 
-    public String getId() {
-	return id;
-    }
+	public String getId() {
+		return id;
+	}
 
-    public Email getEmail() {
-	return email;
-    }
+	public Email getEmail() {
+		return email;
+	}
 
-    public void setEmail(Email email) {
-	this.email = email;
-    }
+	public void setEmail(Email email) {
+		this.email = email;
+	}
 
-    public String getPassword() {
-	return password;
-    }
+	public String getPassword() {
+		return password;
+	}
 
-    public UserRole getUserRole() {
-	return role;
-    }
+	public UserRole getUserRole() {
+		return role;
+	}
 
-    public void setPassword(String password) {
-	this.password = password;
-    }
+	public void setPassword(String password) {
+		this.password = password;
+	}
 
-    public String getName() {
-	return name;
-    }
+	public String getName() {
+		return name;
+	}
 
-    public void setName(String name) {
-	this.name = name;
-    }
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    @Override
-    public int hashCode() {
-	return Objects.hash(email);
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(email);
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-	if (this == obj)
-	    return true;
-	if (obj == null)
-	    return false;
-	if (getClass() != obj.getClass())
-	    return false;
-	UserAccount other = (UserAccount) obj;
-	return Objects.equals(email, other.email);
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		UserAccount other = (UserAccount) obj;
+		return Objects.equals(email, other.email);
+	}
 
 }

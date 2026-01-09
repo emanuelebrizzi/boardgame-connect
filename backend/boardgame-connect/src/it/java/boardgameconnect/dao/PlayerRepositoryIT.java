@@ -22,37 +22,50 @@ import boardgameconnect.model.UserRole;
 @DataJpaTest
 @Testcontainers
 public class PlayerRepositoryIT {
-    @Container
-    static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
+	private static final String EMAIL_STRING = "test@example.com";
+	private static final String NAME = "test";
+	private static final String PASSWORD = "test";
 
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-	registry.add("spring.datasource.url", postgres::getJdbcUrl);
-	registry.add("spring.datasource.username", postgres::getUsername);
-	registry.add("spring.datasource.password", postgres::getPassword);
-    }
+	@Container
+	static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 
-    @Autowired
-    private UserAccountRepository userAccountRepository;
+	@DynamicPropertySource
+	static void configureProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.datasource.url", postgres::getJdbcUrl);
+		registry.add("spring.datasource.username", postgres::getUsername);
+		registry.add("spring.datasource.password", postgres::getPassword);
+	}
 
-    @Autowired
-    private PlayerRepository playerRepository;
+	@Autowired
+	private UserAccountRepository userAccountRepository;
 
-    @BeforeEach
-    void setUp() {
-	userAccountRepository.deleteAll();
-	playerRepository.deleteAll();
-    }
+	@Autowired
+	private PlayerRepository playerRepository;
 
-    @Test
-    void shouldFindPlayerByUserAccount() {
-	var email = new Email("player@boardgame.com");
-	var account = new UserAccount(email, "securePassword123", "John Doe", UserRole.PLAYER);
-	var player = new Player(account);
-	playerRepository.save(player);
+	@BeforeEach
+	void setUp() {
+		userAccountRepository.deleteAll();
+		playerRepository.deleteAll();
+	}
 
-	Optional<Player> result = playerRepository.findByAccount(account);
+	@Test
+	void findByAccountShouldReturnExistingPlayer() {
+		var email = new Email(EMAIL_STRING);
+		var account = new UserAccount(email, PASSWORD, NAME, UserRole.PLAYER);
+		var player = new Player(account);
+		playerRepository.save(player);
+		Optional<Player> result = playerRepository.findByAccount(account);
+		assertThat(result.get()).isEqualTo(player);
+	}
 
-	assertThat(result.get()).isEqualTo(player);
-    }
+	@Test
+	void findByAccountEmailShouldReturnExistingPlayer() {
+		var email = new Email(EMAIL_STRING);
+		var account = new UserAccount(email, PASSWORD, NAME, UserRole.PLAYER);
+		var player = new Player(account);
+		playerRepository.save(player);
+		Optional<Player> result = playerRepository.findByAccountEmail(email);
+		assertThat(result.get()).isEqualTo(player);
+	}
+
 }
