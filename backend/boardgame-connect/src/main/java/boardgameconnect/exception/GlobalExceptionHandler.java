@@ -19,7 +19,6 @@ public class GlobalExceptionHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-	// Handle 400: Invalid Arguments
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex,
 			HttpServletRequest request) {
@@ -32,9 +31,9 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 	}
 
-	// Handle 400: Business Logic
 	@ExceptionHandler(PlayerAlreadyJoinedException.class)
-	public ResponseEntity<ErrorResponse> handleBusinessLogic(PlayerAlreadyJoinedException ex, HttpServletRequest request) {
+	public ResponseEntity<ErrorResponse> handleBusinessLogic(PlayerAlreadyJoinedException ex,
+			HttpServletRequest request) {
 		log.warn("Business logic violation at path {}: {}", request.getRequestURI(), ex.getMessage());
 
 		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
@@ -43,7 +42,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
 	}
 
-	// Handle 401: Invalid Credentials
 	@ExceptionHandler(InvalidCredentialsException.class)
 	public ResponseEntity<ErrorResponse> handleInvalidCredentials(InvalidCredentialsException ex,
 			HttpServletRequest request) {
@@ -55,7 +53,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
 	}
 
-	// Handle 403: Forbidden
 	@ExceptionHandler(ForbiddenActionException.class)
 	public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenActionException ex, HttpServletRequest request) {
 		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(),
@@ -70,13 +67,11 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
 	}
 
-	// Handle 404: Resource Not Found
 	@ExceptionHandler(ResourceNotFoundException.class)
 	public ResponseEntity<String> handleNotFound(ResourceNotFoundException ex) {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
 	}
 
-	// Handle 409: Email already in use
 	@ExceptionHandler(EmailAlreadyInUseException.class)
 	public ResponseEntity<ErrorResponse> handleEmailAlreadyInUse(EmailAlreadyInUseException ex,
 			HttpServletRequest request) {
@@ -88,7 +83,6 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
 	}
 
-	// Handle 500: Generic Server Error
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponse> handleGenericException(Exception ex, HttpServletRequest request) {
 		log.error("Unexpected error occurred at path {}: ", request.getRequestURI(), ex);

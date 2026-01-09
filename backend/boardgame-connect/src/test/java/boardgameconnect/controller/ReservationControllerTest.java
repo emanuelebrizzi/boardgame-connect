@@ -60,7 +60,7 @@ class ReservationControllerTest {
 	private JwtDecoder jwtDecoder;
 
 	@Test
-	void getReservationsShouldReturnListOfAvailableReservations() throws Exception {
+	void getReservationsShouldReturnListOfAvailableReservationsByDefault() throws Exception {
 		var res1 = new ReservationSummary("t_123", "Root", "La Gilda del Cassero", 2, 4,
 				Instant.parse("2025-11-20T21:00:00Z"), Instant.parse("2025-11-20T22:30:00Z"));
 		var res2 = new ReservationSummary("t_124", "Wingspan", "Ludoteca Svelta", 1, 5,
@@ -79,6 +79,19 @@ class ReservationControllerTest {
 	}
 
 	@Test
+	void getReservationsShouldReturnBadRequestWhenStateIsInvalid() throws Exception {
+		String invalidState = "NON_EXISTING_STATUS";
+
+		mockMvc.perform(get(BASE_URI).param("state", invalidState)
+				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_PLAYER")))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message", is("Invalid data")));
+
+		verifyNoInteractions(reservationService);
+	}
+
+	@Test
 	void createReservationShouldReturnCreated() throws Exception {
 		ReservationCreateRequest validRequest = new ReservationCreateRequest("game-123", "assoc-456", 4,
 				Instant.parse("2025-12-31T23:59:00Z"));
@@ -94,7 +107,6 @@ class ReservationControllerTest {
 
 	@Test
 	void getReservationByIdShouldReturnDetailWhenFound() throws Exception {
-		// Arrange
 		String reservationId = "res-001";
 		var association = new AssociationSummary("a-123", "Ludoteca", "Via Roma");
 		var players = List.of(new PlayerSummary("p-123", "Alice"), new PlayerSummary("p-456", "Bob"));
