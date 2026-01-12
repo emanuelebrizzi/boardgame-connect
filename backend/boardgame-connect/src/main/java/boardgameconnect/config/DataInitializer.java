@@ -13,14 +13,15 @@ public class DataInitializer {
 
 	private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
-	private static final String INITIAL_BOARDGAME_CSV_PATH = "/data/boardgames.csv";
+	private static final String INITIAL_BOARDGAME_CSV_PATH = "/data/boardgame.csv";
+	private static final String DELIMITER = ";";
 
 	@Bean
 	CommandLineRunner initDatabase(BoardgameImportService importService) {
 		return args -> {
 			logger.info("Initializing application data...");
 			try {
-				importService.importInitialData(INITIAL_BOARDGAME_CSV_PATH);
+				importService.importInitialData(INITIAL_BOARDGAME_CSV_PATH, DELIMITER);
 			} catch (Exception e) {
 				logger.error("Failed to initialize database: ", e);
 			}

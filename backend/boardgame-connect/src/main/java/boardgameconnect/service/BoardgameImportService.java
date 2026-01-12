@@ -24,19 +24,19 @@ public class BoardgameImportService {
 	@Autowired
 	private BoardgameRepository repository;
 
-	public void importInitialData(String filePath) {
+	public void importInitialData(String filePath, String delimiter) {
 		InputStream is = getClass().getResourceAsStream(filePath);
 
 		if (is != null) {
 			logger.info("Starting import from path: {}", filePath);
-			importFromStream(is);
+			importFromStream(is, delimiter);
 		} else {
 			throw new FileNotFoundException("Resource file not found at " + filePath);
 		}
 	}
 
 	@Transactional
-	public void importFromStream(InputStream inputStream) {
+	public void importFromStream(InputStream inputStream, String delimiter) {
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
 			br.readLine();
@@ -48,7 +48,7 @@ public class BoardgameImportService {
 			while ((line = br.readLine()) != null) {
 				if (line.isBlank())
 					continue;
-				String[] values = line.split(",", -1);
+				String[] values = line.split(delimiter, -1);
 				String name = values[0].trim();
 
 				if (!repository.existsByNameIgnoreCase(name)) {
