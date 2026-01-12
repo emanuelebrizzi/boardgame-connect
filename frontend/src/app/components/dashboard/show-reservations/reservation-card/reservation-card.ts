@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { MatCardModule } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { Reservation } from '../../../../model/reservation';
+import { ReservationSummary } from '../../../../model/reservation';
 import { RouterLink } from '@angular/router';
 
 @Component({
@@ -14,22 +14,8 @@ import { RouterLink } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReservationCardComponent {
-  readonly imageFolderPath = '/games';
+  reservation = input.required<ReservationSummary>();
 
-  reservation = input.required<Reservation>();
-
-  // We assume that the name of the image follows the convention: dune-imperium.jpg
-  protected gameImageUrl = computed(() => {
-    const gameName = this.reservation().game;
-    const slug = gameName
-      .toLowerCase()
-      .replace(/:/g, '') // Remove colons
-      .replace(/\s+/g, '-') // Replace spaces with hyphens
-      .trim();
-    return `${this.imageFolderPath}/${slug}.jpg`;
-  });
-
-  protected cardStatus = computed(() => {
-    return this.reservation().state;
-  });
+  protected gameCoverURL = computed(() => this.reservation().coverURL);
+  protected cardStatus = computed(() => this.reservation().state);
 }

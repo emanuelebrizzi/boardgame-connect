@@ -1,33 +1,22 @@
-export interface ReservationDetail {
+export interface Reservation {
   id: string;
   game: string;
-  association: AssociationDetail;
-  players: PlayerDetail[];
+  associationName: string;
+  playersNames: string[];
   minPlayers: number;
   maxPlayers: number;
   startTime: string;
   endTime: string;
   state: ReservationState;
-}
-
-interface AssociationDetail {
-  id: string;
-  name: string;
-  address: string;
-}
-
-interface PlayerDetail {
-  id: string;
-  username: string;
+  coverURL: string;
 }
 
 export enum ReservationState {
   Open = 'open',
-  Approved = 'approved',
   Closed = 'closed',
 }
 
-export interface Reservation {
+export interface ReservationSummary {
   id: string;
   game: string;
   associationName: string;
@@ -36,6 +25,7 @@ export interface Reservation {
   startTime: string;
   endTime: string;
   state: ReservationState;
+  coverURL: string;
 }
 
 export interface ReservationFilter {

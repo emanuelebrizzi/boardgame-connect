@@ -16,10 +16,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { catchError, debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
 import { merge, of } from 'rxjs';
-import { Reservation, ReservationFilter, ReservationState } from '../../model/reservation';
+import { ReservationSummary, ReservationFilter, ReservationState } from '../../model/reservation';
 import { ReservationService } from '../../services/reservation-service';
 import { ReservationCardComponent } from './show-reservations/reservation-card/reservation-card';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { extractErrorMessage } from '../../utils/error-handler';
 
 @Component({
   selector: 'app-dashboard',
@@ -41,8 +42,9 @@ export class Dashboard implements OnInit {
   private readonly service = inject(ReservationService);
   private readonly destroyRef = inject(DestroyRef);
 
-  reservations = signal<Reservation[]>([]);
-  isLoading = signal(false);
+  reservations = signal<ReservationSummary[]>([]);
+  readonly isLoading = signal(false);
+  readonly errorMessage = signal('');
   error = signal<string | null>(null);
   hasError = computed(() => this.error() !== null);
 
@@ -83,25 +85,17 @@ export class Dashboard implements OnInit {
       state: stateFilter,
     };
 
-    this.service
-      .getReservations(filters)
-      .pipe(
-        catchError((err) => {
-          const msg =
-            err.status >= 500
-              ? 'Server error. Please try again later.'
-              : 'Unable to load reservations. Please check your connection.';
+    this.service.getReservations(filters).subscribe({
+      next: (data) => {
+        this.isLoading.set(false);
+        this.reservations.set(data);
+      },
 
-          this.error.set(msg);
-          return of([]); // Return empty list so observable doesn't die
-        }),
-        finalize(() => this.isLoading.set(false))
-      )
-      .subscribe((data) => {
-        if (!this.error()) {
-          this.reservations.set(data);
-        }
-      });
+      error: (err) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(extractErrorMessage(err));
+      },
+    });
   }
 
   clearFilters() {
