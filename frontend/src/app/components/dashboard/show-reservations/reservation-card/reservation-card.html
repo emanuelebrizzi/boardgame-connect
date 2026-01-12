@@ -4,7 +4,7 @@
   [class]="'status-' + cardStatus()"
   [routerLink]="cardStatus() === 'closed' ? null : ['/reservations', reservation().id]"
 >
-  <img mat-card-image [src]="gameImageUrl()" class="game-cover-image" />
+  <img mat-card-image [src]="gameCoverURL()" class="game-cover-image" />
 
   <mat-card-header class="card-header">
     <mat-card-subtitle class="card-title">

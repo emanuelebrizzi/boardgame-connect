@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { Reservation, ReservationDetail, ReservationFilter } from '../model/reservation';
+import { ReservationSummary, Reservation, ReservationFilter } from '../model/reservation';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +11,7 @@ export class ReservationService {
 
   private http = inject(HttpClient);
 
-  getReservations(filters?: ReservationFilter): Observable<Reservation[]> {
+  getReservations(filters?: ReservationFilter): Observable<ReservationSummary[]> {
     let params = new HttpParams();
 
     if (filters) {
@@ -24,27 +24,14 @@ export class ReservationService {
       }
 
       if (filters.association) {
-        params = params.set('association.name', filters.association);
+        params = params.set('association', filters.association);
       }
     }
 
-    return this.http.get<ReservationDetail[]>(`${this.API_URL}/reservations`, { params }).pipe(
-      map((reservations) =>
-        reservations.map((r) => ({
-          id: r.id,
-          game: r.game,
-          associationName: r.association.name,
-          currentPlayers: r.players.length,
-          maxPlayers: r.maxPlayers,
-          startTime: r.startTime,
-          endTime: r.endTime,
-          state: r.state,
-        }))
-      )
-    );
+    return this.http.get<ReservationSummary[]>(`${this.API_URL}/reservations`, { params });
   }
 
-  getReservation(id: string): Observable<ReservationDetail> {
-    return this.http.get<ReservationDetail>(`${this.API_URL}/reservations/${id}`);
+  getReservation(id: string): Observable<Reservation> {
+    return this.http.get<Reservation>(`${this.API_URL}/reservations/${id}`);
   }
 }

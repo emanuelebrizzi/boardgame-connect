@@ -47,10 +47,10 @@
 } @else if (hasError()) {
 <div class="state-message error" role="alert">
   <div class="icon-circle">
-    <mat-icon>dns</mat-icon>
+    <mat-icon>error</mat-icon>
   </div>
-  <h2>Connection Failed</h2>
-  <p>{{ error() }}</p>
+  <h2>Something has happened!</h2>
+  <p>{{ errorMessage() }}</p>
 
   <button mat-flat-button color="primary" (click)="loadData()">
     <mat-icon>refresh</mat-icon> Retry Connection
@@ -63,7 +63,7 @@
   } @empty {
   <div class="empty-state">
     <mat-icon>event_busy</mat-icon>
-    <p>No tables found matching your filters.</p>
+    <p>No tables found.</p>
   </div>
   }
 </div>
