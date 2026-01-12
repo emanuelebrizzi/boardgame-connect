@@ -21,6 +21,7 @@ import { ReservationService } from '../../services/reservation-service';
 import { ReservationCardComponent } from './show-reservations/reservation-card/reservation-card';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { extractErrorMessage } from '../../utils/error-handler';
+import { FormAlert } from '../form-alert/form-alert';
 
 @Component({
   selector: 'app-dashboard',
@@ -45,8 +46,7 @@ export class Dashboard implements OnInit {
   reservations = signal<ReservationSummary[]>([]);
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
-  error = signal<string | null>(null);
-  hasError = computed(() => this.error() !== null);
+  readonly hasError = computed(() => this.errorMessage() !== null);
 
   nameFilter = new FormControl('');
   assocFilter = new FormControl('');
@@ -75,7 +75,7 @@ export class Dashboard implements OnInit {
 
   loadData() {
     this.isLoading.set(true);
-    this.error.set(null);
+    this.errorMessage.set('');
 
     const rawState = this.statusFilter.value;
     const stateFilter = rawState ? (rawState as ReservationState) : undefined;

@@ -24,7 +24,7 @@ export class ReservationService {
       }
 
       if (filters.association) {
-        params = params.set('association.name', filters.association);
+        params = params.set('association', filters.association);
       }
     }
 
