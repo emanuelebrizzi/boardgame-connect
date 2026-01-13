@@ -11,7 +11,9 @@ export const associationGuard: CanActivateFn = (route, state) => {
     return true;
   }
 
-  return router.createUrlTree(['/dashboard/player']);
+  return router.createUrlTree(['/error'], {
+    queryParams: { code: '403', title: 'Forbidden', message: 'Association access only.' },
+  });
 };
 
 export const playerGuard: CanActivateFn = () => {
@@ -23,5 +25,7 @@ export const playerGuard: CanActivateFn = () => {
     return true;
   }
 
-  return router.createUrlTree(['/dashboard/association']);
+  return router.createUrlTree(['/error'], {
+    queryParams: { code: '403', title: 'Forbidden', message: 'Player access only.' },
+  });
 };
