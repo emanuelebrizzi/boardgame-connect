@@ -62,16 +62,24 @@ export const routes: Routes = [
       ),
   },
   {
-    path: 'boardgames/create',
+    path: 'boardgames/add',
     loadComponent: () =>
-      import('./components/boardgame/create-boardgame/create-boardgame').then(
-        (m) => m.CreateBoardgame
+      import('./components/boardgame/add-boardgame-page/add-boardgame-page').then(
+        (m) => m.AddBoardgamePage
+      ),
+    canActivate: [associationGuard],
+  },
+  {
+    path: 'boardgames/remove',
+    loadComponent: () =>
+      import('./components/boardgame/remove-boardgame-page/remove-boardgame-page').then(
+        (m) => m.RemoveBoardgamePage
       ),
     canActivate: [associationGuard],
   },
   {
     path: 'error',
-    loadComponent: () => import('./components/error/error').then((m) => m.Error),
+    loadComponent: () => import('./components/error-card/error-card').then((m) => m.ErrorCard),
     data: {
       code: '404',
       title: 'Page Not Found',
@@ -80,7 +88,7 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    loadComponent: () => import('./components/error/error').then((m) => m.Error),
+    loadComponent: () => import('./components/error-card/error-card').then((m) => m.ErrorCard),
     data: {
       code: '404',
       title: 'Page Not Found',

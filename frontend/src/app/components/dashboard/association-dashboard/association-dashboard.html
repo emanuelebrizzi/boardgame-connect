@@ -2,25 +2,19 @@
   <header class="page-header">
     <h1>Association Dashboard</h1>
     <p>Manage your reservations and boardgames.</p>
+
+    <button mat-raised-button color="primary" type="button" (click)="addBoardgame()">
+      <mat-icon>add</mat-icon>
+      Add boardgame
+    </button>
+
+    <button mat-raised-button color="primary" type="button" (click)="removeBoardgame()">
+      <mat-icon>delete</mat-icon>
+      Remove boardgame
+    </button>
   </header>
 
   <main>
-    <section class="boardgame-management">
-      <div class="section-header">
-        <h2>My Boardgames</h2>
-        <div class="button-group">
-          <button mat-stroked-button (click)="addBoardgame()">
-            <mat-icon>library_add</mat-icon>
-            Add to Library
-          </button>
-          <button mat-stroked-button color="warn" (click)="removeBoardgame()">
-            <mat-icon>delete</mat-icon>
-            Remove
-          </button>
-        </div>
-      </div>
-    </section>
-
     <section class="reservations-section">
       <h2>My Reservations</h2>
       @if (associationId(); as id) {

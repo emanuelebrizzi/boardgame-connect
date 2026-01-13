@@ -48,7 +48,7 @@ export class Dashboard implements OnInit {
   associationId = input<string>();
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
-  readonly hasError = computed(() => this.errorMessage() !== null);
+  readonly hasError = computed(() => this.errorMessage() !== '');
 
   nameFilter = new FormControl('');
   assocFilter = new FormControl('');

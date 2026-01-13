@@ -3,6 +3,7 @@ import { Dashboard } from '../dashboard';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { AuthService } from '../../../services/auth-service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-association-dashboard',
@@ -13,14 +14,15 @@ import { AuthService } from '../../../services/auth-service';
 })
 export class AssociationDashboard {
   private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
 
   readonly associationId = computed(() => this.authService.currentUser()?.id);
 
   addBoardgame() {
-    console.log('Open Add Game Dialog');
+    this.router.navigate(['boardgames/add']);
   }
 
   removeBoardgame() {
-    console.log('Open Remove Game Dialog');
+    this.router.navigate(['boardgames/remove']);
   }
 }
