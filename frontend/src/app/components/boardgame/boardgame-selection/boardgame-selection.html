@@ -1,0 +1,35 @@
+<div class="grid-container">
+  @for (game of games(); track game.id) {
+  <mat-card
+    class="game-card"
+    [ngClass]="{ selected: isSelected(game) }"
+    (click)="toggleSelection(game)"
+    appearance="outlined"
+  >
+    <div class="card-image">
+      <img [src]="game.coverUrl || 'assets/placeholder.png'" [alt]="game.name" />
+
+      <div class="selection-overlay">
+        <mat-checkbox
+          [checked]="isSelected(game)"
+          (click)="$event.stopPropagation()"
+          (change)="toggleSelection(game)"
+        >
+        </mat-checkbox>
+      </div>
+    </div>
+
+    <mat-card-header>
+      <mat-card-title>{{ game.name }}</mat-card-title>
+      <mat-card-subtitle>
+        {{ game.minPlayers }}-{{ game.maxPlayers }} Players • {{ game.minutesPerPlayer }}m
+      </mat-card-subtitle>
+    </mat-card-header>
+  </mat-card>
+  } @empty {
+  <div class="empty-state">
+    <mat-icon>inbox</mat-icon>
+    <p>No boardgames found.</p>
+  </div>
+  }
+</div>

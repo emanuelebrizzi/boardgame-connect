@@ -30,13 +30,13 @@ class BoardgameControllerTest {
 
 	@Test
 	@WithMockUser
-	void getBoardgames_ShouldReturnOkAndAllFields() throws Exception {
+	void getBoardgamesShouldReturnOkAndAllFields() throws Exception {
 		BoardgameDto catan = new BoardgameDto("1", "Catan", 3, 4, 60, 15, "catan.png");
 		BoardgameDto root = new BoardgameDto("2", "Root", 2, 4, 60, 20, "root.png");
 
 		when(boardgameService.getAllBoardgames()).thenReturn(List.of(catan, root));
 
-		mockMvc.perform(get("/boardgames").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+		mockMvc.perform(get("/api/v1/boardgames").contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andExpect(jsonPath("$", hasSize(2))).andExpect(jsonPath("$[0].id").value("1"))
 				.andExpect(jsonPath("$[0].name").value("Catan")).andExpect(jsonPath("$[0].minPlayers").value(3))
 				.andExpect(jsonPath("$[0].maxPlayers").value(4)).andExpect(jsonPath("$[0].timeMin").value(60))

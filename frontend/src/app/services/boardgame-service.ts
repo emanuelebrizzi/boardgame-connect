@@ -9,9 +9,23 @@ import { Observable } from 'rxjs';
 })
 export class BoardgameService {
   private http = inject(HttpClient);
-  private apiUrl = `${environment.apiUrl}/boardgames`;
+  private apiUrl = `${environment.apiUrl}`;
 
-  createBoardgame(boardgame: Boardgame): Observable<Boardgame> {
-    return this.http.post<Boardgame>(`${this.apiUrl}/create`, boardgame);
+  getAllBoardgames(): Observable<Boardgame[]> {
+    return this.http.get<Boardgame[]>(`${this.apiUrl}/boardgames`);
+  }
+
+  getMyBoardgames(): Observable<Boardgame[]> {
+    return this.http.get<Boardgame[]>(`${this.apiUrl}/associations/boardgames`);
+  }
+
+  addBoardgames(gameIds: string[]): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/associations/boardgames`, gameIds);
+  }
+
+  removeBoardgames(gameIds: string[]): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/associations/boardgames`, {
+      body: gameIds,
+    });
   }
 }

@@ -4,6 +4,7 @@ import {
   computed,
   DestroyRef,
   inject,
+  input,
   OnInit,
   signal,
 } from '@angular/core';
@@ -44,9 +45,10 @@ export class Dashboard implements OnInit {
   private readonly destroyRef = inject(DestroyRef);
 
   reservations = signal<ReservationSummary[]>([]);
+  associationId = input<string>();
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
-  readonly hasError = computed(() => this.errorMessage() !== null);
+  readonly hasError = computed(() => this.errorMessage() !== '');
 
   nameFilter = new FormControl('');
   assocFilter = new FormControl('');
@@ -79,9 +81,11 @@ export class Dashboard implements OnInit {
 
     const rawState = this.statusFilter.value;
     const stateFilter = rawState ? (rawState as ReservationState) : undefined;
+    const effectiveAssociationId = this.associationId() ?? this.assocFilter.value ?? '';
+
     const filters: ReservationFilter = {
       game: this.nameFilter.value ?? '',
-      association: this.assocFilter.value ?? '',
+      association: effectiveAssociationId,
       state: stateFilter,
     };
 
@@ -100,7 +104,9 @@ export class Dashboard implements OnInit {
 
   clearFilters() {
     this.nameFilter.setValue('');
-    this.assocFilter.setValue('');
+    if (!this.associationId()) {
+      this.assocFilter.setValue('');
+    }
     this.statusFilter.setValue('');
   }
 }

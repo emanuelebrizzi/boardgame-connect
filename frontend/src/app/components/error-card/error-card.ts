@@ -7,11 +7,11 @@ import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-error',
   imports: [MatCardModule, MatIconModule, MatButtonModule, RouterLink],
-  templateUrl: './error.html',
-  styleUrl: './error.scss',
+  templateUrl: './error-card.html',
+  styleUrl: './error-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Error {
+export class ErrorCard {
   readonly code = input<string>('404');
   readonly title = input<string>('Page Not Found');
   readonly message = input<string>('The page you are looking for does not exist.');

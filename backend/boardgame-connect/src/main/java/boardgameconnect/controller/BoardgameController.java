@@ -11,7 +11,7 @@ import boardgameconnect.dto.BoardgameDto;
 import boardgameconnect.service.BoardgameService;
 
 @RestController
-@RequestMapping("/boardgames")
+@RequestMapping("/api/v1/boardgames")
 public class BoardgameController {
 
 	private final BoardgameService boardgameService;

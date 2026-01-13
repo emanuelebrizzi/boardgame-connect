@@ -13,6 +13,7 @@ import { RoleSelector } from '../role-selector/role-selector';
 import { SubmitButton } from '../submit-button/submit-button';
 import { FormAlert } from '../form-alert/form-alert';
 import { extractErrorMessage } from '../../utils/error-handler';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-registration',
@@ -35,6 +36,8 @@ export class Registration {
   private readonly formBuilder = inject(NonNullableFormBuilder);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+
+  private readonly snackBar = inject(MatSnackBar);
 
   readonly role = signal<UserRole>('PLAYER');
   readonly errorMessage = signal<string | null>(null);
@@ -107,6 +110,11 @@ export class Registration {
 
     this.authService.register(role, requestPayload).subscribe({
       next: () => {
+        this.snackBar.open('Registration successful! Please log in.', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
         this.router.navigate(['/login']);
       },
       error: (err: HttpErrorResponse) => {

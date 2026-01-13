@@ -1,0 +1,21 @@
+<div class="page-container">
+  <header>
+    <h1>Add Games to Library</h1>
+    <p>Select games from the global database to add to your association.</p>
+  </header>
+
+  <app-boardgame-selection [games]="availableGames()" [(selectedIds)]="selectedGameIds">
+  </app-boardgame-selection>
+
+  <div class="actions">
+    <button mat-button (click)="cancel()">Cancel</button>
+    <app-submit-button
+      [isLoading]="isSubmitting()"
+      [isDisabled]="selectedGameIds().length === 0"
+      loadingText="Adding..."
+      (click)="submitAdd()"
+    >
+      Add Selected ({{ selectedGameIds().length }})
+    </app-submit-button>
+  </div>
+</div>
