@@ -6,11 +6,13 @@
       <mat-icon matSuffix>videogame_asset</mat-icon>
     </mat-form-field>
 
+    @if (!associationId()) {
     <mat-form-field appearance="outline" class="filter-item">
       <mat-label>Association</mat-label>
       <input matInput [formControl]="assocFilter" placeholder="e.g. Gilda" />
       <mat-icon matSuffix>store</mat-icon>
     </mat-form-field>
+    }
 
     <mat-form-field appearance="outline" class="filter-item status-filter">
       <mat-label>Status</mat-label>

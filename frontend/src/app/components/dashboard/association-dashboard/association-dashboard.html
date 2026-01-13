@@ -1,17 +1,31 @@
 <div class="container">
   <header class="page-header">
-    <div>
-      <h1>Association Dashboard</h1>
-      <p>Manage your events and boardgames.</p>
-    </div>
-
-    <a mat-raised-button color="primary" routerLink="/boardgames/create">
-      <mat-icon>add</mat-icon>
-      Create Boardgame
-    </a>
+    <h1>Association Dashboard</h1>
+    <p>Manage your reservations and boardgames.</p>
   </header>
 
   <main>
-    <app-dashboard></app-dashboard>
+    <section class="boardgame-management">
+      <div class="section-header">
+        <h2>My Boardgames</h2>
+        <div class="button-group">
+          <button mat-stroked-button (click)="addBoardgame()">
+            <mat-icon>library_add</mat-icon>
+            Add to Library
+          </button>
+          <button mat-stroked-button color="warn" (click)="removeBoardgame()">
+            <mat-icon>delete</mat-icon>
+            Remove
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="reservations-section">
+      <h2>My Reservations</h2>
+      @if (associationId(); as id) {
+      <app-dashboard [associationId]="id"></app-dashboard>
+      }
+    </section>
   </main>
 </div>

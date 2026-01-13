@@ -18,22 +18,22 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.config.Customizer;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity // Enables @PreAuthorize for method-level security
 public class SecurityConfig {
 
-	@Value("${jwt.secret}") // 1. Inject the secret from properties
+	@Value("${jwt.secret}")
 	private String jwtSecret;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
-				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless
-																												// session
+		http.cors(Customizer.withDefaults()).csrf(csrf -> csrf.disable())
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
-						.anyRequest().authenticated() // All other requests require authentication
+						.anyRequest().authenticated()
 				).oauth2ResourceServer(
 						oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
@@ -45,10 +45,6 @@ public class SecurityConfig {
 		return new BCryptPasswordEncoder();
 	}
 
-//	@Bean
-//	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-//		return configuration.getAuthenticationManager();
-//	}
 
 	@Bean
 	public JwtDecoder jwtDecoder() {

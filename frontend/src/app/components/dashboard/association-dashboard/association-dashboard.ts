@@ -1,14 +1,26 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
 import { Dashboard } from '../dashboard';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { RouterLink } from '@angular/router';
+import { AuthService } from '../../../services/auth-service';
 
 @Component({
   selector: 'app-association-dashboard',
-  imports: [Dashboard, RouterLink, MatButtonModule, MatIconModule],
+  imports: [Dashboard, MatButtonModule, MatIconModule],
   templateUrl: './association-dashboard.html',
   styleUrl: './association-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AssociationDashboard {}
+export class AssociationDashboard {
+  private readonly authService = inject(AuthService);
+
+  readonly associationId = computed(() => this.authService.currentUser()?.id);
+
+  addBoardgame() {
+    console.log('Open Add Game Dialog');
+  }
+
+  removeBoardgame() {
+    console.log('Open Remove Game Dialog');
+  }
+}
