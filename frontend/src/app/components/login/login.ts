@@ -12,6 +12,7 @@ import { RoleSelector } from '../role-selector/role-selector';
 import { SubmitButton } from '../submit-button/submit-button';
 import { FormAlert } from '../form-alert/form-alert';
 import { extractErrorMessage } from '../../utils/error-handler';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-login',
@@ -35,6 +36,8 @@ export class Login {
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
 
+  private readonly snackBar = inject(MatSnackBar);
+
   readonly isLoading = signal(false);
   readonly errorMessage = signal('');
   readonly role = signal<UserRole>('PLAYER');
@@ -56,6 +59,11 @@ export class Login {
     this.authService.login(credentials, role).subscribe({
       next: () => {
         this.isLoading.set(false);
+        this.snackBar.open('Login successful! Welcome back.', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
         this.router.navigate(['/dashboard']);
       },
 
