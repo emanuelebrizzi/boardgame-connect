@@ -1,5 +1,6 @@
 package boardgameconnect.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.eq;
@@ -86,7 +87,7 @@ class ReservationControllerTest {
 				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
 						.authorities(new SimpleGrantedAuthority("ROLE_PLAYER")))
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.message", is("Invalid data")));
+				.andExpect(jsonPath("$.message", containsString("Validation failed")));
 
 		verifyNoInteractions(reservationService);
 	}

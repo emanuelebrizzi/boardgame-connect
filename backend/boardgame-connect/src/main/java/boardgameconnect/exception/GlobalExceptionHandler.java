@@ -20,36 +20,12 @@ public class GlobalExceptionHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-	// Error 400: Malformed JSON
-	@ExceptionHandler(HttpMessageNotReadableException.class)
-	public ResponseEntity<ErrorResponse> handleMalformedJson(HttpMessageNotReadableException ex,
-			HttpServletRequest request) {
-		log.warn("Malformed JSON request at path {}: {}", request.getRequestURI(), ex.getMessage());
+	// Error 400
+	@ExceptionHandler({ HttpMessageNotReadableException.class, MethodArgumentNotValidException.class,
+			PlayerAlreadyJoinedException.class })
+	public ResponseEntity<ErrorResponse> handleBadRequest(Exception ex, HttpServletRequest request) {
 
-		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
-				HttpStatus.BAD_REQUEST.getReasonPhrase(), "Malformed JSON request", request.getRequestURI());
-
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-	}
-
-	// Error 400: Validation failed for input data
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex,
-			HttpServletRequest request) {
-
-		log.warn("Validation failed at path {}: {}", request.getRequestURI(), ex.getBindingResult());
-
-		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
-				HttpStatus.BAD_REQUEST.getReasonPhrase(), "Invalid data", request.getRequestURI());
-
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-	}
-
-	// Error 400: Business logic violation (e.g., player already joined)
-	@ExceptionHandler(PlayerAlreadyJoinedException.class)
-	public ResponseEntity<ErrorResponse> handleBusinessLogic(PlayerAlreadyJoinedException ex,
-			HttpServletRequest request) {
-		log.warn("Business logic violation at path {}: {}", request.getRequestURI(), ex.getMessage());
+		log.warn("Bad Request at path {}: {}", request.getRequestURI(), ex.getMessage());
 
 		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
 				HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
@@ -69,19 +45,14 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
 	}
 
-	// Error 403: Forbidden action performed
-	@ExceptionHandler(ForbiddenActionException.class)
+	// Error 403
+	@ExceptionHandler({ ForbiddenActionException.class, AccessDeniedException.class })
 	public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenActionException ex, HttpServletRequest request) {
-		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(),
-				HttpStatus.FORBIDDEN.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
-		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
-	}
+		log.warn("Forbidden action at path {}: {}", request.getRequestURI(), ex.getMessage());
 
-	// Error 403: Access denied by security constraints
-	@ExceptionHandler(AccessDeniedException.class)
-	public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
 		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(),
 				HttpStatus.FORBIDDEN.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
+
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
 	}
 
