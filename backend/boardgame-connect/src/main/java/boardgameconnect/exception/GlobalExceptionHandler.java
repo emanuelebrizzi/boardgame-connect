@@ -67,11 +67,10 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 	}
 
-	// Error 409: Conflict (e.g., email already registered)
-	@ExceptionHandler(EmailAlreadyInUseException.class)
-	public ResponseEntity<ErrorResponse> handleEmailAlreadyInUse(EmailAlreadyInUseException ex,
-			HttpServletRequest request) {
-		log.warn("registration failed: {} at path {}", ex.getMessage(), request.getRequestURI());
+	// Error 409
+	@ExceptionHandler({ EmailAlreadyInUseException.class, BoardgameInUseException.class })
+	public ResponseEntity<ErrorResponse> handleConflict(Exception ex, HttpServletRequest request) {
+		log.warn("Conflict at path {}: {}", request.getRequestURI(), ex.getMessage());
 
 		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.CONFLICT.value(),
 				HttpStatus.CONFLICT.getReasonPhrase(), ex.getMessage(), request.getRequestURI());

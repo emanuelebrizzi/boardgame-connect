@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,6 +45,14 @@ public class AssociationController {
 	public ResponseEntity<Void> addAssociationGames(@Valid @RequestBody List<String> boardgamesIds) {
 		var associationEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
 		associationService.addBoardgamesToAssociation(boardgamesIds, associationEmail);
+		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/boardgames")
+	@PreAuthorize("hasRole('ASSOCIATION')")
+	public ResponseEntity<Void> removeAssociationGames(@RequestBody List<String> boardgamesIds) {
+		var associationEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
+		associationService.removeBoardgamesFromAssociation(boardgamesIds, associationEmail);
 		return ResponseEntity.ok().build();
 	}
 
