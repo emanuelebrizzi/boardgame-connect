@@ -2,7 +2,7 @@ package boardgameconnect.service.reservation;
 
 import java.util.List;
 
-import boardgameconnect.dto.ReservationCreateRequest;
+import boardgameconnect.dto.reservation.ReservationCreateRequest;
 import boardgameconnect.dto.reservation.ReservationDetail;
 import boardgameconnect.dto.reservation.ReservationSummary;
 import boardgameconnect.model.Email;

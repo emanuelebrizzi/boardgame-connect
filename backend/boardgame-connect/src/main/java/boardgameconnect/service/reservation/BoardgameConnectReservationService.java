@@ -12,9 +12,9 @@ import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.ReservationRepository;
-import boardgameconnect.dto.AssociationSummary;
 import boardgameconnect.dto.PlayerSummary;
-import boardgameconnect.dto.ReservationCreateRequest;
+import boardgameconnect.dto.association.AssociationSummary;
+import boardgameconnect.dto.reservation.ReservationCreateRequest;
 import boardgameconnect.dto.reservation.ReservationDetail;
 import boardgameconnect.dto.reservation.ReservationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
@@ -31,14 +31,14 @@ import boardgameconnect.model.Reservation;
 import boardgameconnect.model.ReservationStatus;
 
 @Service
-public class BoardgameReservationService implements ReservationService {
+public class BoardgameConnectReservationService implements ReservationService {
 
 	private final ReservationRepository reservationRepository;
 	private final BoardgameRepository boardgameRepository;
 	private final AssociationRepository associationRepository;
 	private final PlayerRepository playerRepository;
 
-	public BoardgameReservationService(ReservationRepository reservationRepository,
+	public BoardgameConnectReservationService(ReservationRepository reservationRepository,
 			BoardgameRepository boardgameRepository, AssociationRepository associationRepository,
 			PlayerRepository playerRepository) {
 		this.reservationRepository = reservationRepository;

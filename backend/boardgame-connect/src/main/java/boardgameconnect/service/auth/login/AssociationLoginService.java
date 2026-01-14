@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.UserAccountRepository;
-import boardgameconnect.dto.AssociationProfile;
+import boardgameconnect.dto.association.AssociationProfile;
 import boardgameconnect.dto.auth.login.LoginRequest;
 import boardgameconnect.dto.auth.login.LoginResponse;
 import boardgameconnect.exception.AssociationNotFoundException;

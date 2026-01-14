@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import boardgameconnect.dto.ReservationCreateRequest;
+import boardgameconnect.dto.reservation.ReservationCreateRequest;
 import boardgameconnect.dto.reservation.ReservationDetail;
 import boardgameconnect.dto.reservation.ReservationFilterRequest;
 import boardgameconnect.dto.reservation.ReservationSummary;
@@ -53,18 +53,16 @@ public class ReservationController {
 	@PostMapping
 	@PreAuthorize("hasRole('ASSOCIATION')")
 	public ResponseEntity<Void> createReservation(@Valid @RequestBody ReservationCreateRequest request) {
-		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-		var email = new Email(userEmail);
-		reservationService.createReservation(request, email);
+		var associationEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
+		reservationService.createReservation(request, associationEmail);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 
 	@PostMapping("/{id}/join")
 	@PreAuthorize("hasRole('PLAYER')")
 	public ResponseEntity<Void> join(@PathVariable String id) {
-		String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-		var email = new Email(userEmail);
-		reservationService.join(id, email);
+		var playerEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
+		reservationService.join(id, playerEmail);
 		return ResponseEntity.ok().build();
 	}
 

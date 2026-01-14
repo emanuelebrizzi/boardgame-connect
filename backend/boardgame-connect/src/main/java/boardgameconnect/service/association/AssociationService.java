@@ -2,12 +2,20 @@ package boardgameconnect.service.association;
 
 import java.util.List;
 
-import boardgameconnect.dto.AssociationSummary;
+import boardgameconnect.dto.BoardgameDto;
+import boardgameconnect.dto.association.AssociationSummary;
+import boardgameconnect.model.Email;
 
 public interface AssociationService {
 
 	List<AssociationSummary> getAssociations();
 
 	List<AssociationSummary> getAssociations(String boardgameId);
+
+	void addBoardgamesToAssociation(List<String> boardgamesIds, Email associationEmail);
+
+	void removeBoardgamesFromAssociation(List<String> boardgameIds, Email association1Email);
+
+	List<BoardgameDto> getBoardgamesFrom(Email associationEmail);
 
 }

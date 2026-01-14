@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,24 +20,12 @@ public class GlobalExceptionHandler {
 
 	private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-	// Error 400: Validation failed for input data
-	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<ErrorResponse> handleValidationErrors(MethodArgumentNotValidException ex,
-			HttpServletRequest request) {
+	// Error 400
+	@ExceptionHandler({ HttpMessageNotReadableException.class, MethodArgumentNotValidException.class,
+			PlayerAlreadyJoinedException.class })
+	public ResponseEntity<ErrorResponse> handleBadRequest(Exception ex, HttpServletRequest request) {
 
-		log.warn("Validation failed at path {}: {}", request.getRequestURI(), ex.getBindingResult());
-
-		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
-				HttpStatus.BAD_REQUEST.getReasonPhrase(), "Invalid data", request.getRequestURI());
-
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
-	}
-
-	// Error 400: Business logic violation (e.g., player already joined)
-	@ExceptionHandler(PlayerAlreadyJoinedException.class)
-	public ResponseEntity<ErrorResponse> handleBusinessLogic(PlayerAlreadyJoinedException ex,
-			HttpServletRequest request) {
-		log.warn("Business logic violation at path {}: {}", request.getRequestURI(), ex.getMessage());
+		log.warn("Bad Request at path {}: {}", request.getRequestURI(), ex.getMessage());
 
 		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.BAD_REQUEST.value(),
 				HttpStatus.BAD_REQUEST.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
@@ -56,19 +45,14 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
 	}
 
-	// Error 403: Forbidden action performed
-	@ExceptionHandler(ForbiddenActionException.class)
-	public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenActionException ex, HttpServletRequest request) {
-		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(),
-				HttpStatus.FORBIDDEN.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
-		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
-	}
+	// Error 403
+	@ExceptionHandler({ ForbiddenActionException.class, AccessDeniedException.class })
+	public ResponseEntity<ErrorResponse> handleForbidden(Exception ex, HttpServletRequest request) {
+		log.warn("Forbidden action at path {}: {}", request.getRequestURI(), ex.getMessage());
 
-	// Error 403: Access denied by security constraints
-	@ExceptionHandler(AccessDeniedException.class)
-	public ResponseEntity<Object> handleAccessDeniedException(AccessDeniedException ex, HttpServletRequest request) {
 		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(),
 				HttpStatus.FORBIDDEN.getReasonPhrase(), ex.getMessage(), request.getRequestURI());
+
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
 	}
 
@@ -83,11 +67,10 @@ public class GlobalExceptionHandler {
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 	}
 
-	// Error 409: Conflict (e.g., email already registered)
-	@ExceptionHandler(EmailAlreadyInUseException.class)
-	public ResponseEntity<ErrorResponse> handleEmailAlreadyInUse(EmailAlreadyInUseException ex,
-			HttpServletRequest request) {
-		log.warn("registration failed: {} at path {}", ex.getMessage(), request.getRequestURI());
+	// Error 409
+	@ExceptionHandler({ EmailAlreadyInUseException.class, BoardgameInUseException.class })
+	public ResponseEntity<ErrorResponse> handleConflict(Exception ex, HttpServletRequest request) {
+		log.warn("Conflict at path {}: {}", request.getRequestURI(), ex.getMessage());
 
 		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.CONFLICT.value(),
 				HttpStatus.CONFLICT.getReasonPhrase(), ex.getMessage(), request.getRequestURI());

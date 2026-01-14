@@ -4,9 +4,12 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,14 +24,24 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import boardgameconnect.config.SecurityConfig;
-import boardgameconnect.dto.AssociationSummary;
+import boardgameconnect.dto.BoardgameDto;
+import boardgameconnect.dto.association.AssociationSummary;
+import boardgameconnect.exception.AssociationNotFoundException;
+import boardgameconnect.exception.BoardgameInUseException;
 import boardgameconnect.exception.BoardgameNotFoundException;
+import boardgameconnect.model.Email;
 import boardgameconnect.service.association.AssociationService;
 
 @WebMvcTest(AssociationController.class)
 @Import(SecurityConfig.class)
 class AssociationControllerTest {
+
+	private static final String BOARDGAME_ID = "test1";
+
+	private static final Email ASSOCIATION_1_EMAIL = new Email("test@gmail.com");
 
 	private static final String BASE_URI = "/api/v1/associations";
 
@@ -42,6 +55,9 @@ class AssociationControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@MockitoBean
 	private AssociationService associationService;
@@ -92,6 +108,120 @@ class AssociationControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
 
 		verify(associationService).getAssociations(invalidBoardgameId);
+	}
+
+	@Test
+	void testGetAssociationBoardgamesReturnsOkAndListWhenAuthorized() throws Exception {
+		var game1 = new BoardgameDto("1", "Ark Nova", 1, 4, 120, 30, "cover.jpg");
+		var game2 = new BoardgameDto("2", "Brass", 2, 4, 180, 30, "cover2.jpg");
+
+		when(associationService.getBoardgamesFrom(ASSOCIATION_1_EMAIL)).thenReturn(List.of(game1, game2));
+
+		mockMvc.perform(get(BASE_URI + "/boardgames")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(2))).andExpect(jsonPath("$[0].id", is("1")))
+				.andExpect(jsonPath("$[0].name", is("Ark Nova"))).andExpect(jsonPath("$[1].name", is("Brass")));
+
+		verify(associationService).getBoardgamesFrom(ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void testGetAssociationBoardgamesReturnsNotFoundWhenAssociationIsMissing() throws Exception {
+		doThrow(new AssociationNotFoundException("Association not found")).when(associationService)
+				.getBoardgamesFrom(ASSOCIATION_1_EMAIL);
+
+		mockMvc.perform(get(BASE_URI + "/boardgames").with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+				.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))).andExpect(status().isNotFound());
+
+		verify(associationService).getBoardgamesFrom(ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void testAddAssociationGamesReturnsOkWhenRequestIsValid() throws Exception {
+		List<String> boardgameIds = List.of(BOARDGAME_ID, "test2");
+
+		mockMvc.perform(post(BASE_URI + "/boardgames")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(boardgameIds)))
+				.andExpect(status().isOk());
+
+		verify(associationService).addBoardgamesToAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void testAddAssociationGamesReturnsBadRequestWhenBodyIsInvalid() throws Exception {
+		mockMvc.perform(post(BASE_URI + "/boardgames")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isBadRequest());
+
+		verifyNoInteractions(associationService);
+	}
+
+	@Test
+	void testAddAssociationGamesReturnsNotFoundWhenAssociationIsMissing() throws Exception {
+		List<String> boardgameIds = List.of(BOARDGAME_ID, "test2");
+
+		doThrow(new AssociationNotFoundException("Association not found with id: " + ASSOCIATION_1_ID))
+				.when(associationService).addBoardgamesToAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
+
+		mockMvc.perform(post(BASE_URI + "/boardgames")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(boardgameIds)))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message", is("Association not found with id: " + ASSOCIATION_1_ID)));
+
+		verify(associationService).addBoardgamesToAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void testRemoveAssociationGamesReturnsOkWhenBodyIsValid() throws Exception {
+		var boardgameIds = List.of(BOARDGAME_ID, "test2");
+
+		mockMvc.perform(delete(BASE_URI + "/boardgames")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(boardgameIds)))
+				.andExpect(status().isOk());
+
+		verify(associationService).removeBoardgamesFromAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void testRemoveAssociationGamesReturnsNotFoundWhenAssociationIsMissing() throws Exception {
+		var boardgameIds = List.of(BOARDGAME_ID);
+
+		doThrow(new AssociationNotFoundException("Association not found")).when(associationService)
+				.removeBoardgamesFromAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
+
+		mockMvc.perform(delete(BASE_URI + "/boardgames")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(boardgameIds)))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.message", is("Association not found")));
+
+		verify(associationService).removeBoardgamesFromAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void testRemoveAssociationGamesReturnsConflictWhenGameIsInUse() throws Exception {
+		var boardgameIds = List.of(BOARDGAME_ID);
+		String errorMessage = "Cannot remove boardgame because it has OPEN reservations.";
+
+		doThrow(new BoardgameInUseException(errorMessage)).when(associationService)
+				.removeBoardgamesFromAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
+
+		mockMvc.perform(delete(BASE_URI + "/boardgames")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(boardgameIds)))
+				.andExpect(status().isConflict()).andExpect(jsonPath("$.message", is(errorMessage)));
+
+		verify(associationService).removeBoardgamesFromAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
 	}
 
 }

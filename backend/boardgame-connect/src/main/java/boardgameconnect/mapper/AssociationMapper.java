@@ -2,7 +2,7 @@ package boardgameconnect.mapper;
 
 import org.springframework.stereotype.Component;
 
-import boardgameconnect.dto.AssociationSummary;
+import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.model.Association;
 
 @Component

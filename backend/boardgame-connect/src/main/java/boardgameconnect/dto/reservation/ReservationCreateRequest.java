@@ -1,4 +1,4 @@
-package boardgameconnect.dto;
+package boardgameconnect.dto.reservation;
 
 import java.time.Instant;
 

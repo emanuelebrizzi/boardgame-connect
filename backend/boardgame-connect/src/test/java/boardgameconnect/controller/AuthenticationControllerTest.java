@@ -1,5 +1,6 @@
 package boardgameconnect.controller;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -20,8 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import boardgameconnect.config.SecurityConfig;
-import boardgameconnect.dto.AssociationProfile;
 import boardgameconnect.dto.PlayerProfile;
+import boardgameconnect.dto.association.AssociationProfile;
 import boardgameconnect.dto.auth.login.LoginRequest;
 import boardgameconnect.dto.auth.login.LoginResponse;
 import boardgameconnect.dto.auth.register.AssociationDetails;
@@ -199,7 +200,8 @@ class AuthenticationControllerTest {
 
 		mockMvc.perform(post(PLAYER_REGISTER_URI).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))).andExpect(status().isBadRequest())
-				.andExpect(status().isBadRequest()).andExpect(jsonPath("$.message").value("Invalid data"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message", containsString("Validation failed")))
 				.andExpect(jsonPath("$.path").value(PLAYER_REGISTER_URI));
 
 		verifyNoInteractions(playerRegistrationService);
@@ -240,7 +242,8 @@ class AuthenticationControllerTest {
 
 		mockMvc.perform(post(ASSOCIATION_REGISTER_URI).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(request))).andExpect(status().isBadRequest())
-				.andExpect(status().isBadRequest()).andExpect(jsonPath("$.message").value("Invalid data"))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.message", containsString("Validation failed")))
 				.andExpect(jsonPath("$.path").value(ASSOCIATION_REGISTER_URI));
 
 		verifyNoInteractions(associationRegistrationService);
