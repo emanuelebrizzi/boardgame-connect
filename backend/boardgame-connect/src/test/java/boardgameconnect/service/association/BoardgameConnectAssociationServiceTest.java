@@ -20,18 +20,21 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
+import boardgameconnect.dao.ReservationRepository;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
+import boardgameconnect.exception.BoardgameInUseException;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.mapper.AssociationMapper;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
+import boardgameconnect.model.ReservationStatus;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 
 @ExtendWith(MockitoExtension.class)
-class BoardgameAssociationServiceTest {
+class BoardgameConnectAssociationServiceTest {
 
 	private static final String ASSOCIATION_1_ID = "test";
 	private static final Email ASSOCIATION_1_EMAIL = new Email("test@example.com");
@@ -54,10 +57,13 @@ class BoardgameAssociationServiceTest {
 	private BoardgameRepository boardgameRepository;
 
 	@Mock
+	private ReservationRepository reservationRepository;
+
+	@Mock
 	private AssociationMapper associationMapper;
 
 	@InjectMocks
-	private BoardgameAssociationService associationService;
+	private BoardgameConnectAssociationService associationService;
 
 	@Test
 	void testGetAllAssociationsShouldReturnTheSummariesWhenThereAreAssociations() {
@@ -149,6 +155,68 @@ class BoardgameAssociationServiceTest {
 		verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
 		verifyNoMoreInteractions(associationRepository);
 		verifyNoInteractions(boardgameRepository, associationMapper);
+	}
+
+	@Test
+	void testRemoveBoardgamesFromAssociationHappyPath() {
+		String gameId = "game-1";
+		List<String> boardgameIdsToRemove = List.of(gameId);
+		var boardgame1 = new Boardgame("Game Name", 1, 4, 30, 60, "http://cover.url");
+		var association1 = new Association(
+				new UserAccount(ASSOCIATION_1_EMAIL, ASSOCIATION_1_PASSWORD, ASSOCIATION_1_NAME, UserRole.ASSOCIATION),
+				ASSOCIATION_1_CODE, ASSOCIATION_1_ADDRESS);
+		boardgame1.setId(gameId);
+		association1.getBoardgames().add(boardgame1);
+
+		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.of(association1));
+		when(reservationRepository.existsByAssociationAndBoardgameIdAndStatus(association1, gameId,
+				ReservationStatus.OPEN)).thenReturn(false);
+
+		associationService.removeBoardgamesFromAssociation(boardgameIdsToRemove, ASSOCIATION_1_EMAIL);
+
+		assertThat(association1.getBoardgames()).doesNotContain(boardgame1);
+		InOrder inOrder = inOrder(reservationRepository, associationRepository);
+		inOrder.verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
+		inOrder.verify(reservationRepository).existsByAssociationAndBoardgameIdAndStatus(association1, gameId,
+				ReservationStatus.OPEN);
+		inOrder.verify(associationRepository).save(association1);
+	}
+
+	@Test
+	void testRemoveBoardgamesFromAssociationShouldThrowAssociationNotFoundExceptionWhenAssociationDoesNotExist() {
+		List<String> boardgameIds = List.of("test1");
+
+		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.empty());
+
+		assertThrows(AssociationNotFoundException.class,
+				() -> associationService.removeBoardgamesFromAssociation(boardgameIds, ASSOCIATION_1_EMAIL));
+
+		verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
+		verifyNoMoreInteractions(associationRepository);
+		verifyNoInteractions(boardgameRepository, reservationRepository);
+	}
+
+	@Test
+	void testRemoveBoardgamesFromAssociationShouldThrowExceptionWhenGameHasOpenReservation() {
+		String gameId = "game-1";
+		List<String> boardgameIds = List.of(gameId);
+		var game = new Boardgame("Game name", 1, 4, 60, 120, "url");
+		var association1 = new Association(new UserAccount(ASSOCIATION_1_EMAIL, "pass", "name", UserRole.ASSOCIATION),
+				"code", "addr");
+		game.setId(gameId);
+		association1.getBoardgames().add(game);
+
+		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.of(association1));
+		when(reservationRepository.existsByAssociationAndBoardgameIdAndStatus(association1, gameId,
+				ReservationStatus.OPEN)).thenReturn(true);
+
+		assertThrows(BoardgameInUseException.class,
+				() -> associationService.removeBoardgamesFromAssociation(boardgameIds, ASSOCIATION_1_EMAIL));
+		InOrder inOrder = inOrder(reservationRepository, associationRepository);
+		inOrder.verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
+		inOrder.verify(reservationRepository).existsByAssociationAndBoardgameIdAndStatus(association1, gameId,
+				ReservationStatus.OPEN);
+		inOrder.verifyNoMoreInteractions();
 	}
 
 }

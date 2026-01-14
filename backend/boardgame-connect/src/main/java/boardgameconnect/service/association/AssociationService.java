@@ -13,6 +13,6 @@ public interface AssociationService {
 
 	void addBoardgamesToAssociation(List<String> boardgamesIds, Email associationEmail);
 
-	void deleteBoardgames(List<String> boardgameIds, Email association1Email);
+	void removeBoardgamesFromAssociation(List<String> boardgameIds, Email association1Email);
 
 }

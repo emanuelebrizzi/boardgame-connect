@@ -37,7 +37,7 @@ import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 
 @ExtendWith(MockitoExtension.class)
-class BoardgameReservationServiceTest {
+class BoardgameConnectReservationServiceTest {
 
 	private static final String ASSOCIATION_EMAIL_STRING = "assoc@example.com";
 	private static final String ASSOCIATION_NAME = "BoardGames Inc";
@@ -61,7 +61,7 @@ class BoardgameReservationServiceTest {
 	private PlayerRepository playerRepository;
 
 	@InjectMocks
-	private BoardgameReservationService reservationService;
+	private BoardgameConnectReservationService reservationService;
 
 	private Reservation openReservation;
 

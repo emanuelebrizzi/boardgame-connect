@@ -7,26 +7,32 @@ import org.springframework.stereotype.Service;
 
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
+import boardgameconnect.dao.ReservationRepository;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
+import boardgameconnect.exception.BoardgameInUseException;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.mapper.AssociationMapper;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
+import boardgameconnect.model.ReservationStatus;
 import jakarta.transaction.Transactional;
 
 @Service
-public class BoardgameAssociationService implements AssociationService {
+public class BoardgameConnectAssociationService implements AssociationService {
 
 	private final AssociationRepository associationRepository;
 	private final BoardgameRepository boardgameRepository;
+	private final ReservationRepository reservationRepository;
 	private final AssociationMapper associationMapper;
 
-	public BoardgameAssociationService(AssociationRepository associationRepository,
-			BoardgameRepository boardgameRepository, AssociationMapper associationMapper) {
+	public BoardgameConnectAssociationService(AssociationRepository associationRepository,
+			BoardgameRepository boardgameRepository, ReservationRepository reservationRepository,
+			AssociationMapper associationMapper) {
 		this.associationRepository = associationRepository;
 		this.boardgameRepository = boardgameRepository;
+		this.reservationRepository = reservationRepository;
 		this.associationMapper = associationMapper;
 	}
 
@@ -57,8 +63,31 @@ public class BoardgameAssociationService implements AssociationService {
 	}
 
 	@Override
-	public void deleteBoardgames(List<String> boardgameIds, Email association1Email) {
-		// TODO Auto-generated method stub
+	@Transactional
+	public void removeBoardgamesFromAssociation(List<String> boardgameIds, Email associationEmail) {
+		Association association = associationRepository.findByAccountEmail(associationEmail)
+				.orElseThrow(() -> new AssociationNotFoundException("Association not found"));
+
+		for (String gameId : boardgameIds) {
+			Boardgame gameToRemove = association.getBoardgames().stream().filter(bg -> bg.getId().equals(gameId))
+					.findFirst().orElse(null);
+
+			if (gameToRemove == null) {
+				continue;
+			}
+
+			boolean hasOpenReservations = reservationRepository.existsByAssociationAndBoardgameIdAndStatus(association,
+					gameId, ReservationStatus.OPEN);
+
+			if (hasOpenReservations) {
+				throw new BoardgameInUseException(
+						"Cannot remove " + gameToRemove.getName() + " because it has OPEN reservations.");
+			}
+
+			association.getBoardgames().removeIf(bg -> bg.getId().equals(gameId));
+		}
+
+		associationRepository.save(association);
 
 	}
 

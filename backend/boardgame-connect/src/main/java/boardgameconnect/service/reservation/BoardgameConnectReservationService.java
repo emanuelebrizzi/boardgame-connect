@@ -31,14 +31,14 @@ import boardgameconnect.model.Reservation;
 import boardgameconnect.model.ReservationStatus;
 
 @Service
-public class BoardgameReservationService implements ReservationService {
+public class BoardgameConnectReservationService implements ReservationService {
 
 	private final ReservationRepository reservationRepository;
 	private final BoardgameRepository boardgameRepository;
 	private final AssociationRepository associationRepository;
 	private final PlayerRepository playerRepository;
 
-	public BoardgameReservationService(ReservationRepository reservationRepository,
+	public BoardgameConnectReservationService(ReservationRepository reservationRepository,
 			BoardgameRepository boardgameRepository, AssociationRepository associationRepository,
 			PlayerRepository playerRepository) {
 		this.reservationRepository = reservationRepository;
