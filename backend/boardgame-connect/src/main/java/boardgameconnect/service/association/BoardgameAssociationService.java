@@ -8,9 +8,13 @@ import org.springframework.stereotype.Service;
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
 import boardgameconnect.dto.association.AssociationSummary;
+import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.mapper.AssociationMapper;
+import boardgameconnect.model.Association;
+import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
+import jakarta.transaction.Transactional;
 
 @Service
 public class BoardgameAssociationService implements AssociationService {
@@ -43,7 +47,17 @@ public class BoardgameAssociationService implements AssociationService {
 	}
 
 	@Override
+	@Transactional
 	public void addBoardgamesToAssociation(List<String> boardgamesIds, Email associationEmail) {
+		Association association = associationRepository.findByAccountEmail(associationEmail).orElseThrow(
+				() -> new AssociationNotFoundException("Association not found for email: " + associationEmail));
+		List<Boardgame> foundGames = boardgameRepository.findAllById(boardgamesIds);
+		association.getBoardgames().addAll(foundGames);
+		associationRepository.save(association);
+	}
+
+	@Override
+	public void deleteBoardgames(List<String> boardgameIds, Email association1Email) {
 		// TODO Auto-generated method stub
 
 	}

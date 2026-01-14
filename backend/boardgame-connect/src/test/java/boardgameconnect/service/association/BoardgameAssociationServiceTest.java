@@ -5,9 +5,11 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,9 +21,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
 import boardgameconnect.dto.association.AssociationSummary;
+import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.mapper.AssociationMapper;
 import boardgameconnect.model.Association;
+import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
@@ -113,6 +117,38 @@ class BoardgameAssociationServiceTest {
 
 		verify(boardgameRepository).existsById(invalidBoardgameId);
 		verifyNoInteractions(associationRepository, associationMapper);
+	}
+
+	@Test
+	void testAddBoardgamesToAssociationHappyPath() {
+		List<String> boardgameIds = List.of("test1", "test2");
+		var boardgame1 = new Boardgame("test1", 1, 2, 0, 0, "test_URL");
+		var boardgame2 = new Boardgame("test1", 1, 2, 0, 0, "test_URL");
+		var association1 = new Association(
+				new UserAccount(ASSOCIATION_1_EMAIL, ASSOCIATION_1_PASSWORD, ASSOCIATION_1_NAME, UserRole.ASSOCIATION),
+				ASSOCIATION_1_CODE, ASSOCIATION_1_ADDRESS);
+
+		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.of(association1));
+		when(boardgameRepository.findAllById(boardgameIds)).thenReturn(List.of(boardgame1, boardgame2));
+
+		associationService.addBoardgamesToAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
+
+		assertThat(association1.getBoardgames()).contains(boardgame1, boardgame2);
+		InOrder inOrder = inOrder(boardgameRepository, associationRepository);
+		inOrder.verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
+		inOrder.verify(boardgameRepository).findAllById(boardgameIds);
+		inOrder.verify(associationRepository).save(association1);
+	}
+
+	@Test
+	void testAddBoardgamesToAssociationShouldThrowAssociationNotFoundExceptionWhenAssociationDoesNotExist() {
+		List<String> boardgameIds = List.of("test1", "test2");
+		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.empty());
+		assertThrows(AssociationNotFoundException.class,
+				() -> associationService.addBoardgamesToAssociation(boardgameIds, ASSOCIATION_1_EMAIL));
+		verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
+		verifyNoMoreInteractions(associationRepository);
+		verifyNoInteractions(boardgameRepository, associationMapper);
 	}
 
 }

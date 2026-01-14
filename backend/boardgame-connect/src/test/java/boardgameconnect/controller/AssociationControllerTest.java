@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import boardgameconnect.config.SecurityConfig;
 import boardgameconnect.dto.association.AssociationSummary;
+import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.model.Email;
 import boardgameconnect.service.association.AssociationService;
@@ -106,7 +107,7 @@ class AssociationControllerTest {
 
 	@Test
 	void testAddAssociationGamesReturnsOkWhenRequestIsValid() throws Exception {
-		var boardgameIds = List.of("test1", "test2");
+		List<String> boardgameIds = List.of("test1", "test2");
 
 		mockMvc.perform(post(BASE_URI + "/boardgames")
 				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
@@ -122,10 +123,26 @@ class AssociationControllerTest {
 		mockMvc.perform(post(BASE_URI + "/boardgames")
 				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
 						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
-				.contentType(MediaType.APPLICATION_JSON).content("{}"))
-				.andExpect(status().isBadRequest());
-		
+				.contentType(MediaType.APPLICATION_JSON).content("{}")).andExpect(status().isBadRequest());
+
 		verifyNoInteractions(associationService);
+	}
+
+	@Test
+	void testAddAssociationGamesReturnsNotFoundWhenAssociationIsMissing() throws Exception {
+		List<String> boardgameIds = List.of("test1", "test2");
+
+		doThrow(new AssociationNotFoundException("Association not found with id: " + ASSOCIATION_1_ID))
+				.when(associationService).addBoardgamesToAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
+
+		mockMvc.perform(post(BASE_URI + "/boardgames")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(boardgameIds)))
+				.andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message", is("Association not found with id: " + ASSOCIATION_1_ID)));
+
+		verify(associationService).addBoardgamesToAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
 	}
 
 }

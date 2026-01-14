@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
 
 	// Error 403
 	@ExceptionHandler({ ForbiddenActionException.class, AccessDeniedException.class })
-	public ResponseEntity<ErrorResponse> handleForbidden(ForbiddenActionException ex, HttpServletRequest request) {
+	public ResponseEntity<ErrorResponse> handleForbidden(Exception ex, HttpServletRequest request) {
 		log.warn("Forbidden action at path {}: {}", request.getRequestURI(), ex.getMessage());
 
 		var errorResponse = new ErrorResponse(LocalDateTime.now(), HttpStatus.FORBIDDEN.value(),
