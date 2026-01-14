@@ -30,9 +30,9 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import boardgameconnect.config.SecurityConfig;
-import boardgameconnect.dto.AssociationSummary;
 import boardgameconnect.dto.PlayerSummary;
-import boardgameconnect.dto.ReservationCreateRequest;
+import boardgameconnect.dto.association.AssociationSummary;
+import boardgameconnect.dto.reservation.ReservationCreateRequest;
 import boardgameconnect.dto.reservation.ReservationDetail;
 import boardgameconnect.dto.reservation.ReservationSummary;
 import boardgameconnect.exception.PlayerAlreadyJoinedException;
@@ -150,7 +150,7 @@ class ReservationControllerTest {
 	}
 
 	@Test
-	void createReservationShouldFailIfDataInvalid() throws Exception {
+	void createReservationShouldFailIfDataIsInvalid() throws Exception {
 		String invalidRequest = "{}";
 
 		mockMvc.perform(post(BASE_URI)

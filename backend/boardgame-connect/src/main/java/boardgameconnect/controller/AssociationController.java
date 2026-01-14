@@ -4,13 +4,18 @@ import java.util.List;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import boardgameconnect.dto.AssociationSummary;
+import boardgameconnect.dto.association.AssociationSummary;
+import boardgameconnect.model.Email;
 import boardgameconnect.service.association.AssociationService;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/associations")
@@ -32,6 +37,14 @@ public class AssociationController {
 	@PreAuthorize("hasAnyRole('PLAYER', 'ASSOCIATION')")
 	public ResponseEntity<List<AssociationSummary>> getAssociationsByGame(@RequestParam String boardgameId) {
 		return ResponseEntity.ok(associationService.getAssociations(boardgameId));
+	}
+
+	@PostMapping("/boardgames")
+	@PreAuthorize("hasRole('ASSOCIATION')")
+	public ResponseEntity<Void> addAssociationGames(@Valid @RequestBody List<String> boardgamesIds) {
+		var associationEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
+		associationService.addBoardgamesToAssociation(boardgamesIds, associationEmail);
+		return ResponseEntity.ok().build();
 	}
 
 }

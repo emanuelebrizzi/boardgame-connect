@@ -18,7 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
-import boardgameconnect.dto.AssociationSummary;
+import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.mapper.AssociationMapper;
 import boardgameconnect.model.Association;

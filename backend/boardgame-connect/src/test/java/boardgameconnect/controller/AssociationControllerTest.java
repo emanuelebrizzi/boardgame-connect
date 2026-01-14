@@ -4,9 +4,11 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -21,14 +23,19 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import boardgameconnect.config.SecurityConfig;
-import boardgameconnect.dto.AssociationSummary;
+import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.BoardgameNotFoundException;
+import boardgameconnect.model.Email;
 import boardgameconnect.service.association.AssociationService;
 
 @WebMvcTest(AssociationController.class)
 @Import(SecurityConfig.class)
 class AssociationControllerTest {
+
+	private static final Email ASSOCIATION_1_EMAIL = new Email("test@gmail.com");
 
 	private static final String BASE_URI = "/api/v1/associations";
 
@@ -42,6 +49,9 @@ class AssociationControllerTest {
 
 	@Autowired
 	private MockMvc mockMvc;
+
+	@Autowired
+	private ObjectMapper objectMapper;
 
 	@MockitoBean
 	private AssociationService associationService;
@@ -92,6 +102,30 @@ class AssociationControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
 
 		verify(associationService).getAssociations(invalidBoardgameId);
+	}
+
+	@Test
+	void testAddAssociationGamesReturnsOkWhenRequestIsValid() throws Exception {
+		var boardgameIds = List.of("test1", "test2");
+
+		mockMvc.perform(post(BASE_URI + "/boardgames")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(boardgameIds)))
+				.andExpect(status().isOk());
+
+		verify(associationService).addBoardgamesToAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void testAddAssociationGamesReturnsBadRequestWhenBodyIsInvalid() throws Exception {
+		mockMvc.perform(post(BASE_URI + "/boardgames")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON).content("{}"))
+				.andExpect(status().isBadRequest());
+		
+		verifyNoInteractions(associationService);
 	}
 
 }

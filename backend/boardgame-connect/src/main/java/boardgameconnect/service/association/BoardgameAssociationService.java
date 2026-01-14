@@ -7,9 +7,10 @@ import org.springframework.stereotype.Service;
 
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
-import boardgameconnect.dto.AssociationSummary;
+import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.mapper.AssociationMapper;
+import boardgameconnect.model.Email;
 
 @Service
 public class BoardgameAssociationService implements AssociationService {
@@ -38,6 +39,12 @@ public class BoardgameAssociationService implements AssociationService {
 
 		return associationRepository.findByBoardgamesId(boardgameId).stream().map(associationMapper::toDto)
 				.collect(Collectors.toList());
+
+	}
+
+	@Override
+	public void addBoardgamesToAssociation(List<String> boardgamesIds, Email associationEmail) {
+		// TODO Auto-generated method stub
 
 	}
 
