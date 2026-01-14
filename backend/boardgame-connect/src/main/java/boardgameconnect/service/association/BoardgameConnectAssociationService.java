@@ -8,11 +8,13 @@ import org.springframework.stereotype.Service;
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
 import boardgameconnect.dao.ReservationRepository;
+import boardgameconnect.dto.BoardgameDto;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameInUseException;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.mapper.AssociationMapper;
+import boardgameconnect.mapper.BoardgameMapper;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
@@ -26,14 +28,16 @@ public class BoardgameConnectAssociationService implements AssociationService {
 	private final BoardgameRepository boardgameRepository;
 	private final ReservationRepository reservationRepository;
 	private final AssociationMapper associationMapper;
+	private final BoardgameMapper boardgameMapper;
 
 	public BoardgameConnectAssociationService(AssociationRepository associationRepository,
 			BoardgameRepository boardgameRepository, ReservationRepository reservationRepository,
-			AssociationMapper associationMapper) {
+			AssociationMapper associationMapper, BoardgameMapper boardgameMapper) {
 		this.associationRepository = associationRepository;
 		this.boardgameRepository = boardgameRepository;
 		this.reservationRepository = reservationRepository;
 		this.associationMapper = associationMapper;
+		this.boardgameMapper = boardgameMapper;
 	}
 
 	@Override
@@ -89,6 +93,13 @@ public class BoardgameConnectAssociationService implements AssociationService {
 
 		associationRepository.save(association);
 
+	}
+
+	@Override
+	public List<BoardgameDto> getBoardgamesFrom(Email associationEmail) {
+		Association association = associationRepository.findByAccountEmail(associationEmail)
+				.orElseThrow(() -> new AssociationNotFoundException("Association not found"));
+		return association.getBoardgames().stream().map(boardgameMapper::toDto).toList();
 	}
 
 }

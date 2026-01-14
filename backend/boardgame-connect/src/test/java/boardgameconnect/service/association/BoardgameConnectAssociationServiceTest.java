@@ -21,11 +21,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
 import boardgameconnect.dao.ReservationRepository;
+import boardgameconnect.dto.BoardgameDto;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameInUseException;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.mapper.AssociationMapper;
+import boardgameconnect.mapper.BoardgameMapper;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
@@ -61,6 +63,9 @@ class BoardgameConnectAssociationServiceTest {
 
 	@Mock
 	private AssociationMapper associationMapper;
+
+	@Mock
+	private BoardgameMapper boardgameMapper;
 
 	@InjectMocks
 	private BoardgameConnectAssociationService associationService;
@@ -217,6 +222,31 @@ class BoardgameConnectAssociationServiceTest {
 		inOrder.verify(reservationRepository).existsByAssociationAndBoardgameIdAndStatus(association1, gameId,
 				ReservationStatus.OPEN);
 		inOrder.verifyNoMoreInteractions();
+	}
+
+	@Test
+	void testGetAssociationBoardgamesReturnsBoardgameListWhenAssociationExists() {
+		var boardgame1 = new Boardgame("Game 1", 1, 4, 30, 60, "url");
+		var dto1 = new BoardgameDto("bg-1", "Game 1", 1, 4, 60, 10, "url");
+		var association = new Association(new UserAccount(ASSOCIATION_1_EMAIL, "pass", "name", UserRole.ASSOCIATION),
+				"code", "address");
+		association.getBoardgames().add(boardgame1);
+
+		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.of(association));
+		when(boardgameMapper.toDto(boardgame1)).thenReturn(dto1);
+
+		List<BoardgameDto> result = associationService.getBoardgamesFrom(ASSOCIATION_1_EMAIL);
+
+		assertThat(result).containsExactly(dto1);
+		verify(boardgameMapper).toDto(boardgame1);
+	}
+
+	@Test
+	void testGetAssociationBoardgamesThrowsExceptionWhenAssociationNotFound() {
+		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.empty());
+		assertThrows(AssociationNotFoundException.class,
+				() -> associationService.getBoardgamesFrom(ASSOCIATION_1_EMAIL));
+		verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
 	}
 
 }

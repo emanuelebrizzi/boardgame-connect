@@ -60,7 +60,7 @@ class BoardgameServiceTest {
 	}
 
 	@Test
-	void getAllBoardgamesShouldReturnEmptyList_WhenNoGamesFound() {
+	void getAllBoardgamesShouldReturnEmptyListWhenNoGamesFound() {
 		when(repository.findAll()).thenReturn(List.of());
 
 		List<BoardgameDto> result = boardgameService.getAllBoardgames();

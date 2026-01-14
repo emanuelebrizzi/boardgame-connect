@@ -27,6 +27,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import boardgameconnect.config.SecurityConfig;
+import boardgameconnect.dto.BoardgameDto;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameInUseException;
@@ -107,6 +108,34 @@ class AssociationControllerTest {
 				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
 
 		verify(associationService).getAssociations(invalidBoardgameId);
+	}
+
+	@Test
+	void testGetAssociationBoardgamesReturnsOkAndListWhenAuthorized() throws Exception {
+		var game1 = new BoardgameDto("1", "Ark Nova", 1, 4, 120, 30, "cover.jpg");
+		var game2 = new BoardgameDto("2", "Brass", 2, 4, 180, 30, "cover2.jpg");
+
+		when(associationService.getBoardgamesFrom(ASSOCIATION_1_EMAIL)).thenReturn(List.of(game1, game2));
+
+		mockMvc.perform(get(BASE_URI + "/boardgames")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(2))).andExpect(jsonPath("$[0].id", is("1")))
+				.andExpect(jsonPath("$[0].name", is("Ark Nova"))).andExpect(jsonPath("$[1].name", is("Brass")));
+
+		verify(associationService).getBoardgamesFrom(ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void testGetAssociationBoardgamesReturnsNotFoundWhenAssociationIsMissing() throws Exception {
+		doThrow(new AssociationNotFoundException("Association not found")).when(associationService)
+				.getBoardgamesFrom(ASSOCIATION_1_EMAIL);
+
+		mockMvc.perform(get(BASE_URI + "/boardgames").with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
+				.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))).andExpect(status().isNotFound());
+
+		verify(associationService).getBoardgamesFrom(ASSOCIATION_1_EMAIL);
 	}
 
 	@Test

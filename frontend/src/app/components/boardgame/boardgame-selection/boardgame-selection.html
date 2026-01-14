@@ -7,7 +7,7 @@
     appearance="outlined"
   >
     <div class="card-image">
-      <img [src]="game.coverUrl || 'assets/placeholder.png'" [alt]="game.name" />
+      <img src="assets/placeholder.jpg" [alt]="game.name" />
 
       <div class="selection-overlay">
         <mat-checkbox
@@ -22,7 +22,7 @@
     <mat-card-header>
       <mat-card-title>{{ game.name }}</mat-card-title>
       <mat-card-subtitle>
-        {{ game.minPlayers }}-{{ game.maxPlayers }} Players • {{ game.minutesPerPlayer }}m
+        {{ game.minPlayers }}-{{ game.maxPlayers }} Players • {{ game.timeMin }}m
       </mat-card-subtitle>
     </mat-card-header>
   </mat-card>

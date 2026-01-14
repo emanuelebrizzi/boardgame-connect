@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import boardgameconnect.dto.BoardgameDto;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.model.Email;
 import boardgameconnect.service.association.AssociationService;
@@ -38,6 +39,14 @@ public class AssociationController {
 	@PreAuthorize("hasAnyRole('PLAYER', 'ASSOCIATION')")
 	public ResponseEntity<List<AssociationSummary>> getAssociationsByGame(@RequestParam String boardgameId) {
 		return ResponseEntity.ok(associationService.getAssociations(boardgameId));
+	}
+
+	@GetMapping("/boardgames")
+	@PreAuthorize("hasRole('ASSOCIATION')")
+	public ResponseEntity<List<BoardgameDto>> getAssociationBoardgames() {
+		var associationEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
+		List<BoardgameDto> boardgames = associationService.getBoardgamesFrom(associationEmail);
+		return ResponseEntity.ok(boardgames);
 	}
 
 	@PostMapping("/boardgames")
