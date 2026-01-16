@@ -96,7 +96,7 @@ public class BoardgameConnectReservationService implements ReservationService {
 		long durationMinutes = game.calculateDuration(request.maxPlayers());
 		Instant endTime = request.startTime().plus(Duration.ofMinutes(durationMinutes));
 
-		Reservation reservation = new Reservation(creator, association, game, request.startTime(), endTime);
+		Reservation reservation = new Reservation(creator, association, game, null, request.startTime(), endTime);
 
 		if (request.maxPlayers() > game.getMaxPlayer()) {
 			throw new IllegalArgumentException("Invalid player numbers " + game.getName());
