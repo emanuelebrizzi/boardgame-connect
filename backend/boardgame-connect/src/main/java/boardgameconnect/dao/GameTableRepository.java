@@ -19,12 +19,6 @@ public interface GameTableRepository extends JpaRepository<GameTable, String> {
 			    SELECT t FROM GameTable t
 			    WHERE t.association.id = :associationId
 			    AND t.capacity >= :minCapacity
-			    AND t.id NOT IN (
-			        SELECT r.gameTable.id FROM Reservation r
-			        WHERE r.status = boardgameconnect.model.ReservationStatus.OPEN
-			        AND r.startTime < :endTime
-			        AND r.endTime > :startTime
-			    )
 			""")
 	List<GameTable> findAvailableTables(@Param("associationId") String associationId,
 			@Param("minCapacity") int minCapacity, @Param("startTime") Instant startTime,
