@@ -39,6 +39,10 @@ public class Reservation {
 	@Enumerated(EnumType.STRING)
 	private ReservationStatus status;
 
+	@ManyToOne
+	@JoinColumn(name = "game_table_id")
+	private GameTable gameTable;
+
 	private Instant startTime;
 
 	private Instant endTime;
@@ -46,14 +50,15 @@ public class Reservation {
 	public Reservation() {
 	}
 
-	public Reservation(Player creator, Association association, Boardgame boardgame, Instant startTime,
-			Instant endTime) {
+	public Reservation(Player creator, Association association, Boardgame boardgame, GameTable gameTable,
+			Instant startTime, Instant endTime) {
 		this.players.add(creator);
 		this.association = association;
 		this.boardgame = boardgame;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.status = ReservationStatus.OPEN;
+		this.gameTable = gameTable;
 	}
 
 	public String getId() {
@@ -74,6 +79,14 @@ public class Reservation {
 
 	public ReservationStatus getStatus() {
 		return status;
+	}
+
+	public GameTable getGameTable() {
+		return gameTable;
+	}
+
+	public void setGameTable(GameTable gameTable) {
+		this.gameTable = gameTable;
 	}
 
 	public Instant getStartTime() {

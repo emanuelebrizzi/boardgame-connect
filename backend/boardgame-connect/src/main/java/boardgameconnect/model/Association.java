@@ -14,6 +14,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -33,6 +34,9 @@ public class Association {
 	private String taxCode;
 	@Column(nullable = false)
 	private String address;
+
+	@OneToMany(mappedBy = "association", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<GameTable> gameTables = new HashSet<>();
 
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "association_boardgames", joinColumns = @JoinColumn(name = "association_id"), inverseJoinColumns = @JoinColumn(name = "boardgame_id"))
@@ -69,6 +73,14 @@ public class Association {
 
 	public void setBoardgames(Set<Boardgame> boardgames) {
 		this.boardgames = boardgames;
+	}
+
+	public Set<GameTable> getGameTables() {
+		return gameTables;
+	}
+
+	public void addGameTable(GameTable table) {
+		this.gameTables.add(table);
 	}
 
 	@Override
