@@ -77,7 +77,7 @@ The easiest way to run the application is using Docker Compose. This will set up
 2.  **Build and Run:**
 
     ```bash
-    docker-compose up --build -d
+    docker-compose up --build --force-recreate -d
     ```
 
 3.  **Access the Application:**
