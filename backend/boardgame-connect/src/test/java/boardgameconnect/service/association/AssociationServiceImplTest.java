@@ -2,6 +2,7 @@ package boardgameconnect.service.association;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -20,8 +21,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
+import boardgameconnect.dao.GameTableRepository;
 import boardgameconnect.dao.ReservationRepository;
 import boardgameconnect.dto.BoardgameDto;
+import boardgameconnect.dto.GameTableRequest;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameInUseException;
@@ -31,12 +34,14 @@ import boardgameconnect.mapper.BoardgameMapper;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
+import boardgameconnect.model.GameTable;
 import boardgameconnect.model.ReservationStatus;
+import boardgameconnect.model.TableSize;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 
 @ExtendWith(MockitoExtension.class)
-class BoardgameConnectAssociationServiceTest {
+class AssociationServiceImplTest {
 
 	private static final String ASSOCIATION_1_ID = "test";
 	private static final Email ASSOCIATION_1_EMAIL = new Email("test@example.com");
@@ -62,16 +67,19 @@ class BoardgameConnectAssociationServiceTest {
 	private ReservationRepository reservationRepository;
 
 	@Mock
+	private GameTableRepository gameTableRepository;
+
+	@Mock
 	private AssociationMapper associationMapper;
 
 	@Mock
 	private BoardgameMapper boardgameMapper;
 
 	@InjectMocks
-	private BoardgameConnectAssociationService associationService;
+	private AssociationServiceImpl associationService;
 
 	@Test
-	void testGetAllAssociationsShouldReturnTheSummariesWhenThereAreAssociations() {
+	void GetAllAssociationsShouldReturnTheSummariesWhenThereAreAssociations() {
 		var association1 = new Association(
 				new UserAccount(ASSOCIATION_1_EMAIL, ASSOCIATION_1_PASSWORD, ASSOCIATION_1_NAME, UserRole.ASSOCIATION),
 				ASSOCIATION_1_CODE, ASSOCIATION_1_ADDRESS);
@@ -97,7 +105,7 @@ class BoardgameConnectAssociationServiceTest {
 	}
 
 	@Test
-	void testGetAssociationsByBoardgameIdShouldReturnSummariesWhenBoardgameExists() {
+	void GetAssociationsByBoardgameIdShouldReturnSummariesWhenBoardgameExists() {
 		String boardgameId = "bg-123";
 		var association1 = new Association(
 				new UserAccount(ASSOCIATION_1_EMAIL, ASSOCIATION_1_PASSWORD, ASSOCIATION_1_NAME, UserRole.ASSOCIATION),
@@ -118,7 +126,7 @@ class BoardgameConnectAssociationServiceTest {
 	}
 
 	@Test
-	void testGetAssociationsByBoardgameIdShouldThrowNotFoundWhenBoardgameDoesNotExist() {
+	void GetAssociationsByBoardgameIdShouldThrowNotFoundWhenBoardgameDoesNotExist() {
 		String invalidBoardgameId = "unknown-id";
 		when(boardgameRepository.existsById(invalidBoardgameId)).thenReturn(false);
 
@@ -131,7 +139,7 @@ class BoardgameConnectAssociationServiceTest {
 	}
 
 	@Test
-	void testAddBoardgamesToAssociationHappyPath() {
+	void AddBoardgamesToAssociationHappyPath() {
 		List<String> boardgameIds = List.of("test1", "test2");
 		var boardgame1 = new Boardgame("test1", 1, 2, 0, 0, "test_URL");
 		var boardgame2 = new Boardgame("test1", 1, 2, 0, 0, "test_URL");
@@ -152,7 +160,7 @@ class BoardgameConnectAssociationServiceTest {
 	}
 
 	@Test
-	void testAddBoardgamesToAssociationShouldThrowAssociationNotFoundExceptionWhenAssociationDoesNotExist() {
+	void AddBoardgamesToAssociationShouldThrowAssociationNotFoundExceptionWhenAssociationDoesNotExist() {
 		List<String> boardgameIds = List.of("test1", "test2");
 		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.empty());
 		assertThrows(AssociationNotFoundException.class,
@@ -163,7 +171,7 @@ class BoardgameConnectAssociationServiceTest {
 	}
 
 	@Test
-	void testRemoveBoardgamesFromAssociationHappyPath() {
+	void RemoveBoardgamesFromAssociationHappyPath() {
 		String gameId = "game-1";
 		List<String> boardgameIdsToRemove = List.of(gameId);
 		var boardgame1 = new Boardgame("Game Name", 1, 4, 30, 60, "http://cover.url");
@@ -188,7 +196,7 @@ class BoardgameConnectAssociationServiceTest {
 	}
 
 	@Test
-	void testRemoveBoardgamesFromAssociationShouldThrowAssociationNotFoundExceptionWhenAssociationDoesNotExist() {
+	void RemoveBoardgamesFromAssociationShouldThrowAssociationNotFoundExceptionWhenAssociationDoesNotExist() {
 		List<String> boardgameIds = List.of("test1");
 
 		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.empty());
@@ -202,7 +210,7 @@ class BoardgameConnectAssociationServiceTest {
 	}
 
 	@Test
-	void testRemoveBoardgamesFromAssociationShouldThrowExceptionWhenGameHasOpenReservation() {
+	void RemoveBoardgamesFromAssociationShouldThrowExceptionWhenGameHasOpenReservation() {
 		String gameId = "game-1";
 		List<String> boardgameIds = List.of(gameId);
 		var game = new Boardgame("Game name", 1, 4, 60, 120, "url");
@@ -225,7 +233,7 @@ class BoardgameConnectAssociationServiceTest {
 	}
 
 	@Test
-	void testGetAssociationBoardgamesReturnsBoardgameListWhenAssociationExists() {
+	void GetAssociationBoardgamesReturnsBoardgameListWhenAssociationExists() {
 		var boardgame1 = new Boardgame("Game 1", 1, 4, 30, 60, "url");
 		var dto1 = new BoardgameDto("bg-1", "Game 1", 1, 4, 60, 10, "url");
 		var association = new Association(new UserAccount(ASSOCIATION_1_EMAIL, "pass", "name", UserRole.ASSOCIATION),
@@ -242,11 +250,43 @@ class BoardgameConnectAssociationServiceTest {
 	}
 
 	@Test
-	void testGetAssociationBoardgamesThrowsExceptionWhenAssociationNotFound() {
+	void GetAssociationBoardgamesThrowsExceptionWhenAssociationNotFound() {
 		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.empty());
 		assertThrows(AssociationNotFoundException.class,
 				() -> associationService.getBoardgamesFrom(ASSOCIATION_1_EMAIL));
 		verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void AddTableToAssociationHappyPath() {
+		var request = new GameTableRequest(4, TableSize.MEDIUM);
+		var association = new Association(new UserAccount(ASSOCIATION_1_EMAIL, "pass", "name", UserRole.ASSOCIATION),
+				ASSOCIATION_1_CODE, ASSOCIATION_1_ADDRESS);
+
+		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.of(association));
+
+		associationService.addTableToAssociation(request, ASSOCIATION_1_EMAIL);
+
+		assertThat(association.getGameTables()).hasSize(1);
+		var addedTable = association.getGameTables().iterator().next();
+		assertThat(addedTable.getCapacity()).isEqualTo(4);
+		assertThat(addedTable.getSize()).isEqualTo(TableSize.MEDIUM);
+		assertThat(addedTable.getAssociation()).isEqualTo(association);
+
+		verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
+		verify(gameTableRepository).save(any(GameTable.class));
+	}
+
+	@Test
+	void AddTableToAssociationShouldThrowAssociationNotFoundExceptionWhenAssociationDoesNotExist() {
+		var request = new GameTableRequest(4, TableSize.MEDIUM);
+		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.empty());
+
+		assertThrows(AssociationNotFoundException.class,
+				() -> associationService.addTableToAssociation(request, ASSOCIATION_1_EMAIL));
+
+		verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
+		verifyNoInteractions(gameTableRepository);
 	}
 
 }
