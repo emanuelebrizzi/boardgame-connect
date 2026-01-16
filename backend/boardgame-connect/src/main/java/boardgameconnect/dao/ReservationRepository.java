@@ -12,4 +12,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, String
 
 	boolean existsByAssociationAndBoardgameIdAndStatus(Association association, String boardgameId,
 			ReservationStatus status);
+
+	boolean existsByGameTableIdAndStatus(String tableId, ReservationStatus status);
+
 }

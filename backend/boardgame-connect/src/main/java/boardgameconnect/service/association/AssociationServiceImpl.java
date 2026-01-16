@@ -1,6 +1,7 @@
 package boardgameconnect.service.association;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -123,9 +124,23 @@ public class AssociationServiceImpl implements AssociationService {
 	}
 
 	@Override
+	@Transactional
 	public void removeTableFromAssociation(String tableId, Email associationEmail) {
-		// TODO Auto-generated method stub
+		Association association = associationRepository.findByAccountEmail(associationEmail)
+				.orElseThrow(() -> new AssociationNotFoundException("Association not found"));
 
+		GameTable tableToRemove = association.getGameTables().stream().filter(t -> t.getId().equals(tableId))
+				.findFirst().orElseThrow(() -> new NoSuchElementException("Table not found in this association"));
+
+		boolean hasOpenReservations = reservationRepository.existsByGameTableIdAndStatus(tableId,
+				ReservationStatus.OPEN);
+
+		if (hasOpenReservations) {
+			throw new BoardgameInUseException("Cannot remove table because it has OPEN reservations.");
+		}
+
+		association.getGameTables().remove(tableToRemove);
+
+		associationRepository.save(association);
 	}
-
 }

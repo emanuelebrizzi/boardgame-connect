@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -71,6 +72,14 @@ public class AssociationController {
 	public ResponseEntity<Void> addTable(@Valid @RequestBody GameTableRequest tableRequest) {
 		var associationEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
 		associationService.addTableToAssociation(tableRequest, associationEmail);
+		return ResponseEntity.ok().build();
+	}
+
+	@DeleteMapping("/tables/{tableId}")
+	@PreAuthorize("hasRole('ASSOCIATION')")
+	public ResponseEntity<Void> removeTable(@PathVariable String tableId) {
+		var associationEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
+		associationService.removeTableFromAssociation(tableId, associationEmail);
 		return ResponseEntity.ok().build();
 	}
 
