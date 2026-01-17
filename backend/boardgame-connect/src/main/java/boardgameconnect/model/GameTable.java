@@ -24,7 +24,7 @@ public class GameTable {
 	private Association association;
 
 	@Enumerated(EnumType.STRING)
-	private TableSize size;
+	private GameTableSize size;
 
 	private int capacity;
 
@@ -47,11 +47,11 @@ public class GameTable {
 		this.association = association;
 	}
 
-	public TableSize getSize() {
+	public GameTableSize getSize() {
 		return size;
 	}
 
-	public void setSize(TableSize size) {
+	public void setSize(GameTableSize size) {
 		this.size = size;
 	}
 

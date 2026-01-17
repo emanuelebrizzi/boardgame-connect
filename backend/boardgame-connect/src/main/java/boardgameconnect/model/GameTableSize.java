@@ -1,5 +1,5 @@
 package boardgameconnect.model;
 
-public enum TableSize {
+public enum GameTableSize {
 	SMALL, MEDIUM, LARGE
 }

@@ -1,6 +1,6 @@
 package boardgameconnect.dto;
 
-import boardgameconnect.model.TableSize;
+import boardgameconnect.model.GameTableSize;
 
-public record GameTableRequest(int capacity, TableSize size) {
+public record GameTableRequest(int capacity, GameTableSize size) {
 }

@@ -37,7 +37,7 @@ import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.GameTable;
 import boardgameconnect.model.ReservationStatus;
-import boardgameconnect.model.TableSize;
+import boardgameconnect.model.GameTableSize;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 
@@ -260,7 +260,7 @@ class AssociationServiceImplTest {
 
 	@Test
 	void addTableToAssociationHappyPath() {
-		var request = new GameTableRequest(4, TableSize.MEDIUM);
+		var request = new GameTableRequest(4, GameTableSize.MEDIUM);
 		var association = new Association(new UserAccount(ASSOCIATION_1_EMAIL, "pass", "name", UserRole.ASSOCIATION),
 				ASSOCIATION_1_CODE, ASSOCIATION_1_ADDRESS);
 
@@ -271,7 +271,7 @@ class AssociationServiceImplTest {
 		assertThat(association.getGameTables()).hasSize(1);
 		var addedTable = association.getGameTables().iterator().next();
 		assertThat(addedTable.getCapacity()).isEqualTo(4);
-		assertThat(addedTable.getSize()).isEqualTo(TableSize.MEDIUM);
+		assertThat(addedTable.getSize()).isEqualTo(GameTableSize.MEDIUM);
 		assertThat(addedTable.getAssociation()).isEqualTo(association);
 
 		verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
@@ -280,7 +280,7 @@ class AssociationServiceImplTest {
 
 	@Test
 	void addTableToAssociationShouldThrowAssociationNotFoundExceptionWhenAssociationDoesNotExist() {
-		var request = new GameTableRequest(4, TableSize.MEDIUM);
+		var request = new GameTableRequest(4, GameTableSize.MEDIUM);
 		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.empty());
 
 		assertThrows(AssociationNotFoundException.class,

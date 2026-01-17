@@ -34,7 +34,7 @@ import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameInUseException;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.model.Email;
-import boardgameconnect.model.TableSize;
+import boardgameconnect.model.GameTableSize;
 import boardgameconnect.service.association.AssociationService;
 
 @WebMvcTest(AssociationController.class)
@@ -228,7 +228,7 @@ class AssociationControllerTest {
 
 	@Test
 	void addTableReturnsOkWhenRequestIsValid() throws Exception {
-		var tableRequest = new GameTableRequest(4, TableSize.MEDIUM);
+		var tableRequest = new GameTableRequest(4, GameTableSize.MEDIUM);
 		mockMvc.perform(post(BASE_URI + "/tables")
 				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL.toString()))
 						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
@@ -239,7 +239,7 @@ class AssociationControllerTest {
 
 	@Test
 	void addTableReturnsNotFoundWhenAssociationIsMissing() throws Exception {
-		var tableRequest = new GameTableRequest(4, TableSize.MEDIUM);
+		var tableRequest = new GameTableRequest(4, GameTableSize.MEDIUM);
 		String errorMessage = "Association not found";
 
 		doThrow(new AssociationNotFoundException(errorMessage)).when(associationService)
