@@ -16,6 +16,7 @@ import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameInUseException;
 import boardgameconnect.exception.BoardgameNotFoundException;
+import boardgameconnect.exception.GameTableInUseException;
 import boardgameconnect.mapper.AssociationMapper;
 import boardgameconnect.mapper.BoardgameMapper;
 import boardgameconnect.model.Association;
@@ -136,7 +137,7 @@ public class AssociationServiceImpl implements AssociationService {
 				ReservationStatus.OPEN);
 
 		if (hasOpenReservations) {
-			throw new BoardgameInUseException("Cannot remove table because it has OPEN reservations.");
+			throw new GameTableInUseException("Cannot remove table because it has OPEN reservations.");
 		}
 
 		association.getGameTables().remove(tableToRemove);

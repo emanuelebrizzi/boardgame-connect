@@ -30,14 +30,15 @@ import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameInUseException;
 import boardgameconnect.exception.BoardgameNotFoundException;
+import boardgameconnect.exception.GameTableInUseException;
 import boardgameconnect.mapper.AssociationMapper;
 import boardgameconnect.mapper.BoardgameMapper;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.GameTable;
-import boardgameconnect.model.ReservationStatus;
 import boardgameconnect.model.GameTableSize;
+import boardgameconnect.model.ReservationStatus;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 
@@ -322,7 +323,7 @@ class AssociationServiceImplTest {
 		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.of(association));
 		when(reservationRepository.existsByGameTableIdAndStatus(tableId, ReservationStatus.OPEN)).thenReturn(true);
 
-		assertThrows(BoardgameInUseException.class,
+		assertThrows(GameTableInUseException.class,
 				() -> associationService.removeTableFromAssociation(tableId, ASSOCIATION_1_EMAIL));
 
 		verify(associationRepository, never()).save(any());
