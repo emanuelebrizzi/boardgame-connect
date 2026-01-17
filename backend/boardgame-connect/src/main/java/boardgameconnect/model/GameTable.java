@@ -31,6 +31,14 @@ public class GameTable {
 	public GameTable() {
 	}
 
+	public GameTable(String id, Association association, GameTableSize size, int capacity) {
+		super();
+		this.id = id;
+		this.association = association;
+		this.size = size;
+		this.capacity = capacity;
+	}
+
 	public String getId() {
 		return id;
 	}
