@@ -68,7 +68,8 @@ public class GlobalExceptionHandler {
 	}
 
 	// Error 409
-	@ExceptionHandler({ EmailAlreadyInUseException.class, BoardgameInUseException.class })
+	@ExceptionHandler({ EmailAlreadyInUseException.class, BoardgameInUseException.class,
+			GameTableInUseException.class })
 	public ResponseEntity<ErrorResponse> handleConflict(Exception ex, HttpServletRequest request) {
 		log.warn("Conflict at path {}: {}", request.getRequestURI(), ex.getMessage());
 

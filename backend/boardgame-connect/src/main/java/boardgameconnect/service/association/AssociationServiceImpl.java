@@ -1,40 +1,47 @@
 package boardgameconnect.service.association;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
+import boardgameconnect.dao.GameTableRepository;
 import boardgameconnect.dao.ReservationRepository;
 import boardgameconnect.dto.BoardgameDto;
+import boardgameconnect.dto.GameTableRequest;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameInUseException;
 import boardgameconnect.exception.BoardgameNotFoundException;
+import boardgameconnect.exception.GameTableInUseException;
 import boardgameconnect.mapper.AssociationMapper;
 import boardgameconnect.mapper.BoardgameMapper;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
+import boardgameconnect.model.GameTable;
 import boardgameconnect.model.ReservationStatus;
 import jakarta.transaction.Transactional;
 
 @Service
-public class BoardgameConnectAssociationService implements AssociationService {
+public class AssociationServiceImpl implements AssociationService {
 
 	private final AssociationRepository associationRepository;
 	private final BoardgameRepository boardgameRepository;
+	private final GameTableRepository gameTableRepository;
 	private final ReservationRepository reservationRepository;
 	private final AssociationMapper associationMapper;
 	private final BoardgameMapper boardgameMapper;
 
-	public BoardgameConnectAssociationService(AssociationRepository associationRepository,
-			BoardgameRepository boardgameRepository, ReservationRepository reservationRepository,
+	public AssociationServiceImpl(AssociationRepository associationRepository, BoardgameRepository boardgameRepository,
+			GameTableRepository gameTableRepository, ReservationRepository reservationRepository,
 			AssociationMapper associationMapper, BoardgameMapper boardgameMapper) {
 		this.associationRepository = associationRepository;
 		this.boardgameRepository = boardgameRepository;
+		this.gameTableRepository = gameTableRepository;
 		this.reservationRepository = reservationRepository;
 		this.associationMapper = associationMapper;
 		this.boardgameMapper = boardgameMapper;
@@ -102,4 +109,39 @@ public class BoardgameConnectAssociationService implements AssociationService {
 		return association.getBoardgames().stream().map(boardgameMapper::toDto).toList();
 	}
 
+	@Override
+	@Transactional
+	public void addTableToAssociation(GameTableRequest request, Email associationEmail) {
+		Association association = associationRepository.findByAccountEmail(associationEmail)
+				.orElseThrow(() -> new AssociationNotFoundException("Association not found"));
+
+		GameTable table = new GameTable();
+		table.setCapacity(request.capacity());
+		table.setSize(request.size());
+		table.setAssociation(association);
+		association.addGameTable(table);
+
+		gameTableRepository.save(table);
+	}
+
+	@Override
+	@Transactional
+	public void removeTableFromAssociation(String tableId, Email associationEmail) {
+		Association association = associationRepository.findByAccountEmail(associationEmail)
+				.orElseThrow(() -> new AssociationNotFoundException("Association not found"));
+
+		GameTable tableToRemove = association.getGameTables().stream().filter(t -> t.getId().equals(tableId))
+				.findFirst().orElseThrow(() -> new NoSuchElementException("Table not found in this association"));
+
+		boolean hasOpenReservations = reservationRepository.existsByGameTableIdAndStatus(tableId,
+				ReservationStatus.OPEN);
+
+		if (hasOpenReservations) {
+			throw new GameTableInUseException("Cannot remove table because it has OPEN reservations.");
+		}
+
+		association.getGameTables().remove(tableToRemove);
+
+		associationRepository.save(association);
+	}
 }

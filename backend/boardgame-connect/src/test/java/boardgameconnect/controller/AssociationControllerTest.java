@@ -28,11 +28,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import boardgameconnect.config.SecurityConfig;
 import boardgameconnect.dto.BoardgameDto;
+import boardgameconnect.dto.GameTableRequest;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameInUseException;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.model.Email;
+import boardgameconnect.model.GameTableSize;
 import boardgameconnect.service.association.AssociationService;
 
 @WebMvcTest(AssociationController.class)
@@ -63,7 +65,7 @@ class AssociationControllerTest {
 	private AssociationService associationService;
 
 	@Test
-	void testGetAssociationsReturnsAssociationSummeries() throws Exception {
+	void getAssociationsReturnsAssociationSummeries() throws Exception {
 		var association1 = new AssociationSummary(ASSOCIATION_1_ID, ASSOCIATION_1_NAME, ASSOCIATION_1_ADDRESS);
 		var association2 = new AssociationSummary(ASSOCIATION_2_ID, ASSOCIATION_2_NAME, ASSOCIATION_2_ADDRESS);
 
@@ -80,7 +82,7 @@ class AssociationControllerTest {
 	}
 
 	@Test
-	void testGetAssociationsReturnsAssociationSummeriesWhenBoardgameIdIsValid() throws Exception {
+	void getAssociationsReturnsAssociationSummeriesWhenBoardgameIdIsValid() throws Exception {
 		String boardgameId = "bg-123";
 		var association1 = new AssociationSummary(ASSOCIATION_1_ID, ASSOCIATION_1_NAME, ASSOCIATION_1_ADDRESS);
 
@@ -96,7 +98,7 @@ class AssociationControllerTest {
 	}
 
 	@Test
-	void testGetAssociationsReturnsNotFoundWhenBoardgameIdDoesNotExist() throws Exception {
+	void getAssociationsReturnsNotFoundWhenBoardgameIdDoesNotExist() throws Exception {
 		String invalidBoardgameId = "unknown-id";
 
 		doThrow(new BoardgameNotFoundException("Boardgame not found with id: " + invalidBoardgameId))
@@ -111,7 +113,7 @@ class AssociationControllerTest {
 	}
 
 	@Test
-	void testGetAssociationBoardgamesReturnsOkAndListWhenAuthorized() throws Exception {
+	void getAssociationBoardgamesReturnsOkAndListWhenAuthorized() throws Exception {
 		var game1 = new BoardgameDto("1", "Ark Nova", 1, 4, 120, 30, "cover.jpg");
 		var game2 = new BoardgameDto("2", "Brass", 2, 4, 180, 30, "cover2.jpg");
 
@@ -128,7 +130,7 @@ class AssociationControllerTest {
 	}
 
 	@Test
-	void testGetAssociationBoardgamesReturnsNotFoundWhenAssociationIsMissing() throws Exception {
+	void getAssociationBoardgamesReturnsNotFoundWhenAssociationIsMissing() throws Exception {
 		doThrow(new AssociationNotFoundException("Association not found")).when(associationService)
 				.getBoardgamesFrom(ASSOCIATION_1_EMAIL);
 
@@ -139,7 +141,7 @@ class AssociationControllerTest {
 	}
 
 	@Test
-	void testAddAssociationGamesReturnsOkWhenRequestIsValid() throws Exception {
+	void addAssociationGamesReturnsOkWhenRequestIsValid() throws Exception {
 		List<String> boardgameIds = List.of(BOARDGAME_ID, "test2");
 
 		mockMvc.perform(post(BASE_URI + "/boardgames")
@@ -152,7 +154,7 @@ class AssociationControllerTest {
 	}
 
 	@Test
-	void testAddAssociationGamesReturnsBadRequestWhenBodyIsInvalid() throws Exception {
+	void addAssociationGamesReturnsBadRequestWhenBodyIsInvalid() throws Exception {
 		mockMvc.perform(post(BASE_URI + "/boardgames")
 				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL))
 						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
@@ -162,7 +164,7 @@ class AssociationControllerTest {
 	}
 
 	@Test
-	void testAddAssociationGamesReturnsNotFoundWhenAssociationIsMissing() throws Exception {
+	void addAssociationGamesReturnsNotFoundWhenAssociationIsMissing() throws Exception {
 		List<String> boardgameIds = List.of(BOARDGAME_ID, "test2");
 
 		doThrow(new AssociationNotFoundException("Association not found with id: " + ASSOCIATION_1_ID))
@@ -179,7 +181,7 @@ class AssociationControllerTest {
 	}
 
 	@Test
-	void testRemoveAssociationGamesReturnsOkWhenBodyIsValid() throws Exception {
+	void removeAssociationGamesReturnsOkWhenBodyIsValid() throws Exception {
 		var boardgameIds = List.of(BOARDGAME_ID, "test2");
 
 		mockMvc.perform(delete(BASE_URI + "/boardgames")
@@ -192,7 +194,7 @@ class AssociationControllerTest {
 	}
 
 	@Test
-	void testRemoveAssociationGamesReturnsNotFoundWhenAssociationIsMissing() throws Exception {
+	void removeAssociationGamesReturnsNotFoundWhenAssociationIsMissing() throws Exception {
 		var boardgameIds = List.of(BOARDGAME_ID);
 
 		doThrow(new AssociationNotFoundException("Association not found")).when(associationService)
@@ -208,7 +210,7 @@ class AssociationControllerTest {
 	}
 
 	@Test
-	void testRemoveAssociationGamesReturnsConflictWhenGameIsInUse() throws Exception {
+	void removeAssociationGamesReturnsConflictWhenGameIsInUse() throws Exception {
 		var boardgameIds = List.of(BOARDGAME_ID);
 		String errorMessage = "Cannot remove boardgame because it has OPEN reservations.";
 
@@ -224,4 +226,60 @@ class AssociationControllerTest {
 		verify(associationService).removeBoardgamesFromAssociation(boardgameIds, ASSOCIATION_1_EMAIL);
 	}
 
+	@Test
+	void addTableReturnsOkWhenRequestIsValid() throws Exception {
+		var tableRequest = new GameTableRequest(4, GameTableSize.MEDIUM);
+		mockMvc.perform(post(BASE_URI + "/tables")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL.toString()))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tableRequest)))
+				.andExpect(status().isOk());
+		verify(associationService).addTableToAssociation(tableRequest, ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void addTableReturnsNotFoundWhenAssociationIsMissing() throws Exception {
+		var tableRequest = new GameTableRequest(4, GameTableSize.MEDIUM);
+		String errorMessage = "Association not found";
+
+		doThrow(new AssociationNotFoundException(errorMessage)).when(associationService)
+				.addTableToAssociation(tableRequest, ASSOCIATION_1_EMAIL);
+
+		mockMvc.perform(post(BASE_URI + "/tables")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL.toString()))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(tableRequest)))
+				.andExpect(status().isNotFound()).andExpect(jsonPath("$.message", is(errorMessage)));
+
+		verify(associationService).addTableToAssociation(tableRequest, ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void removeTableReturnsOkWhenAuthorized() throws Exception {
+		String tableId = "table-123";
+
+		mockMvc.perform(delete(BASE_URI + "/tables/" + tableId)
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL.toString()))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION"))))
+				.andExpect(status().isOk());
+
+		verify(associationService).removeTableFromAssociation(tableId, ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void removeTableReturnsConflictWhenTableIsInUse() throws Exception {
+		String tableId = "table-123";
+		String errorMessage = "Cannot remove table because it has OPEN reservations.";
+
+		doThrow(new BoardgameInUseException(errorMessage)).when(associationService).removeTableFromAssociation(tableId,
+				ASSOCIATION_1_EMAIL);
+
+		mockMvc.perform(delete(BASE_URI + "/tables/" + tableId)
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL.toString()))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isConflict())
+				.andExpect(jsonPath("$.message", is(errorMessage)));
+
+		verify(associationService).removeTableFromAssociation(tableId, ASSOCIATION_1_EMAIL);
+	}
 }

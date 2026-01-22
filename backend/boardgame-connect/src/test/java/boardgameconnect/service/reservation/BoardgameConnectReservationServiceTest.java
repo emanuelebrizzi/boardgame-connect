@@ -76,7 +76,8 @@ class BoardgameConnectReservationServiceTest {
 		UserAccount playerAcc = new UserAccount(new Email(PLAYER_EMAIL_STRING), "pass", PLAYER_NAME, UserRole.PLAYER);
 		Player creator = new Player(playerAcc);
 
-		openReservation = new Reservation(creator, association, root, Instant.now(), Instant.now().plusSeconds(3600));
+		openReservation = new Reservation(creator, association, root, null, Instant.now(),
+				Instant.now().plusSeconds(3600));
 
 		ReflectionTestUtils.setField(openReservation, "id", RESERVATION_ID);
 	}
