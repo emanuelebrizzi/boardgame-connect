@@ -5,6 +5,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -23,14 +26,18 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
+import boardgameconnect.dao.GameTableRepository;
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.ReservationRepository;
+import boardgameconnect.dto.reservation.ReservationCreateRequest;
 import boardgameconnect.dto.reservation.ReservationDetail;
 import boardgameconnect.dto.reservation.ReservationSummary;
 import boardgameconnect.exception.ReservationNotFoundException;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
+import boardgameconnect.model.GameTable;
+import boardgameconnect.model.GameTableSize;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.Reservation;
 import boardgameconnect.model.UserAccount;
@@ -43,13 +50,17 @@ class BoardgameConnectReservationServiceTest {
 	private static final String ASSOCIATION_NAME = "BoardGames Inc";
 	private static final String ASSOCIATION_ADDRESS = "Via Roma 1";
 	private static final String ASSOCIATION_TAXCODE = "TAX123";
+	private static final String ASSOCIATION_ID = "assoc_123";
 
 	private static final String PLAYER_EMAIL_STRING = "player@example.com";
 	private static final String PLAYER_NAME = "Mario Rossi";
 
+	private static final String BORDGAME_ID = "bg_456";
 	private static final String BORDGAME_NAME = "Root";
 	private static final String BORDGAME_URL = "url-img-root.jpg";
-	private static final String RESERVATION_ID = "t_789";
+
+	private static final String RESERVATION_ID = "r_789";
+	private static final String TABLE_ID = "table_999";
 
 	@Mock
 	private ReservationRepository reservationRepository;
@@ -59,24 +70,31 @@ class BoardgameConnectReservationServiceTest {
 	private AssociationRepository associationRepository;
 	@Mock
 	private PlayerRepository playerRepository;
+	@Mock
+	private GameTableRepository gameTableRepository;
 
 	@InjectMocks
 	private BoardgameConnectReservationService reservationService;
 
 	private Reservation openReservation;
+	private Boardgame rootGame;
+	private Association association;
+	private Player creator;
 
 	@BeforeEach
 	void setUp() {
 		UserAccount assocAcc = new UserAccount(new Email(ASSOCIATION_EMAIL_STRING), "pass", ASSOCIATION_NAME,
 				UserRole.ASSOCIATION);
-		Association association = new Association(assocAcc, ASSOCIATION_TAXCODE, ASSOCIATION_ADDRESS);
+		association = new Association(assocAcc, ASSOCIATION_TAXCODE, ASSOCIATION_ADDRESS);
+		ReflectionTestUtils.setField(association, "id", ASSOCIATION_ID);
 
-		Boardgame root = new Boardgame(BORDGAME_NAME, 2, 4, 60, 30, BORDGAME_URL);
+		rootGame = new Boardgame(BORDGAME_NAME, 2, 4, 60, 30, BORDGAME_URL);
+		ReflectionTestUtils.setField(rootGame, "id", BORDGAME_ID);
 
 		UserAccount playerAcc = new UserAccount(new Email(PLAYER_EMAIL_STRING), "pass", PLAYER_NAME, UserRole.PLAYER);
-		Player creator = new Player(playerAcc);
+		creator = new Player(playerAcc);
 
-		openReservation = new Reservation(creator, association, root, null, Instant.now(),
+		openReservation = new Reservation(creator, association, rootGame, null, Instant.now(),
 				Instant.now().plusSeconds(3600));
 
 		ReflectionTestUtils.setField(openReservation, "id", RESERVATION_ID);
@@ -155,6 +173,96 @@ class BoardgameConnectReservationServiceTest {
 		assertThrows(ReservationNotFoundException.class, () -> {
 			reservationService.getReservationById(unknownId);
 		});
+	}
+
+	// -----------------
+
+	@Test
+	void createReservationShouldSaveSuccessfullyWhenTableIsAvailable() {
+		Instant startTime = Instant.parse("2025-11-25T21:00:00Z");
+		ReservationCreateRequest request = new ReservationCreateRequest(BORDGAME_ID, ASSOCIATION_ID, 4, startTime);
+		Email userEmail = new Email(PLAYER_EMAIL_STRING);
+
+		GameTable freeTable = new GameTable(TABLE_ID, association, GameTableSize.MEDIUM, 4);
+
+		when(boardgameRepository.findById(BORDGAME_ID)).thenReturn(Optional.of(rootGame));
+		when(associationRepository.findById(ASSOCIATION_ID)).thenReturn(Optional.of(association));
+		when(playerRepository.findByAccountEmail(userEmail)).thenReturn(Optional.of(creator));
+
+		when(gameTableRepository.findByAssociationAndCapacityGreaterThanEqual(association, 4))
+				.thenReturn(List.of(freeTable));
+		when(reservationRepository.findOccupiedTables(eq(ASSOCIATION_ID), any(), any())).thenReturn(List.of());
+
+		reservationService.createReservation(request, userEmail);
+
+		verify(reservationRepository, times(1)).save(any(Reservation.class));
+	}
+
+	@Test
+	void createReservationShouldThrowExceptionWhenPlayersAreNotInRange() {
+		int invalidPlayers = 10;
+		ReservationCreateRequest request = new ReservationCreateRequest(BORDGAME_ID, ASSOCIATION_ID, invalidPlayers,
+				Instant.now());
+		Email userEmail = new Email(PLAYER_EMAIL_STRING);
+
+		when(boardgameRepository.findById(BORDGAME_ID)).thenReturn(Optional.of(rootGame));
+		when(associationRepository.findById(ASSOCIATION_ID)).thenReturn(Optional.of(association));
+		when(playerRepository.findByAccountEmail(userEmail)).thenReturn(Optional.of(creator));
+
+		IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+			reservationService.createReservation(request, userEmail);
+		});
+		assertTrue(exception.getMessage().contains("Number of invalid players for " + BORDGAME_NAME));
+	}
+
+	@Test
+	void createReservationShouldThrowExceptionWhenNoTableIsAvailable() {
+		ReservationCreateRequest request = new ReservationCreateRequest(BORDGAME_ID, ASSOCIATION_ID, 4, Instant.now());
+		Email userEmail = new Email(PLAYER_EMAIL_STRING);
+
+		GameTable busyTable = new GameTable(TABLE_ID, association, GameTableSize.MEDIUM, 4);
+
+		when(boardgameRepository.findById(BORDGAME_ID)).thenReturn(Optional.of(rootGame));
+		when(associationRepository.findById(ASSOCIATION_ID)).thenReturn(Optional.of(association));
+		when(playerRepository.findByAccountEmail(userEmail)).thenReturn(Optional.of(creator));
+
+		when(gameTableRepository.findByAssociationAndCapacityGreaterThanEqual(association, 4))
+				.thenReturn(List.of(busyTable));
+		when(reservationRepository.findOccupiedTables(eq(ASSOCIATION_ID), any(), any())).thenReturn(List.of(busyTable));
+
+		RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+			reservationService.createReservation(request, userEmail);
+		});
+		assertEquals("Table not found.", exception.getMessage());
+	}
+
+	@Test
+	void createReservationShouldCalculateCorrectEndTime() {
+		Instant startTime = Instant.parse("2025-11-25T21:00:00Z");
+		int players = 4;
+		long expectedDurationMin = 180;
+		Instant expectedEndTime = startTime.plus(java.time.Duration.ofMinutes(expectedDurationMin));
+
+		ReservationCreateRequest request = new ReservationCreateRequest(BORDGAME_ID, ASSOCIATION_ID, players,
+				startTime);
+		GameTable freeTable = new GameTable(TABLE_ID, association, GameTableSize.MEDIUM, 4);
+
+		when(boardgameRepository.findById(BORDGAME_ID)).thenReturn(Optional.of(rootGame));
+		when(associationRepository.findById(ASSOCIATION_ID)).thenReturn(Optional.of(association));
+		when(playerRepository.findByAccountEmail(any())).thenReturn(Optional.of(creator));
+		when(gameTableRepository.findByAssociationAndCapacityGreaterThanEqual(any(), anyInt()))
+				.thenReturn(List.of(freeTable));
+
+		org.mockito.ArgumentCaptor<Reservation> reservationCaptor = org.mockito.ArgumentCaptor
+				.forClass(Reservation.class);
+
+		reservationService.createReservation(request, new Email(PLAYER_EMAIL_STRING));
+
+		verify(reservationRepository).save(reservationCaptor.capture());
+		Reservation savedReservation = reservationCaptor.getValue();
+
+		assertEquals(startTime, savedReservation.getStartTime());
+		assertEquals(expectedEndTime, savedReservation.getEndTime());
 	}
 
 //	@Test

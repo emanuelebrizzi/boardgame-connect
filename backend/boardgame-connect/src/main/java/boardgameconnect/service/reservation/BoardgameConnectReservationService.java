@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import boardgameconnect.dao.AssociationRepository;
 import boardgameconnect.dao.BoardgameRepository;
+import boardgameconnect.dao.GameTableRepository;
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.ReservationRepository;
 import boardgameconnect.dto.PlayerSummary;
@@ -20,12 +21,14 @@ import boardgameconnect.dto.reservation.ReservationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameNotFoundException;
 import boardgameconnect.exception.ForbiddenActionException;
+import boardgameconnect.exception.GameTableNotFoundException;
 import boardgameconnect.exception.PlayerAlreadyJoinedException;
 import boardgameconnect.exception.PlayerNotFoundException;
 import boardgameconnect.exception.ReservationNotFoundException;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
+import boardgameconnect.model.GameTable;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.Reservation;
 import boardgameconnect.model.ReservationStatus;
@@ -37,14 +40,16 @@ public class BoardgameConnectReservationService implements ReservationService {
 	private final BoardgameRepository boardgameRepository;
 	private final AssociationRepository associationRepository;
 	private final PlayerRepository playerRepository;
+	private final GameTableRepository gameTableRepository;
 
 	public BoardgameConnectReservationService(ReservationRepository reservationRepository,
 			BoardgameRepository boardgameRepository, AssociationRepository associationRepository,
-			PlayerRepository playerRepository) {
+			PlayerRepository playerRepository, GameTableRepository gameTableRepository) {
 		this.reservationRepository = reservationRepository;
 		this.boardgameRepository = boardgameRepository;
 		this.associationRepository = associationRepository;
 		this.playerRepository = playerRepository;
+		this.gameTableRepository = gameTableRepository;
 
 	}
 
@@ -93,16 +98,28 @@ public class BoardgameConnectReservationService implements ReservationService {
 		Player creator = playerRepository.findByAccountEmail(userEmail)
 				.orElseThrow(() -> new PlayerNotFoundException("Player profile not found for email: " + userEmail));
 
-		long durationMinutes = game.calculateDuration(request.maxPlayers());
-		Instant endTime = request.startTime().plus(Duration.ofMinutes(durationMinutes));
-
-		Reservation reservation = new Reservation(creator, association, game, null, request.startTime(), endTime);
-
-		if (request.maxPlayers() > game.getMaxPlayer()) {
-			throw new IllegalArgumentException("Invalid player numbers " + game.getName());
+		if (request.selectedPlayers() < game.getMinPlayer() || request.selectedPlayers() > game.getMaxPlayer()) {
+			throw new IllegalArgumentException("Number of invalid players for " + game.getName());
 		}
 
+		long durationMinutes = game.calculateDuration(request.selectedPlayers());
+		Instant startTime = request.startTime();
+		Instant endTime = startTime.plus(Duration.ofMinutes(durationMinutes));
+
+		GameTable availableTable = findTable(association, startTime, endTime, request.selectedPlayers());
+
+		Reservation reservation = new Reservation(creator, association, game, availableTable, startTime, endTime);
+
 		reservationRepository.save(reservation);
+	}
+
+	private GameTable findTable(Association association, Instant start, Instant end, int players) {
+		List<GameTable> suitableTables = gameTableRepository.findByAssociationAndCapacityGreaterThanEqual(association,
+				players);
+
+		List<GameTable> occupiedTables = reservationRepository.findOccupiedTables(association.getId(), start, end);
+		return suitableTables.stream().filter(table -> !occupiedTables.contains(table)).findFirst()
+				.orElseThrow(() -> new GameTableNotFoundException("Table not found."));
 	}
 
 	@Override
