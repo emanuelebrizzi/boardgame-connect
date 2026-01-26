@@ -1,6 +1,6 @@
-# BoardGame Connect
+# Boardgame Connect
 
-BoardGame Connect is a full-stack web application designed to connect board game players with local associations.
+Boardgame Connect is a full-stack web application designed to connect board game players with local associations.
 
 ## 🚀 Technologies
 
@@ -70,7 +70,7 @@ The easiest way to run the application is using Docker Compose. This will set up
 1.  **Clone the repository:**
 
     ```bash
-    git clone https://github.com/emanuelebrizzi/boardgame-connect.git
+    git clone https://github.com/emanuelebrizzi/game-connect.git
     cd boardgame-connect
     ```
 
