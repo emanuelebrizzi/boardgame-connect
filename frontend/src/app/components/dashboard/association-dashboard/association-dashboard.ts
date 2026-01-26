@@ -25,4 +25,12 @@ export class AssociationDashboard {
   removeBoardgame() {
     this.router.navigate(['boardgames/remove']);
   }
+
+  addTable() {
+    this.router.navigate(['tables/add']);
+  }
+
+  removeTable() {
+    this.router.navigate(['tables/remove']);
+  }
 }
