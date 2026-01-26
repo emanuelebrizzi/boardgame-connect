@@ -32,6 +32,7 @@ import boardgameconnect.dao.ReservationRepository;
 import boardgameconnect.dto.reservation.ReservationCreateRequest;
 import boardgameconnect.dto.reservation.ReservationDetail;
 import boardgameconnect.dto.reservation.ReservationSummary;
+import boardgameconnect.exception.ReservationFullException;
 import boardgameconnect.exception.ReservationNotFoundException;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
@@ -175,8 +176,6 @@ class BoardgameConnectReservationServiceTest {
 		});
 	}
 
-	// -----------------
-
 	@Test
 	void createReservationShouldSaveSuccessfullyWhenTableIsAvailable() {
 		Instant startTime = Instant.parse("2025-11-25T21:00:00Z");
@@ -265,146 +264,114 @@ class BoardgameConnectReservationServiceTest {
 		assertEquals(expectedEndTime, savedReservation.getEndTime());
 	}
 
-//	@Test
-//	void createReservationShouldSaveAndReturnSummary() {
-//		UserAccount assocAcc = new UserAccount(new Email("assoc@test.com"), "pass", "Assoc Name", UserRole.ASSOCIATION);
-//		Association association = new Association(assocAcc, "TAX123", "Via Roma");
-//		Boardgame game = new Boardgame("Root", 2, 4, 60, 30);
-//		var email = new Email("player@test.com");
-//		UserAccount playerAcc = new UserAccount(email, "pass", "Mario", UserRole.PLAYER);
-//		Player player = new Player(playerAcc);
-//		String userId = "user_123";
-//
-//		ReservationCreateRequest request = new ReservationCreateRequest("bg_root", "assoc_inc", 4,
-//				Instant.parse("2025-12-01T20:00:00Z"));
-//
-//		when(boardgameRepository.findById("bg_root")).thenReturn(Optional.of(game));
-//		when(associationRepository.findById("assoc_inc")).thenReturn(Optional.of(association));
-//		when(playerRepository.findById(userId)).thenReturn(Optional.of(player));
-//		when(reservationRepository.save(any(Reservation.class))).thenAnswer(i -> {
-//			Reservation r = i.getArgument(0);
-//			ReflectionTestUtils.setField(r, "id", "new_res_id");
-//			return r;
-//		});
-//
-//		reservationService.createReservation(request, email);
-//		InOrder inOrder = inOrder(boardgameRepository, associationRepository, playerRepository, reservationRepository);
-//		inOrder.verify(boardgameRepository).findById("bg_root");
-//		inOrder.verify(associationRepository).findById("assoc_inc");
-//		
-//		verify(reservationRepository).save(any(Reservation.class));
-//	}
-//
-//	@Test
-//	void createReservationShouldThrowExceptionWhenGameNotFound() {
-//		when(boardgameRepository.findById(anyString())).thenReturn(Optional.empty());
-//
-//		assertThrows(BoardgameNotFoundException.class, () -> {
-//			reservationService.createReservation(new ReservationCreateRequest("invalid", "assoc", 4, Instant.now()),
-//					"user");
-//		});
-//	}
+	@Test
+	void joinShouldAddPlayerSuccessfully() {
+		String otherPlayerEmail = "other@example.com";
+		Email email = new Email(otherPlayerEmail);
+		UserAccount otherAcc = new UserAccount(email, "pass", "Luigi Verdi", UserRole.PLAYER);
+		Player otherPlayer = new Player(otherAcc);
 
-//	@Test
-//	void joinShouldAddPlayerWhenValidRequest() {
-//		when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(mockReservation));
-//		when(playerRepository.findById(userId)).thenReturn(Optional.of(mockPlayer));
-//
-//		participationService.join(reservationId, userId);
-//
-//		assertTrue(mockReservation.getPlayers().contains(mockPlayer));
-//		verify(reservationRepository, times(1)).save(mockReservation);
-//	}
-//
-//	@Test
-//	void joinShouldThrowExceptionWhenPlayerAlreadyJoined() {
-//		mockReservation.getPlayers().add(mockPlayer);
-//
-//		when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(mockReservation));
-//		when(playerRepository.findById(userId)).thenReturn(Optional.of(mockPlayer));
-//
-//		BusinessLogicException exception = assertThrows(BusinessLogicException.class, () -> {
-//			participationService.join(reservationId, userId);
-//		});
-//
-//		assertEquals("Sei già iscritto a questa partita", exception.getMessage());
-//		verify(reservationRepository, never()).save(any());
-//	}
-//
-//	@Test
-//	void joinShouldThrowExceptionWhenReservationNotFound() {
-//		when(reservationRepository.findById(reservationId)).thenReturn(Optional.empty());
-//
-//		assertThrows(ReservationNotFoundException.class, () -> {
-//			participationService.join(reservationId, userId);
-//		});
-//	}
-//
-//	@Test
-//	void joinShouldThrowExceptionWhenPlayerNotFound() {
-//		when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(mockReservation));
-//		when(playerRepository.findById(userId)).thenReturn(Optional.empty());
-//
-//		assertThrows(PlayerNotFoundException.class, () -> {
-//			participationService.join(reservationId, userId);
-//		});
-//	}
-//
-//	@Test
-//	void leaveShouldDeleteReservationWhenLastPlayerLeaves() {
-//		mockReservation.getPlayers().add(mockPlayer);
-//		when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(mockReservation));
-//
-//		participationService.leave(reservationId, userId);
-//
-//		assertTrue(mockReservation.getPlayers().isEmpty());
-//		verify(reservationRepository, times(1)).delete(mockReservation);
-//		verify(reservationRepository, never()).save(any());
-//	}
-//
-//	@Test
-//	void leaveShouldSaveReservationWhenOtherPlayersRemain() {
-//		Player anotherPlayer = new Player(new UserAccount());
-//		ReflectionTestUtils.setField(anotherPlayer, "id", "other-user");
-//
-//		mockReservation.getPlayers().add(mockPlayer);
-//		mockReservation.getPlayers().add(anotherPlayer);
-//
-//		when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(mockReservation));
-//
-//		participationService.leave(reservationId, userId);
-//
-//		assertEquals(1, mockReservation.getPlayers().size());
-//		verify(reservationRepository, times(1)).save(mockReservation);
-//		verify(reservationRepository, never()).delete(any());
-//	}
-//
-//	@Test
-//	void leaveShouldThrowForbiddenWhenUserIsNotParticipant() {
-//		Player anotherPlayer = new Player(new UserAccount());
-//		ReflectionTestUtils.setField(anotherPlayer, "id", "other-user");
-//		mockReservation.getPlayers().add(anotherPlayer);
-//
-//		when(reservationRepository.findById(reservationId)).thenReturn(Optional.of(mockReservation));
-//
-//		ForbiddenActionException exception = assertThrows(ForbiddenActionException.class, () -> {
-//			participationService.leave(reservationId, userId);
-//		});
-//
-//		assertEquals("Non partecipi a questa prenotazione", exception.getMessage());
-//		verify(reservationRepository, never()).delete(any());
-//		verify(reservationRepository, never()).save(any());
-//	}
-//
-//	@Test
-//	void leaveShouldThrowNotFoundWhenReservationDoesNotExist() {
-//		when(reservationRepository.findById(anyString())).thenReturn(Optional.empty());
-//
-//		assertThrows(ReservationNotFoundException.class, () -> {
-//			participationService.leave(reservationId, userId);
-//		});
-//
-//		verify(reservationRepository, never()).delete(any());
-//		verify(reservationRepository, never()).save(any());
-//	}
+		when(reservationRepository.findById(RESERVATION_ID)).thenReturn(Optional.of(openReservation));
+		when(playerRepository.findByAccountEmail(email)).thenReturn(Optional.of(otherPlayer));
+
+		reservationService.join(RESERVATION_ID, email);
+
+		assertTrue(openReservation.getPlayers().contains(otherPlayer));
+		verify(reservationRepository, times(1)).save(openReservation);
+	}
+
+	@Test
+	void joinShouldThrowExceptionWhenPlayerAlreadyJoined() {
+		Email email = new Email(PLAYER_EMAIL_STRING);
+
+		when(reservationRepository.findById(RESERVATION_ID)).thenReturn(Optional.of(openReservation));
+		when(playerRepository.findByAccountEmail(email)).thenReturn(Optional.of(creator));
+
+		assertThrows(boardgameconnect.exception.PlayerAlreadyJoinedException.class, () -> {
+			reservationService.join(RESERVATION_ID, email);
+		});
+		verify(reservationRepository, times(0)).save(any());
+	}
+
+	@Test
+	void joinShouldThrowExceptionWhenReservationIsFull() {
+		Email newPlayerEmail = new Email("new-player@example.com");
+		Player newPlayer = new Player(new UserAccount(newPlayerEmail, "pass", "Mario", UserRole.PLAYER));
+
+		for (int i = 0; i < 3; i++) {
+			Player p = new Player(new UserAccount(new Email("p" + i + "@test.it"), "pw", "Name", UserRole.PLAYER));
+			openReservation.getPlayers().add(p);
+		}
+
+		when(reservationRepository.findById(RESERVATION_ID)).thenReturn(Optional.of(openReservation));
+		when(playerRepository.findByAccountEmail(newPlayerEmail)).thenReturn(Optional.of(newPlayer));
+
+		assertThrows(ReservationFullException.class, () -> {
+			reservationService.join(RESERVATION_ID, newPlayerEmail);
+		});
+
+		verify(reservationRepository, times(0)).save(any());
+	}
+
+	@Test
+	void joinShouldThrowExceptionWhenReservationNotFound() {
+		String unknownId = "non-existent-id";
+		Email email = new Email(PLAYER_EMAIL_STRING);
+
+		when(reservationRepository.findById(unknownId)).thenReturn(Optional.empty());
+
+		assertThrows(ReservationNotFoundException.class, () -> {
+			reservationService.join(unknownId, email);
+		});
+
+		verify(reservationRepository, times(0)).save(any());
+	}
+
+	@Test
+	void leaveShouldRemovePlayerSuccessfully() {
+		Email email = new Email(PLAYER_EMAIL_STRING);
+		Player secondPlayer = new Player(new UserAccount(new Email("2@test.com"), "p", "Name", UserRole.PLAYER));
+		openReservation.getPlayers().add(secondPlayer);
+
+		when(reservationRepository.findById(RESERVATION_ID)).thenReturn(Optional.of(openReservation));
+
+		reservationService.leave(RESERVATION_ID, email);
+
+		assertEquals(1, openReservation.getPlayers().size());
+		verify(reservationRepository, times(1)).save(openReservation);
+	}
+
+	@Test
+	void leaveShouldDeleteReservationWhenLastPlayerLeaves() {
+		Email email = new Email(PLAYER_EMAIL_STRING);
+
+		when(reservationRepository.findById(RESERVATION_ID)).thenReturn(Optional.of(openReservation));
+
+		reservationService.leave(RESERVATION_ID, email);
+
+		verify(reservationRepository, times(1)).delete(openReservation);
+	}
+
+	@Test
+	void leaveShouldThrowExceptionIfPlayerWhenNotInReservation() {
+		Email email = new Email("intruder@example.com");
+
+		when(reservationRepository.findById(RESERVATION_ID)).thenReturn(Optional.of(openReservation));
+
+		assertThrows(boardgameconnect.exception.ForbiddenActionException.class, () -> {
+			reservationService.leave(RESERVATION_ID, email);
+		});
+		verify(reservationRepository, times(0)).save(any());
+		verify(reservationRepository, times(0)).delete(any());
+	}
+
+	@Test
+	void leaveShouldThrowExceptionWhenReservationNotFound() {
+		when(reservationRepository.findById("invalid")).thenReturn(Optional.empty());
+
+		assertThrows(ReservationNotFoundException.class, () -> {
+			reservationService.leave("invalid", new Email(PLAYER_EMAIL_STRING));
+		});
+	}
+
 }

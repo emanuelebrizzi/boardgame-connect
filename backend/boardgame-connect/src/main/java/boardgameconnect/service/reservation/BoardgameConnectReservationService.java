@@ -24,6 +24,7 @@ import boardgameconnect.exception.ForbiddenActionException;
 import boardgameconnect.exception.GameTableNotFoundException;
 import boardgameconnect.exception.PlayerAlreadyJoinedException;
 import boardgameconnect.exception.PlayerNotFoundException;
+import boardgameconnect.exception.ReservationFullException;
 import boardgameconnect.exception.ReservationNotFoundException;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
@@ -132,6 +133,9 @@ public class BoardgameConnectReservationService implements ReservationService {
 
 		if (reservation.getPlayers().contains(player)) {
 			throw new PlayerAlreadyJoinedException("You have already joined this game");
+		}
+		if (reservation.getPlayers().size() >= reservation.getBoardgame().getMaxPlayer()) {
+			throw new ReservationFullException("Reservation is full");
 		}
 
 		reservation.getPlayers().add(player);
