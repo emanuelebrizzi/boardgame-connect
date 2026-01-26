@@ -26,6 +26,7 @@ import boardgameconnect.dao.GameTableRepository;
 import boardgameconnect.dao.ReservationRepository;
 import boardgameconnect.dto.BoardgameDto;
 import boardgameconnect.dto.GameTableRequest;
+import boardgameconnect.dto.GameTableResponse;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameInUseException;
@@ -327,6 +328,64 @@ class AssociationServiceImplTest {
 				() -> associationService.removeTableFromAssociation(tableId, ASSOCIATION_1_EMAIL));
 
 		verify(associationRepository, never()).save(any());
+	}
+
+	@Test
+	void getAssociationTablesByIdShouldReturnTablesWhenAssociationExists() {
+		String associationId = "assoc-123";
+		var association = new Association(new UserAccount(ASSOCIATION_1_EMAIL, "pass", "name", UserRole.ASSOCIATION),
+				"code", "addr");
+		GameTable table1 = new GameTable("gt-1", association, GameTableSize.MEDIUM, 4);
+		table1.setId("t1");
+		association.getGameTables().add(table1);
+
+		when(associationRepository.findById(associationId)).thenReturn(Optional.of(association));
+
+		List<GameTableResponse> result = associationService.getAssociationTablesById(associationId);
+
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).id()).isEqualTo("t1");
+		assertThat(result.get(0).capacity()).isEqualTo(4);
+
+		verify(associationRepository).findById(associationId);
+	}
+
+	@Test
+	void getAssociationTablesByIdShouldThrowNotFoundWhenAssociationDoesNotExist() {
+		String id = "invalid-id";
+		when(associationRepository.findById(id)).thenReturn(Optional.empty());
+
+		assertThrows(AssociationNotFoundException.class, () -> associationService.getAssociationTablesById(id));
+
+		verify(associationRepository).findById(id);
+	}
+
+	@Test
+	void getAssociationTablesByEmailShouldReturnTablesWhenAssociationExists() {
+		var association = new Association(new UserAccount(ASSOCIATION_1_EMAIL, "pass", "name", UserRole.ASSOCIATION),
+				"code", "addr");
+		GameTable table1 = new GameTable("gt-1", association, GameTableSize.SMALL, 4);
+		table1.setId("t2");
+		association.getGameTables().add(table1);
+
+		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.of(association));
+
+		List<GameTableResponse> result = associationService.getAssociationTablesByEmail(ASSOCIATION_1_EMAIL);
+
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0).id()).isEqualTo("t2");
+
+		verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void getAssociationTablesByEmailShouldThrowNotFoundWhenEmailDoesNotExist() {
+		when(associationRepository.findByAccountEmail(ASSOCIATION_1_EMAIL)).thenReturn(Optional.empty());
+
+		assertThrows(AssociationNotFoundException.class,
+				() -> associationService.getAssociationTablesByEmail(ASSOCIATION_1_EMAIL));
+
+		verify(associationRepository).findByAccountEmail(ASSOCIATION_1_EMAIL);
 	}
 
 }

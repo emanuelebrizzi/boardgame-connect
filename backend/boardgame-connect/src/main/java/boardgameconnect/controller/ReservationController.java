@@ -51,10 +51,10 @@ public class ReservationController {
 	}
 
 	@PostMapping
-	@PreAuthorize("hasRole('ASSOCIATION')")
+	@PreAuthorize("hasRole('PLAYER')")
 	public ResponseEntity<Void> createReservation(@Valid @RequestBody ReservationCreateRequest request) {
-		var associationEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
-		reservationService.createReservation(request, associationEmail);
+		var playerEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
+		reservationService.createReservation(request, playerEmail);
 		return ResponseEntity.status(HttpStatus.CREATED).build();
 	}
 

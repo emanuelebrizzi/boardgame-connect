@@ -99,7 +99,7 @@ class ReservationControllerTest {
 
 		mockMvc.perform(post(BASE_URI)
 				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
-						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+						.authorities(new SimpleGrantedAuthority("ROLE_PLAYER")))
 				.contentType(MediaType.APPLICATION_JSON).content(objectMapper.writeValueAsString(validRequest)))
 				.andExpect(status().isCreated());
 

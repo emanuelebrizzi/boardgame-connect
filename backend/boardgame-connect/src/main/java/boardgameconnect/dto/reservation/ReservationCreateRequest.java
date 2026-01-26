@@ -7,5 +7,5 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 public record ReservationCreateRequest(@NotBlank String boardgameId, @NotBlank String associationId,
-		@Min(2) int maxPlayers, @NotNull Instant startTime) {
+		@Min(2) int selectedPlayers, @NotNull Instant startTime) {
 }
