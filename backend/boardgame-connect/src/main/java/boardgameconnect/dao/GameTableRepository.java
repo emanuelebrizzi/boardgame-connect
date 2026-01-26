@@ -13,6 +13,8 @@ import boardgameconnect.model.GameTable;
 @Repository
 public interface GameTableRepository extends JpaRepository<GameTable, String> {
 
+	List<GameTable> findByAssociationId(String associationId);
+
 	List<GameTable> findByAssociationAndCapacityGreaterThanEqual(Association association, int capacity);
 
 	@Query("SELECT gt FROM GameTable gt " + "WHERE gt.association.id = :associationId "

@@ -12,6 +12,7 @@ import boardgameconnect.dao.GameTableRepository;
 import boardgameconnect.dao.ReservationRepository;
 import boardgameconnect.dto.BoardgameDto;
 import boardgameconnect.dto.GameTableRequest;
+import boardgameconnect.dto.GameTableResponse;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.exception.AssociationNotFoundException;
 import boardgameconnect.exception.BoardgameInUseException;
@@ -144,4 +145,27 @@ public class AssociationServiceImpl implements AssociationService {
 
 		associationRepository.save(association);
 	}
+
+	@Override
+	@Transactional
+	public List<GameTableResponse> getAssociationTablesById(String id) {
+		Association association = associationRepository.findById(id)
+				.orElseThrow(() -> new AssociationNotFoundException("Association not found with id: " + id));
+
+		return association.getGameTables().stream()
+				.map(table -> new GameTableResponse(table.getId(), table.getSize(), table.getCapacity()))
+				.collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional
+	public List<GameTableResponse> getAssociationTablesByEmail(Email associationEmail) {
+		Association association = associationRepository.findByAccountEmail(associationEmail).orElseThrow(
+				() -> new AssociationNotFoundException("Association not found for email: " + associationEmail));
+
+		return association.getGameTables().stream()
+				.map(table -> new GameTableResponse(table.getId(), table.getSize(), table.getCapacity()))
+				.collect(Collectors.toList());
+	}
+
 }

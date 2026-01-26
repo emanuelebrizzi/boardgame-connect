@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import boardgameconnect.dto.BoardgameDto;
 import boardgameconnect.dto.GameTableRequest;
+import boardgameconnect.dto.GameTableResponse;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.model.Email;
 import boardgameconnect.service.association.AssociationService;
@@ -81,6 +82,18 @@ public class AssociationController {
 		var associationEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
 		associationService.removeTableFromAssociation(tableId, associationEmail);
 		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/tables")
+	@PreAuthorize("hasRole('ASSOCIATION')")
+	public ResponseEntity<List<GameTableResponse>> getTables() {
+		var associationEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
+		return ResponseEntity.ok(associationService.getAssociationTablesByEmail(associationEmail));
+	}
+
+	@GetMapping("/{id}/tables")
+	public ResponseEntity<List<GameTableResponse>> getTables(@PathVariable String id) {
+		return ResponseEntity.ok(associationService.getAssociationTablesById(id));
 	}
 
 }
