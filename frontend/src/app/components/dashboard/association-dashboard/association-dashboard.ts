@@ -32,10 +32,8 @@ export class AssociationDashboard {
 
   readonly displayedColumns: string[] = ['size', 'capacity', 'actions'];
 
-  // Signal to trigger table refreshes
   private readonly refreshTrigger = signal(0);
 
-  // Automatically fetch tables whenever refreshTrigger changes
   readonly tables = toSignal(
     toObservable(this.refreshTrigger).pipe(switchMap(() => this.associationService.getTables())),
     { initialValue: [] as GameTable[] }
