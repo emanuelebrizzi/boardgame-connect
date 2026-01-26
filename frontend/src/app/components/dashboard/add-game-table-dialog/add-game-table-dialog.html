@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>Add New Table</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="table-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Capacity</mat-label>
+      <input matInput type="number" formControlName="capacity" min="1" />
+      <mat-error>Capacity is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Size</mat-label>
+      <mat-select formControlName="size">
+        @for (size of tableSizes; track size) {
+        <mat-option [value]="size">{{ size }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>Size is required</mat-error>
+    </mat-form-field>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="form.invalid || isSubmitting"
+    (click)="submit()"
+  >
+    Add Table
+  </button>
+</mat-dialog-actions>

@@ -15,14 +15,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { catchError, debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
-import { merge, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { merge } from 'rxjs';
 import { ReservationSummary, ReservationFilter, ReservationState } from '../../model/reservation';
 import { ReservationService } from '../../services/reservation-service';
 import { ReservationCardComponent } from './show-reservations/reservation-card/reservation-card';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { extractErrorMessage } from '../../utils/error-handler';
-import { FormAlert } from '../form-alert/form-alert';
 
 @Component({
   selector: 'app-dashboard',
