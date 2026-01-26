@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { GameTable, GameTableRequest } from '../model/game-table';
+import { AssociationSummary } from '../model/associaton';
 
 @Injectable({
   providedIn: 'root',
@@ -10,6 +11,10 @@ import { GameTable, GameTableRequest } from '../model/game-table';
 export class AssociationService {
   private readonly http = inject(HttpClient);
   private readonly apiUrl = `${environment.apiUrl}/associations`;
+
+  getAllAssociations(): Observable<AssociationSummary[]> {
+    return this.http.get<AssociationSummary[]>(`${this.apiUrl}/associations`);
+  }
 
   getTables(): Observable<GameTable[]> {
     return this.http.get<GameTable[]>(`${this.apiUrl}/tables`);
