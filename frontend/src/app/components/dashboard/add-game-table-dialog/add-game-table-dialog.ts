@@ -43,8 +43,9 @@ export class AddGameTableDialog {
 
     this.associationService.addTable(request).subscribe({
       next: () => this.dialogRef.close(true),
-      error: () => {
+      error: (error) => {
         this.isSubmitting = false;
+        console.error(error);
       },
     });
   }

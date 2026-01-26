@@ -9,7 +9,7 @@ import { GameTableRequest } from '../model/game-table';
 })
 export class AssociationService {
   private readonly http = inject(HttpClient);
-  private readonly apiUrl = `${environment.apiUrl}/auth`;
+  private readonly apiUrl = `${environment.apiUrl}/associations`;
 
   addTable(request: GameTableRequest): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/tables`, request);
