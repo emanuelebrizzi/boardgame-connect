@@ -282,4 +282,51 @@ class AssociationControllerTest {
 
 		verify(associationService).removeTableFromAssociation(tableId, ASSOCIATION_1_EMAIL);
 	}
+
+	// --- Test per getTables() [GET /api/v1/associations/tables] ---
+
+	@Test
+	void getTablesReturnsOkAndListWhenAuthorizedAsAssociation() throws Exception {
+		var tableResponse = new boardgameconnect.dto.GameTableResponse("t1", GameTableSize.MEDIUM, 4);
+
+		when(associationService.getAssociationTablesByEmail(ASSOCIATION_1_EMAIL)).thenReturn(List.of(tableResponse));
+
+		mockMvc.perform(get(BASE_URI + "/tables")
+				.with(jwt().jwt(j -> j.claim("sub", ASSOCIATION_1_EMAIL.toString()))
+						.authorities(new SimpleGrantedAuthority("ROLE_ASSOCIATION")))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].id", is("t1")))
+				.andExpect(jsonPath("$[0].capacity", is(4)));
+
+		verify(associationService).getAssociationTablesByEmail(ASSOCIATION_1_EMAIL);
+	}
+
+	@Test
+	void getTablesByIdReturnsOkAndList() throws Exception {
+		String associationId = "assoc-123";
+		var tableResponse = new boardgameconnect.dto.GameTableResponse("t2", GameTableSize.SMALL, 2);
+
+		when(associationService.getAssociationTablesById(associationId)).thenReturn(List.of(tableResponse));
+
+		mockMvc.perform(get(BASE_URI + "/{id}/tables", associationId)
+				.with(jwt().jwt(j -> j.claim("sub", "any@user.com"))
+						.authorities(new SimpleGrantedAuthority("ROLE_PLAYER")))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].id", is("t2")));
+
+		verify(associationService).getAssociationTablesById(associationId);
+	}
+
+	@Test
+	void getTablesByIdReturnsNotFoundWhenAssociationDoesNotExist() throws Exception {
+		String associationId = "invalid-id";
+		doThrow(new AssociationNotFoundException("Association not found")).when(associationService)
+				.getAssociationTablesById(associationId);
+
+		mockMvc.perform(get(BASE_URI + "/{id}/tables", associationId).with(
+				jwt().jwt(j -> j.claim("sub", "any@user.com")).authorities(new SimpleGrantedAuthority("ROLE_PLAYER"))))
+				.andExpect(status().isNotFound());
+
+		verify(associationService).getAssociationTablesById(associationId);
+	}
 }

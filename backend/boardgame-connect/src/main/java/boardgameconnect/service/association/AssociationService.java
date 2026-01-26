@@ -4,6 +4,7 @@ import java.util.List;
 
 import boardgameconnect.dto.BoardgameDto;
 import boardgameconnect.dto.GameTableRequest;
+import boardgameconnect.dto.GameTableResponse;
 import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.model.Email;
 
@@ -22,5 +23,9 @@ public interface AssociationService {
 	void addTableToAssociation(GameTableRequest request, Email associationEmail);
 
 	void removeTableFromAssociation(String tableId, Email associationEmail);
+
+	List<GameTableResponse> getAssociationTablesById(String id);
+
+	List<GameTableResponse> getAssociationTablesByEmail(Email associationEmail);
 
 }
