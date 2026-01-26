@@ -13,7 +13,7 @@ export class AssociationService {
   private readonly apiUrl = `${environment.apiUrl}/associations`;
 
   getAllAssociations(): Observable<AssociationSummary[]> {
-    return this.http.get<AssociationSummary[]>(`${this.apiUrl}/associations`);
+    return this.http.get<AssociationSummary[]>(`${this.apiUrl}`);
   }
 
   getTables(): Observable<GameTable[]> {

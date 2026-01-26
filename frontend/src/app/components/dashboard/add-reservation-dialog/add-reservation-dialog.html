@@ -1,0 +1,58 @@
+<h2 mat-dialog-title>Make a Reservation</h2>
+<mat-dialog-content>
+  <form [formGroup]="form" class="reservation-form">
+    <mat-form-field appearance="outline">
+      <mat-label>Association</mat-label>
+      <mat-select formControlName="associationId">
+        @for (assoc of associations(); track assoc.id) {
+        <mat-option [value]="assoc.id">{{ assoc.name }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>Association is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Boardgame</mat-label>
+      <mat-select formControlName="boardgameId">
+        @for (game of boardgames(); track game.id) {
+        <mat-option [value]="game.id">{{ game.name }}</mat-option>
+        }
+      </mat-select>
+      <mat-error>Boardgame is required</mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Number of Players</mat-label>
+      <input matInput type="number" formControlName="selectedPlayers" min="2" />
+      <mat-error>At least 2 players are required</mat-error>
+    </mat-form-field>
+
+    <div class="datetime-row">
+      <mat-form-field appearance="outline" class="date-field">
+        <mat-label>Date</mat-label>
+        <input matInput [matDatepicker]="picker" formControlName="date" />
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+        <mat-error>Date is required</mat-error>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="time-field">
+        <mat-label>Time</mat-label>
+        <input matInput type="time" formControlName="time" />
+        <mat-error>Time is required</mat-error>
+      </mat-form-field>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button
+    mat-raised-button
+    color="primary"
+    [disabled]="form.invalid || isSubmitting()"
+    (click)="submit()"
+  >
+    @if (isSubmitting()) { Booking... } @else { Reserve Now }
+  </button>
+</mat-dialog-actions>

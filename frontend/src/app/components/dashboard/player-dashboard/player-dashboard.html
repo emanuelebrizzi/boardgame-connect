@@ -1,15 +1,17 @@
 <div class="container">
   <header class="page-header">
-    <h1>Available Games</h1>
-    <p>Join a game or reserve your spot.</p>
+    <h1>Player Dashboard</h1>
+    <p>Find games and make a reservation.</p>
 
-    <button mat-raised-button color="primary" type="button">
-      <mat-icon>add</mat-icon>
-      Create Reservation
+    <button mat-raised-button color="primary" (click)="addReservation()">
+      <mat-icon>add_circle</mat-icon>
+      New Reservation
     </button>
   </header>
 
   <main>
-    <app-dashboard></app-dashboard>
+    <section class="reservations-section">
+      <app-dashboard></app-dashboard>
+    </section>
   </main>
 </div>
