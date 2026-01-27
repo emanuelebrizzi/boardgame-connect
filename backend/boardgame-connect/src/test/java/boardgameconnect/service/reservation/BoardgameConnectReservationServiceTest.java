@@ -95,7 +95,7 @@ class BoardgameConnectReservationServiceTest {
 		UserAccount playerAcc = new UserAccount(new Email(PLAYER_EMAIL_STRING), "pass", PLAYER_NAME, UserRole.PLAYER);
 		creator = new Player(playerAcc);
 
-		openReservation = new Reservation(creator, association, rootGame, null, Instant.now(),
+		openReservation = new Reservation(creator, association, rootGame, null, 3, Instant.now(),
 				Instant.now().plusSeconds(3600));
 
 		ReflectionTestUtils.setField(openReservation, "id", RESERVATION_ID);
@@ -179,7 +179,7 @@ class BoardgameConnectReservationServiceTest {
 	@Test
 	void createReservationShouldSaveSuccessfullyWhenTableIsAvailable() {
 		Instant startTime = Instant.parse("2025-11-25T21:00:00Z");
-		ReservationCreateRequest request = new ReservationCreateRequest(BORDGAME_ID, ASSOCIATION_ID, 4, startTime);
+		ReservationCreateRequest request = new ReservationCreateRequest(BORDGAME_ID, ASSOCIATION_ID, 3, startTime);
 		Email userEmail = new Email(PLAYER_EMAIL_STRING);
 
 		GameTable freeTable = new GameTable(TABLE_ID, association, GameTableSize.MEDIUM, 4);
@@ -188,7 +188,7 @@ class BoardgameConnectReservationServiceTest {
 		when(associationRepository.findById(ASSOCIATION_ID)).thenReturn(Optional.of(association));
 		when(playerRepository.findByAccountEmail(userEmail)).thenReturn(Optional.of(creator));
 
-		when(gameTableRepository.findByAssociationAndCapacityGreaterThanEqual(association, 4))
+		when(gameTableRepository.findByAssociationAndCapacityGreaterThanEqual(association, 3))
 				.thenReturn(List.of(freeTable));
 		when(reservationRepository.findOccupiedTables(eq(ASSOCIATION_ID), any(), any())).thenReturn(List.of());
 

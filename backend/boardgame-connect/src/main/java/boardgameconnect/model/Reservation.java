@@ -43,6 +43,8 @@ public class Reservation {
 	@JoinColumn(name = "game_table_id")
 	private GameTable gameTable;
 
+	private int maxPlayers;
+
 	private Instant startTime;
 
 	private Instant endTime;
@@ -51,14 +53,23 @@ public class Reservation {
 	}
 
 	public Reservation(Player creator, Association association, Boardgame boardgame, GameTable gameTable,
-			Instant startTime, Instant endTime) {
+			int maxPlayers, Instant startTime, Instant endTime) {
 		this.players.add(creator);
 		this.association = association;
 		this.boardgame = boardgame;
+		this.maxPlayers = maxPlayers;
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.status = ReservationStatus.OPEN;
 		this.gameTable = gameTable;
+	}
+
+	public int getMaxPlayers() {
+		return maxPlayers;
+	}
+
+	public void setMaxPlayers(int maxPlayers) {
+		this.maxPlayers = maxPlayers;
 	}
 
 	public String getId() {

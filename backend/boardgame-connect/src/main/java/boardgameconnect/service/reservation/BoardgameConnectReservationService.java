@@ -83,8 +83,8 @@ public class BoardgameConnectReservationService implements ReservationService {
 				.map(p -> new PlayerSummary(p.getId(), p.getAccount().getName())).toList();
 
 		return new ReservationDetail(res.getId(), res.getBoardgame().getName(), assocSummary, playerSummaries,
-				res.getBoardgame().getMinTimeInMin(), res.getBoardgame().getMaxPlayer(), res.getStartTime(),
-				res.getEndTime(), res.getStatus().name());
+				res.getBoardgame().getMinTimeInMin(), res.getMaxPlayers(), res.getStartTime(), res.getEndTime(),
+				res.getStatus().name());
 	}
 
 	@Override
@@ -109,7 +109,8 @@ public class BoardgameConnectReservationService implements ReservationService {
 
 		GameTable availableTable = findTable(association, startTime, endTime, request.selectedPlayers());
 
-		Reservation reservation = new Reservation(creator, association, game, availableTable, startTime, endTime);
+		Reservation reservation = new Reservation(creator, association, game, availableTable, request.selectedPlayers(),
+				startTime, endTime);
 
 		reservationRepository.save(reservation);
 	}
