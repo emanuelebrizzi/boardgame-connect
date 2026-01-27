@@ -20,6 +20,8 @@ public interface AssociationService {
 
 	List<BoardgameDto> getBoardgamesFrom(Email associationEmail);
 
+	List<BoardgameDto> getAssociationBoardgames(String id);
+
 	void addTableToAssociation(GameTableRequest request, Email associationEmail);
 
 	void removeTableFromAssociation(String tableId, Email associationEmail);
