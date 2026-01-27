@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
 import { GameTable, GameTableRequest } from '../model/game-table';
 import { AssociationSummary } from '../model/associaton';
+import { Boardgame } from '../model/boardgame';
 
 @Injectable({
   providedIn: 'root',
@@ -14,6 +15,10 @@ export class AssociationService {
 
   getAllAssociations(): Observable<AssociationSummary[]> {
     return this.http.get<AssociationSummary[]>(`${this.apiUrl}`);
+  }
+
+  getBoardgames(associationId: string): Observable<Boardgame[]> {
+    return this.http.get<Boardgame[]>(`${this.apiUrl}/${associationId}/boardgames`);
   }
 
   getTables(): Observable<GameTable[]> {
