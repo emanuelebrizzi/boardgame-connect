@@ -28,7 +28,7 @@ export class AssociationDashboard {
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
 
-  readonly associationId = computed(() => this.authService.currentUser()?.id);
+  readonly associationId = computed(() => this.authService.currentUser()?.name);
 
   readonly displayedColumns: string[] = ['size', 'capacity', 'actions'];
 
@@ -36,7 +36,7 @@ export class AssociationDashboard {
 
   readonly tables = toSignal(
     toObservable(this.refreshTrigger).pipe(switchMap(() => this.associationService.getTables())),
-    { initialValue: [] as GameTable[] }
+    { initialValue: [] as GameTable[] },
   );
 
   addBoardgame() {
