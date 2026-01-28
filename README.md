@@ -18,6 +18,11 @@ Boardgame Connect is a full-stack web application designed to connect board game
 - **Security:** Spring Security & JWT (JSON Web Tokens)
 - **Build Tool:** Maven
 
+### Deployment
+
+- **Nginx**
+- **Docker Compose**
+
 ---
 
 ## 🛠️ Architecture
@@ -59,7 +64,7 @@ The Spring Boot application adapts the classic **Model-View-Controller (MVC)** p
 
 ## 📦 Prerequisites
 
-A Docker Compose installation is required to run the full application.
+Docker and Docker Compose are required to run the full application.
 
 ---
 
@@ -84,10 +89,6 @@ The easiest way to run the application is using Docker Compose. This will set up
     Open your browser and navigate to:
 
     > **http://localhost**
-
-    - **Frontend:** Loads automatically at the root URL.
-    - **API:** Accessible at `http://localhost/api/v1/...`
-    - **Database:** Accessible internally by the backend at `db:5432`.
 
 4.  **Stop the Application:**
     Press `Ctrl+C` in the terminal or run:
