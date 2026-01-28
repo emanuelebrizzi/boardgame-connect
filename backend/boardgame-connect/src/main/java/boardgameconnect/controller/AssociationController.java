@@ -52,6 +52,12 @@ public class AssociationController {
 		return ResponseEntity.ok(boardgames);
 	}
 
+	@GetMapping("/{id}/boardgames")
+	public ResponseEntity<List<BoardgameDto>> getAssociationBoardgames(@PathVariable String id) {
+		List<BoardgameDto> boardgames = associationService.getAssociationBoardgames(id);
+		return ResponseEntity.ok(boardgames);
+	}
+
 	@PostMapping("/boardgames")
 	@PreAuthorize("hasRole('ASSOCIATION')")
 	public ResponseEntity<Void> addAssociationGames(@Valid @RequestBody List<String> boardgamesIds) {

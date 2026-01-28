@@ -66,8 +66,8 @@ public class BoardgameConnectReservationService implements ReservationService {
 	}
 
 	private ReservationSummary mapToSummary(Reservation res) {
-		return new ReservationSummary(res.getId(), res.getBoardgame().getName(),
-				res.getAssociation().getAccount().getName(), res.getPlayers().size(), res.getBoardgame().getMaxPlayer(),
+		return new ReservationSummary(res.getId(), res.getBoardgame().getName(), res.getBoardgame().getImagePath(),
+				res.getAssociation().getAccount().getName(), res.getPlayers().size(), res.getMaxPlayers(),
 				res.getStartTime(), res.getEndTime());
 	}
 
@@ -82,9 +82,9 @@ public class BoardgameConnectReservationService implements ReservationService {
 		List<PlayerSummary> playerSummaries = res.getPlayers().stream()
 				.map(p -> new PlayerSummary(p.getId(), p.getAccount().getName())).toList();
 
-		return new ReservationDetail(res.getId(), res.getBoardgame().getName(), assocSummary, playerSummaries,
-				res.getBoardgame().getMinTimeInMin(), res.getBoardgame().getMaxPlayer(), res.getStartTime(),
-				res.getEndTime(), res.getStatus().name());
+		return new ReservationDetail(res.getId(), res.getBoardgame().getName(), res.getBoardgame().getImagePath(),
+				assocSummary, playerSummaries, res.getBoardgame().getMinTimeInMin(), res.getMaxPlayers(),
+				res.getStartTime(), res.getEndTime(), res.getStatus().name());
 	}
 
 	@Override
@@ -109,7 +109,8 @@ public class BoardgameConnectReservationService implements ReservationService {
 
 		GameTable availableTable = findTable(association, startTime, endTime, request.selectedPlayers());
 
-		Reservation reservation = new Reservation(creator, association, game, availableTable, startTime, endTime);
+		Reservation reservation = new Reservation(creator, association, game, availableTable, request.selectedPlayers(),
+				startTime, endTime);
 
 		reservationRepository.save(reservation);
 	}

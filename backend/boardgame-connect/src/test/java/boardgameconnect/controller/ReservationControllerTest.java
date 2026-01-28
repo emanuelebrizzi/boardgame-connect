@@ -62,9 +62,9 @@ class ReservationControllerTest {
 
 	@Test
 	void getReservationsShouldReturnListOfAvailableReservationsByDefault() throws Exception {
-		var res1 = new ReservationSummary("t_123", "Root", "La Gilda del Cassero", 2, 4,
+		var res1 = new ReservationSummary("t_123", "Root", "root.png", "La Gilda del Cassero", 2, 4,
 				Instant.parse("2025-11-20T21:00:00Z"), Instant.parse("2025-11-20T22:30:00Z"));
-		var res2 = new ReservationSummary("t_124", "Wingspan", "Ludoteca Svelta", 1, 5,
+		var res2 = new ReservationSummary("t_124", "Wingspan", "wingspan.png", "Ludoteca Svelta", 1, 5,
 				Instant.parse("2025-11-21T18:30:00Z"), Instant.parse("2025-11-21T19:30:00Z"));
 
 		when(reservationService.getAvailableReservations(null, null, null)).thenReturn(List.of(res1, res2));
@@ -111,8 +111,8 @@ class ReservationControllerTest {
 		String reservationId = "res-001";
 		var association = new AssociationSummary("a-123", "Ludoteca", "Via Roma");
 		var players = List.of(new PlayerSummary("p-123", "Alice"), new PlayerSummary("p-456", "Bob"));
-		var detail = new ReservationDetail(reservationId, "Catan", association, players, 3, 4, Instant.now(),
-				Instant.now().plusSeconds(7200), "OPEN");
+		var detail = new ReservationDetail(reservationId, "Catan", "catan.png", association, players, 3, 4,
+				Instant.now(), Instant.now().plusSeconds(7200), "OPEN");
 
 		when(reservationService.getReservationById(reservationId)).thenReturn(detail);
 

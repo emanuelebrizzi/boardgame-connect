@@ -112,6 +112,14 @@ public class AssociationServiceImpl implements AssociationService {
 
 	@Override
 	@Transactional
+	public List<BoardgameDto> getAssociationBoardgames(String id) {
+		Association association = associationRepository.findById(id)
+				.orElseThrow(() -> new AssociationNotFoundException("Association not found with id: " + id));
+		return association.getBoardgames().stream().map(boardgameMapper::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional
 	public void addTableToAssociation(GameTableRequest request, Email associationEmail) {
 		Association association = associationRepository.findByAccountEmail(associationEmail)
 				.orElseThrow(() -> new AssociationNotFoundException("Association not found"));

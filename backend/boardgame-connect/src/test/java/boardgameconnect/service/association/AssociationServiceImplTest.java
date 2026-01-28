@@ -261,6 +261,40 @@ class AssociationServiceImplTest {
 	}
 
 	@Test
+	void getAssociationBoardgamesShouldReturnBoardgameDtosWhenAssociationExists() {
+		String associationId = "assoc-123";
+		var boardgame = new Boardgame("Catan", 3, 4, 60, 120, "url_catan");
+		var dto = new BoardgameDto("bg-123", "Catan", 3, 4, 90, 10, "url_catan");
+
+		var association = new Association(new UserAccount(ASSOCIATION_1_EMAIL, "pass", "name", UserRole.ASSOCIATION),
+				"code", "address");
+		association.getBoardgames().add(boardgame);
+
+		when(associationRepository.findById(associationId)).thenReturn(Optional.of(association));
+		when(boardgameMapper.toDto(boardgame)).thenReturn(dto);
+
+		List<BoardgameDto> result = associationService.getAssociationBoardgames(associationId);
+
+		assertThat(result).hasSize(1);
+		assertThat(result.get(0)).isEqualTo(dto);
+
+		InOrder inOrder = inOrder(associationRepository, boardgameMapper);
+		inOrder.verify(associationRepository).findById(associationId);
+		inOrder.verify(boardgameMapper).toDto(boardgame);
+	}
+
+	@Test
+	void getAssociationBoardgamesShouldThrowAssociationNotFoundExceptionWhenIdDoesNotExist() {
+		String invalidId = "non-existent-id";
+		when(associationRepository.findById(invalidId)).thenReturn(Optional.empty());
+
+		assertThrows(AssociationNotFoundException.class, () -> associationService.getAssociationBoardgames(invalidId));
+
+		verify(associationRepository).findById(invalidId);
+		verifyNoInteractions(boardgameMapper);
+	}
+
+	@Test
 	void addTableToAssociationHappyPath() {
 		var request = new GameTableRequest(4, GameTableSize.MEDIUM);
 		var association = new Association(new UserAccount(ASSOCIATION_1_EMAIL, "pass", "name", UserRole.ASSOCIATION),

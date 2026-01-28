@@ -227,6 +227,39 @@ class AssociationControllerTest {
 	}
 
 	@Test
+	void getAssociationBoardgamesByIdReturnsOkAndListWhenAssociationExists() throws Exception {
+		String associationId = "assoc-123";
+		var game1 = new BoardgameDto("bg1", "Terraforming Mars", 1, 5, 120, 12, "tm_cover.jpg");
+
+		when(associationService.getAssociationBoardgames(associationId)).thenReturn(List.of(game1));
+
+		mockMvc.perform(get(BASE_URI + "/{id}/boardgames", associationId)
+				.with(jwt().jwt(j -> j.claim("sub", "player@email.com"))
+						.authorities(new SimpleGrantedAuthority("ROLE_PLAYER")))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
+				.andExpect(jsonPath("$", hasSize(1))).andExpect(jsonPath("$[0].id", is("bg1")))
+				.andExpect(jsonPath("$[0].name", is("Terraforming Mars")));
+
+		verify(associationService).getAssociationBoardgames(associationId);
+	}
+
+	@Test
+	void getAssociationBoardgamesByIdReturnsNotFoundWhenIdDoesNotExist() throws Exception {
+		String invalidId = "not-found-id";
+
+		doThrow(new AssociationNotFoundException("Association not found with id: " + invalidId))
+				.when(associationService).getAssociationBoardgames(invalidId);
+
+		mockMvc.perform(get(BASE_URI + "/{id}/boardgames", invalidId)
+				.with(jwt().jwt(j -> j.claim("sub", "player@email.com"))
+						.authorities(new SimpleGrantedAuthority("ROLE_PLAYER")))
+				.contentType(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound())
+				.andExpect(jsonPath("$.message", is("Association not found with id: " + invalidId)));
+
+		verify(associationService).getAssociationBoardgames(invalidId);
+	}
+
+	@Test
 	void addTableReturnsOkWhenRequestIsValid() throws Exception {
 		var tableRequest = new GameTableRequest(4, GameTableSize.MEDIUM);
 		mockMvc.perform(post(BASE_URI + "/tables")

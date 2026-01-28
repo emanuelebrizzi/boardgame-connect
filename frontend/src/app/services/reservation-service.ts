@@ -1,15 +1,20 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
-import { ReservationSummary, Reservation, ReservationFilter } from '../model/reservation';
+import {
+  ReservationSummary,
+  Reservation,
+  ReservationFilter,
+  ReservationCreateRequest,
+} from '../model/reservation';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ReservationService {
-  private readonly API_URL = '/api/v1';
-
   private http = inject(HttpClient);
+  private readonly apiUrl = `${environment.apiUrl}/reservations`;
 
   getReservations(filters?: ReservationFilter): Observable<ReservationSummary[]> {
     let params = new HttpParams();
@@ -28,10 +33,15 @@ export class ReservationService {
       }
     }
 
-    return this.http.get<ReservationSummary[]>(`${this.API_URL}/reservations`, { params });
+    return this.http.get<ReservationSummary[]>(`${this.apiUrl}`, { params });
   }
 
   getReservation(id: string): Observable<Reservation> {
-    return this.http.get<Reservation>(`${this.API_URL}/reservations/${id}`);
+    return this.http.get<Reservation>(`${this.apiUrl}/${id}`);
+  }
+
+  // It returns the id of the created reservation to the caller.
+  createReservation(request: ReservationCreateRequest): Observable<string> {
+    return this.http.post<string>(`${this.apiUrl}`, request);
   }
 }

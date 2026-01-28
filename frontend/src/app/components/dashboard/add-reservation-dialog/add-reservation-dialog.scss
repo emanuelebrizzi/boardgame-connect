@@ -1,0 +1,43 @@
+.reservation-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 420px;
+  padding-top: 1rem;
+}
+
+.datetime-row {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+
+  .date-field {
+    flex: 3;
+  }
+
+  .time-field {
+    flex: 2;
+  }
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+
+mat-error {
+  font-size: 0.8rem;
+  margin-top: 4px;
+}
+
+
+@media (max-width: 600px) {
+  .reservation-form {
+    min-width: 100%;
+  }
+
+  .datetime-row {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
