@@ -1,57 +1,68 @@
 @if (reservation(); as res) {
   <mat-card class="reservation-card mat-elevation-z3">
-    <mat-card-header>
-      <div mat-card-avatar class="game-avatar">
-        <mat-icon>videogame_asset</mat-icon>
+    <div class="image-container">
+      <img
+        [src]="res.gameImgPath"
+        width="600"
+        height="300"
+        priority
+        alt="Boardgame Cover"
+        class="cover-image"
+      />
+      <div class="overlay-title">
+        <mat-card-title>{{ res.game }}</mat-card-title>
       </div>
-      <mat-card-title>{{ res.game }}</mat-card-title>
-      <mat-card-subtitle>{{ res.association.name }}</mat-card-subtitle>
-      <div class="header-spacer"></div>
-
-      <!-- Status Chip -->
-      <mat-chip-set>
-        <mat-chip
-          [highlighted]="true"
-          [color]="res.players.length >= res.maxPlayers ? 'warn' : 'primary'"
-        >
-          {{ res.players.length }} / {{ res.maxPlayers }} Players
-        </mat-chip>
-      </mat-chip-set>
-    </mat-card-header>
-
-    <mat-divider></mat-divider>
+    </div>
 
     <mat-card-content>
       <div class="info-grid">
-        <!-- Location Section -->
         <div class="info-section">
-          <h3><mat-icon>place</mat-icon> Location</h3>
-          <p class="info-text">
-            <strong>{{ res.association.address }}</strong
-            ><br />
-          </p>
+          <h3 class="section-label"><mat-icon>event</mat-icon> Date & Time</h3>
+          <div class="date-display">
+            <span class="day">{{ res.startTime | date: 'mediumDate' }}</span>
+            <div class="time-row">
+              <span class="time-label">Start:</span>
+              <span class="time-value">{{ res.startTime | date: 'shortTime' }}</span>
+            </div>
+            <div class="time-row">
+              <span class="time-label">End:</span>
+              <span class="time-value">{{ res.endTime | date: 'shortTime' }}</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Time Section -->
         <div class="info-section">
-          <h3><mat-icon>schedule</mat-icon> Time</h3>
-          <p class="info-text">
-            Start: {{ res.startTime | date: 'medium' }}<br />
-            End: {{ res.endTime | date: 'shortTime' }}
-          </p>
+          <h3 class="section-label"><mat-icon>store</mat-icon> Location</h3>
+          <div class="association-display">
+            <span class="association-name">{{ res.association.name }}</span>
+            <span class="association-address">{{ res.association.address }}</span>
+          </div>
         </div>
       </div>
 
-      <mat-divider class="section-divider"></mat-divider>
+      <mat-divider></mat-divider>
 
-      <!-- Players List -->
       <div class="players-section">
-        <h3>Participants ({{ res.players.length }})</h3>
+        <div class="section-header">
+          <h3>Participants</h3>
+          <mat-chip-set>
+            <mat-chip
+              [highlighted]="true"
+              [color]="res.players.length >= res.maxPlayers ? 'warn' : 'primary'"
+            >
+              {{ res.players.length }} / {{ res.maxPlayers }} Joined
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+
         <mat-list>
-          @for (player of res.players; track player.name) {
+          @for (player of res.players; track player.id) {
             <mat-list-item>
-              <mat-icon matListItemIcon class="text-gray-500">person</mat-icon>
-              <span matListItemTitle class="font-medium">{{ player.name }}</span>
+              <mat-icon matListItemIcon>person</mat-icon>
+              <span matListItemTitle>{{ player.name }}</span>
+              @if (player.id === currentUserId()) {
+                <span matListItemMeta class="you-badge">(You)</span>
+              }
             </mat-list-item>
           }
         </mat-list>
@@ -60,24 +71,18 @@
 
     <mat-divider></mat-divider>
 
-    <mat-card-actions>
-      <button mat-stroked-button routerLink="/dashboard/player">BACK</button>
+    <mat-card-actions align="end">
+      <button mat-button routerLink="/dashboard/player">BACK</button>
 
-      <span class="header-spacer"></span>
-
-      <button mat-flat-button color="primary" [disabled]="res.players.length >= res.maxPlayers">
-        <mat-icon class="mr-1">login</mat-icon>
-        <!-- TODO: Add login behaviour -->
-        JOIN GAME
-      </button>
-
-      <button mat-stroked-button color="warn">
-        <mat-icon class="mr-1">logout</mat-icon>
-        <!-- TODO: Add exit behaviour -->
-        EXIT GAME
-      </button>
+      @if (isParticipant()) {
+        <button mat-flat-button color="warn" (click)="exitReservation()">EXIT RESERVATION</button>
+      } @else {
+        <!-- <button mat-flat-button color="primary"
+                [disabled]="res.players.length >= res.maxPlayers"
+                (click)="joinReservation()">
+          JOIN GAME
+        </button> -->
+      }
     </mat-card-actions>
   </mat-card>
-} @else {
-  <p class="p-4">Loading details...</p>
 }
