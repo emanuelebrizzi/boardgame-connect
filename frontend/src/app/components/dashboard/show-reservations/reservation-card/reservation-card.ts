@@ -16,6 +16,6 @@ import { RouterLink } from '@angular/router';
 export class ReservationCardComponent {
   reservation = input.required<ReservationSummary>();
 
-  protected gameCoverURL = computed(() => this.reservation().coverURL);
-  protected cardStatus = computed(() => this.reservation().state);
+  protected gameCoverURL = computed(() => this.reservation().gameImgPath);
+  // protected cardStatus = computed(() => this.reservation().state);
 }

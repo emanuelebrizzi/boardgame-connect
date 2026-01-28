@@ -19,13 +19,12 @@ export enum ReservationState {
 export interface ReservationSummary {
   id: string;
   game: string;
-  associationName: string;
+  gameImgPath: string;
+  association: string;
   currentPlayers: number;
   maxPlayers: number;
   startTime: string;
   endTime: string;
-  state: ReservationState;
-  coverURL: string;
 }
 
 export interface ReservationFilter {
