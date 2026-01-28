@@ -137,7 +137,7 @@ class BoardgameConnectReservationServiceTest {
 
 		assertAll(() -> assertEquals(BORDGAME_NAME, summary.game()),
 				() -> assertEquals(ASSOCIATION_NAME, summary.association()),
-				() -> assertEquals(1, summary.currentPlayers()), () -> assertEquals(4, summary.maxPlayers()),
+				() -> assertEquals(1, summary.currentPlayers()), () -> assertEquals(3, summary.maxPlayers()),
 				() -> assertNotNull(summary.startTime()), () -> assertNotNull(summary.endTime()));
 	}
 
