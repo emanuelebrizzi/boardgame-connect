@@ -27,11 +27,11 @@ import { switchMap } from 'rxjs';
   styleUrl: './reservation-detail.scss',
 })
 export class ReservationDetail {
-  id = input.required<string>();
-
   private readonly reservationService = inject(ReservationService);
 
+  id = input.required<string>();
+
   reservation = toSignal(
-    toObservable(this.id).pipe(switchMap((id) => this.reservationService.getReservation(id)))
+    toObservable(this.id).pipe(switchMap((id) => this.reservationService.getReservation(id))),
   );
 }

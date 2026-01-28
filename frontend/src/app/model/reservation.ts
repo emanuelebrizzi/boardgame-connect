@@ -1,14 +1,17 @@
+import { Player } from './user';
+import { AssociationSummary } from './associaton';
+
 export interface Reservation {
   id: string;
   game: string;
-  associationName: string;
-  playersNames: string[];
+  gameImgPath: string;
+  association: AssociationSummary;
+  players: PlayerSummary[];
   minPlayers: number;
   maxPlayers: number;
   startTime: string;
   endTime: string;
   state: ReservationState;
-  coverURL: string;
 }
 
 export enum ReservationState {
@@ -38,4 +41,9 @@ export interface ReservationCreateRequest {
   associationId: string;
   selectedPlayers: number;
   startTime: string; // ISO-8601 format (e.g., "2023-10-05T14:30:00Z")
+}
+
+interface PlayerSummary {
+  id: string;
+  name: string;
 }

@@ -1,79 +1,83 @@
-@if(reservation(); as res){
-<mat-card class="reservation-card mat-elevation-z3">
-  <mat-card-header>
-    <div mat-card-avatar class="game-avatar">
-      <mat-icon>videogame_asset</mat-icon>
-    </div>
-    <mat-card-title>{{ res.game }}</mat-card-title>
-    <mat-card-subtitle>{{ res.associationName }}</mat-card-subtitle>
-    <div class="header-spacer"></div>
+@if (reservation(); as res) {
+  <mat-card class="reservation-card mat-elevation-z3">
+    <mat-card-header>
+      <div mat-card-avatar class="game-avatar">
+        <mat-icon>videogame_asset</mat-icon>
+      </div>
+      <mat-card-title>{{ res.game }}</mat-card-title>
+      <mat-card-subtitle>{{ res.association.name }}</mat-card-subtitle>
+      <div class="header-spacer"></div>
 
-    <!-- Status Chip -->
-    <mat-chip-set>
-      <mat-chip
-        [highlighted]="true"
-        [color]="res.playersNames.length >= res.maxPlayers ? 'warn' : 'primary'"
-      >
-        {{ res.playersNames.length }} / {{ res.maxPlayers }} Players
-      </mat-chip>
-    </mat-chip-set>
-  </mat-card-header>
+      <!-- Status Chip -->
+      <mat-chip-set>
+        <mat-chip
+          [highlighted]="true"
+          [color]="res.players.length >= res.maxPlayers ? 'warn' : 'primary'"
+        >
+          {{ res.players.length }} / {{ res.maxPlayers }} Players
+        </mat-chip>
+      </mat-chip-set>
+    </mat-card-header>
 
-  <mat-divider></mat-divider>
+    <mat-divider></mat-divider>
 
-  <mat-card-content>
-    <div class="info-grid">
-      <!-- Location Section -->
-      <div class="info-section">
-        <h3><mat-icon>place</mat-icon> Location</h3>
-        <p class="info-text">
-          <strong>{{ res.associationName }}</strong
-          ><br />
-        </p>
+    <mat-card-content>
+      <div class="info-grid">
+        <!-- Location Section -->
+        <div class="info-section">
+          <h3><mat-icon>place</mat-icon> Location</h3>
+          <p class="info-text">
+            <strong>{{ res.association.address }}</strong
+            ><br />
+          </p>
+        </div>
+
+        <!-- Time Section -->
+        <div class="info-section">
+          <h3><mat-icon>schedule</mat-icon> Time</h3>
+          <p class="info-text">
+            Start: {{ res.startTime | date: 'medium' }}<br />
+            End: {{ res.endTime | date: 'shortTime' }}
+          </p>
+        </div>
       </div>
 
-      <!-- Time Section -->
-      <div class="info-section">
-        <h3><mat-icon>schedule</mat-icon> Time</h3>
-        <p class="info-text">
-          Start: {{ res.startTime | date : 'medium' }}<br />
-          End: {{ res.endTime | date : 'shortTime' }}
-        </p>
+      <mat-divider class="section-divider"></mat-divider>
+
+      <!-- Players List -->
+      <div class="players-section">
+        <h3>Participants ({{ res.players.length }})</h3>
+        <mat-list>
+          @for (player of res.players; track player.name) {
+            <mat-list-item>
+              <mat-icon matListItemIcon class="text-gray-500">person</mat-icon>
+              <span matListItemTitle class="font-medium">{{ player.name }}</span>
+            </mat-list-item>
+          }
+        </mat-list>
       </div>
-    </div>
+    </mat-card-content>
 
-    <mat-divider class="section-divider"></mat-divider>
+    <mat-divider></mat-divider>
 
-    <!-- Players List -->
-    <div class="players-section">
-      <h3>Participants ({{ res.playersNames.length }})</h3>
-      <mat-list>
-        @for(name of res.playersNames; track name){
-        <mat-list-item>
-          <mat-icon matListItemIcon class="text-gray-500">person</mat-icon>
-          <span matListItemTitle class="font-medium">{{ name }}</span>
-        </mat-list-item>
-        }
-      </mat-list>
-    </div>
-  </mat-card-content>
+    <mat-card-actions>
+      <button mat-stroked-button routerLink="/dashboard/player">BACK</button>
 
-  <mat-divider></mat-divider>
+      <span class="header-spacer"></span>
 
-  <mat-card-actions>
-    <button mat-stroked-button routerLink="/reservations">BACK</button>
+      <button mat-flat-button color="primary" [disabled]="res.players.length >= res.maxPlayers">
+        <mat-icon class="mr-1">login</mat-icon>
+        <!-- TODO: Add login behaviour -->
+        JOIN GAME
+      </button>
 
-    <span class="header-spacer"></span>
-
-    <button mat-flat-button color="primary" [disabled]="res.playersNames.length >= res.maxPlayers">
-      <mat-icon class="mr-1">login</mat-icon> JOIN GAME
-    </button>
-
-    <button mat-stroked-button color="warn">
-      <mat-icon class="mr-1">logout</mat-icon> EXIT GAME
-    </button>
-  </mat-card-actions>
-</mat-card>
+      <button mat-stroked-button color="warn">
+        <mat-icon class="mr-1">logout</mat-icon>
+        <!-- TODO: Add exit behaviour -->
+        EXIT GAME
+      </button>
+    </mat-card-actions>
+  </mat-card>
 } @else {
-<p class="p-4">Loading details...</p>
+  <p class="p-4">Loading details...</p>
 }
