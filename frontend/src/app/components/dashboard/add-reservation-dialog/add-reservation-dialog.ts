@@ -22,6 +22,7 @@ import { filter, switchMap, tap } from 'rxjs';
 import { Boardgame } from '../../../model/boardgame';
 import { FormAlert } from '../../form-alert/form-alert';
 import { extractErrorMessage } from '../../../utils/error-handler';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-add-reservation-dialog',
@@ -44,6 +45,7 @@ export class AddReservationDialog {
   private readonly fb = inject(FormBuilder);
   private readonly reservationService = inject(ReservationService);
   private readonly associationService = inject(AssociationService);
+  private readonly router = inject(Router);
   private readonly dialogRef = inject(MatDialogRef<AddReservationDialog>);
 
   readonly isSubmitting = signal(false);
@@ -108,9 +110,9 @@ export class AddReservationDialog {
     };
 
     this.reservationService.createReservation(request).subscribe({
-      next: (reservation) => {
-        this.dialogRef.close(reservation);
-        console.log(request);
+      next: (reservationId) => {
+        this.router.navigate(['/reservations', reservationId]);
+        this.dialogRef.close();
       },
       error: (err) => {
         this.isSubmitting.set(false);
