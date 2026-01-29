@@ -4,7 +4,7 @@
       <mat-card-title>Welcome Back</mat-card-title>
     </mat-card-header>
 
-    <form [formGroup]="loginForm" (ngSubmit)="processLoginForm()">
+    <form [formGroup]="loginForm" (ngSubmit)="processLoginForm()" class="app-form-stack">
       <app-role-selector [(role)]="role" />
 
       <mat-form-field>
@@ -12,9 +12,9 @@
         <input matInput formControlName="email" placeholder="name@example.com" />
 
         @if (loginForm.get('email')?.hasError('required')) {
-        <mat-error>Email is required</mat-error>
+          <mat-error>Email is required</mat-error>
         } @else if (loginForm.get('email')?.hasError('email')) {
-        <mat-error>Invalid email address</mat-error>
+          <mat-error>Invalid email address</mat-error>
         }
       </mat-form-field>
 
@@ -22,7 +22,7 @@
         <mat-label>Password</mat-label>
         <input matInput type="password" formControlName="password" />
         @if (loginForm.get('password')?.hasError('required')) {
-        <mat-error>Password is required</mat-error>
+          <mat-error>Password is required</mat-error>
         }
       </mat-form-field>
 
@@ -35,6 +35,8 @@
       >
         Sign In
       </app-submit-button>
+
+      <div class="app-auth-link">Don't have an account? <a routerLink="/register">Sign up</a></div>
     </form>
   </mat-card>
 </div>

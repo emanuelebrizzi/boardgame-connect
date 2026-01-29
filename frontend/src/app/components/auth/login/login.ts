@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { UserRole } from '../../../models/user';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { RoleSelector } from '../role-selector/role-selector';
@@ -26,6 +26,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
     RoleSelector,
     SubmitButton,
     FormAlert,
+    RouterLink,
   ],
   templateUrl: './login.html',
   styleUrl: './login.scss',
