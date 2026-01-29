@@ -35,7 +35,9 @@ export class ReservationDetail {
   private readonly snackBar = inject(MatSnackBar);
 
   id = input.required<string>();
-  readonly currentUserId = computed(() => this.authService.currentUser()?.id);
+  readonly currentUser = computed(() => this.authService.currentUser());
+  readonly currentUserId = computed(() => this.currentUser()?.id);
+  readonly isPlayer = computed(() => this.currentUser()?.role === 'PLAYER');
   readonly reservation = toSignal(
     toObservable(this.id).pipe(switchMap((id) => this.reservationService.getReservation(id))),
   );
