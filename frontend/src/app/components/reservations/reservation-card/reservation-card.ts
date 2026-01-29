@@ -13,7 +13,7 @@ import { RouterLink } from '@angular/router';
   styleUrl: './reservation-card.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReservationCardComponent {
+export class ReservationCard {
   reservation = input.required<ReservationSummary>();
 
   protected gameCoverURL = computed(() => this.reservation().gameImgPath);

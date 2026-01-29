@@ -48,8 +48,13 @@ export class AuthService {
   }
 
   private getUserFromStorage(): UserProfile | null {
-    const storedUser = localStorage.getItem(this.USER_KEY);
-    return storedUser ? JSON.parse(storedUser) : null;
+    try {
+      const storedUser = localStorage.getItem(this.USER_KEY);
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (e) {
+      localStorage.removeItem(this.USER_KEY); // Clean up bad data
+      return null;
+    }
   }
 
   private getTokenFromStorage(): string | null {
