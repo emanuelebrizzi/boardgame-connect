@@ -45,6 +45,10 @@ export class ReservationService {
     return this.http.post<string>(`${this.apiUrl}`, request);
   }
 
+  joinReservation(reservationId: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${reservationId}/join`, {});
+  }
+
   leaveReservation(reservationId: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${reservationId}/leave`);
   }

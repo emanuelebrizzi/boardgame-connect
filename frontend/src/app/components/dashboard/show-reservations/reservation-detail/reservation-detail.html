@@ -77,11 +77,15 @@
       @if (isParticipant()) {
         <button mat-flat-button color="warn" (click)="exitReservation()">EXIT RESERVATION</button>
       } @else {
-        <!-- <button mat-flat-button color="primary"
-                [disabled]="res.players.length >= res.maxPlayers"
-                (click)="joinReservation()">
+        <button
+          mat-flat-button
+          color="primary"
+          [disabled]="res.players.length >= res.maxPlayers"
+          (click)="joinReservation()"
+        >
+          <mat-icon class="mr-1">login</mat-icon>
           JOIN GAME
-        </button> -->
+        </button>
       }
     </mat-card-actions>
   </mat-card>

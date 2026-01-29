@@ -11,6 +11,7 @@ import { MatListModule } from '@angular/material/list';
 import { Router, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
 import { AuthService } from '../../../../services/auth-service';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-reservation-detail',
@@ -31,18 +32,30 @@ export class ReservationDetail {
   private readonly reservationService = inject(ReservationService);
   private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
   id = input.required<string>();
   readonly currentUserId = computed(() => this.authService.currentUser()?.id);
   readonly reservation = toSignal(
     toObservable(this.id).pipe(switchMap((id) => this.reservationService.getReservation(id))),
   );
-
   readonly isParticipant = computed(() => {
     const res = this.reservation();
     const uid = this.currentUserId();
     return res && uid && res.players.some((p) => p.id === uid);
   });
+
+  joinReservation() {
+    this.reservationService.joinReservation(this.id()).subscribe({
+      next: () => {
+        window.location.reload();
+      },
+      error: (err) => {
+        console.error('Error joining reservation', err);
+        this.showSnackBar('Failed to join the reservation. Please try again.', 'error');
+      },
+    });
+  }
 
   exitReservation() {
     if (
@@ -55,12 +68,22 @@ export class ReservationDetail {
 
     this.reservationService.leaveReservation(this.id()).subscribe({
       next: () => {
+        this.showSnackBar('You have left the reservation.');
         this.router.navigate(['/dashboard/player'], { replaceUrl: true });
       },
       error: (err) => {
         console.error('Error leaving reservation', err);
-        alert('Could not leave the reservation. Please try again.');
+        this.showSnackBar('Could not leave the reservation. Please try again.', 'error');
       },
+    });
+  }
+
+  private showSnackBar(message: string, type: 'success' | 'error' = 'success') {
+    this.snackBar.open(message, 'Close', {
+      duration: 3000,
+      horizontalPosition: 'center',
+      verticalPosition: 'bottom',
+      panelClass: type === 'error' ? ['error-snackbar'] : ['success-snackbar'],
     });
   }
 }
