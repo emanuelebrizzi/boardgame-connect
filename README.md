@@ -49,8 +49,8 @@ The system follows a **RESTful architecture**. The backend exposes resources (Us
 The Angular client is structured using the **Component-Service-Model** pattern to ensure separation of concerns:
 
 - **Models:** TypeScript interfaces defining the shape of data.
-- **Services:** Injectable classes handling business logic, state management (Signals), and API communication.
-- **Components:** Standalone UI units responsible solely for presenting data and capturing user events.
+- **Services:** Injectable classes handling communication with the Backend system using REST APIs.
+- **Components:** Standalone UI units responsible for presenting data and capturing user events.
 
 #### ⚙️ Backend: MVC
 
@@ -58,7 +58,7 @@ The Spring Boot application adapts the classic **Model-View-Controller (MVC)** p
 
 - **Controller:** Handles incoming HTTP requests and maps them to service methods.
 - **Model:** Represented by JPA Entities and DTOs (Data Transfer Objects) that manage data and business rules.
-- **View:** Instead of rendering HTML server-side, the "View" is the JSON representation of the data returned to the client.
+- **View:** Instead of rendering HTML server-side, the view is delegated to the Frontend system.
 
 ---
 
