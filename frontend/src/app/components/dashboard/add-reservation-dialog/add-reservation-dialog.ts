@@ -74,9 +74,9 @@ export class AddReservationDialog {
         this.selectedGame.set(null);
       }),
       filter((id) => !!id),
-      switchMap((id) => this.associationService.getBoardgames(id!))
+      switchMap((id) => this.associationService.getBoardgames(id!)),
     ),
-    { initialValue: [] }
+    { initialValue: [] },
   );
 
   constructor() {

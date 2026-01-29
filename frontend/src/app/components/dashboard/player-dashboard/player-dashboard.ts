@@ -26,8 +26,7 @@ export class PlayerDashboard {
     dialogRef.afterClosed().subscribe((reservation) => {
       if (reservation) {
         console.log('Reservation created:', reservation);
-        // Redirect logic as requested
-        // this.router.navigate(['/lobby', reservation.id]);
+        this.router.navigate(['/reservations', reservation.id]);
       }
     });
   }
