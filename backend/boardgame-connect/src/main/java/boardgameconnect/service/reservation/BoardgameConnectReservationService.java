@@ -89,7 +89,7 @@ public class BoardgameConnectReservationService implements ReservationService {
 
 	@Override
 	@Transactional
-	public void createReservation(ReservationCreateRequest request, Email userEmail) {
+	public Reservation createReservation(ReservationCreateRequest request, Email userEmail) {
 		Boardgame game = boardgameRepository.findById(request.boardgameId()).orElseThrow(
 				() -> new BoardgameNotFoundException("Boardgame not found with ID: " + request.boardgameId()));
 
@@ -112,7 +112,8 @@ public class BoardgameConnectReservationService implements ReservationService {
 		Reservation reservation = new Reservation(creator, association, game, availableTable, request.selectedPlayers(),
 				startTime, endTime);
 
-		reservationRepository.save(reservation);
+		return reservationRepository.save(reservation);
+
 	}
 
 	private GameTable findTable(Association association, Instant start, Instant end, int players) {

@@ -41,6 +41,7 @@ import boardgameconnect.model.GameTable;
 import boardgameconnect.model.GameTableSize;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.Reservation;
+import boardgameconnect.model.ReservationStatus;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 
@@ -187,12 +188,24 @@ class BoardgameConnectReservationServiceTest {
 		when(boardgameRepository.findById(BORDGAME_ID)).thenReturn(Optional.of(rootGame));
 		when(associationRepository.findById(ASSOCIATION_ID)).thenReturn(Optional.of(association));
 		when(playerRepository.findByAccountEmail(userEmail)).thenReturn(Optional.of(creator));
-
 		when(gameTableRepository.findByAssociationAndCapacityGreaterThanEqual(association, 3))
 				.thenReturn(List.of(freeTable));
 		when(reservationRepository.findOccupiedTables(eq(ASSOCIATION_ID), any(), any())).thenReturn(List.of());
 
-		reservationService.createReservation(request, userEmail);
+		when(reservationRepository.save(any(Reservation.class))).thenAnswer(i -> i.getArgument(0));
+
+		Reservation result = reservationService.createReservation(request, userEmail);
+
+		assertNotNull(result);
+
+		assertEquals(association, result.getAssociation());
+		assertEquals(rootGame, result.getBoardgame());
+		assertEquals(freeTable, result.getGameTable());
+		assertEquals(3, result.getMaxPlayers());
+		assertEquals(startTime, result.getStartTime());
+		assertEquals(ReservationStatus.OPEN, result.getStatus());
+		assertTrue(result.getPlayers().contains(creator));
+		assertEquals(1, result.getPlayers().size());
 
 		verify(reservationRepository, times(1)).save(any(Reservation.class));
 	}
