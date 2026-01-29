@@ -10,10 +10,10 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { BoardgameService } from '../../../services/boardgame-service';
 import { forkJoin } from 'rxjs';
-import { Boardgame } from '../../../model/boardgame';
+import { Boardgame } from '../../../models/boardgame';
 import { extractErrorMessage } from '../../../utils/error-handler';
 import { MatButtonModule } from '@angular/material/button';
-import { SubmitButton } from '../../submit-button/submit-button';
+import { SubmitButton } from '../../shared/submit-button/submit-button';
 import { BoardgameSelection } from '../boardgame-selection/boardgame-selection';
 
 @Component({

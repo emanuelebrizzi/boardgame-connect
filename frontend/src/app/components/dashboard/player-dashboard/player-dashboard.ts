@@ -3,7 +3,7 @@ import { Dashboard } from '../dashboard';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
-import { AddReservationDialog } from '../add-reservation-dialog/add-reservation-dialog';
+import { AddReservationDialog } from '../../reservations/add-reservation-dialog/add-reservation-dialog';
 
 @Component({
   selector: 'app-player-dashboard',

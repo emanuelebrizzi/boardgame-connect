@@ -14,13 +14,13 @@ export const routes: Routes = [
   {
     path: 'login',
     canActivate: [guestGuard],
-    loadComponent: () => import('./components/login/login').then((m) => m.Login),
+    loadComponent: () => import('./components/auth/login/login').then((m) => m.Login),
   },
   {
     path: 'register',
     canActivate: [guestGuard],
     loadComponent: () =>
-      import('./components/registration/registration').then((m) => m.Registration),
+      import('./components/auth/registration/registration').then((m) => m.Registration),
   },
   {
     path: 'dashboard',
@@ -30,7 +30,7 @@ export const routes: Routes = [
         path: 'player',
         loadComponent: () =>
           import('./components/dashboard/player-dashboard/player-dashboard').then(
-            (m) => m.PlayerDashboard
+            (m) => m.PlayerDashboard,
           ),
         canActivate: [playerGuard],
       },
@@ -38,7 +38,7 @@ export const routes: Routes = [
         path: 'association',
         loadComponent: () =>
           import('./components/dashboard/association-dashboard/association-dashboard').then(
-            (m) => m.AssociationDashboard
+            (m) => m.AssociationDashboard,
           ),
         canActivate: [associationGuard],
       },
@@ -48,7 +48,7 @@ export const routes: Routes = [
         canActivate: [dashboardDispatcherGuard],
         loadComponent: () =>
           import('./components/dashboard/player-dashboard/player-dashboard').then(
-            (m) => m.PlayerDashboard
+            (m) => m.PlayerDashboard,
           ),
       },
     ],
@@ -57,29 +57,30 @@ export const routes: Routes = [
     path: 'reservations/:id',
     canActivate: [authGuard],
     loadComponent: () =>
-      import('./components/dashboard/show-reservations/reservation-detail/reservation-detail').then(
-        (m) => m.ReservationDetail
+      import('./components/reservations/reservation-detail/reservation-detail').then(
+        (m) => m.ReservationDetail,
       ),
   },
   {
     path: 'boardgames/add',
     loadComponent: () =>
-      import('./components/boardgame/add-boardgame-page/add-boardgame-page').then(
-        (m) => m.AddBoardgamePage
+      import('./components/boardgames/add-boardgame-page/add-boardgame-page').then(
+        (m) => m.AddBoardgamePage,
       ),
     canActivate: [associationGuard],
   },
   {
     path: 'boardgames/remove',
     loadComponent: () =>
-      import('./components/boardgame/remove-boardgame-page/remove-boardgame-page').then(
-        (m) => m.RemoveBoardgamePage
+      import('./components/boardgames/remove-boardgame-page/remove-boardgame-page').then(
+        (m) => m.RemoveBoardgamePage,
       ),
     canActivate: [associationGuard],
   },
   {
     path: 'error',
-    loadComponent: () => import('./components/error-card/error-card').then((m) => m.ErrorCard),
+    loadComponent: () =>
+      import('./components/shared/error-card/error-card').then((m) => m.ErrorCard),
     data: {
       code: '404',
       title: 'Page Not Found',
@@ -88,7 +89,8 @@ export const routes: Routes = [
   },
   {
     path: '**',
-    loadComponent: () => import('./components/error-card/error-card').then((m) => m.ErrorCard),
+    loadComponent: () =>
+      import('./components/shared/error-card/error-card').then((m) => m.ErrorCard),
     data: {
       code: '404',
       title: 'Page Not Found',

@@ -1,6 +1,6 @@
 import { Component, model } from '@angular/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
-import { UserRole } from '../../model/user';
+import { UserRole } from '../../../models/user';
 
 @Component({
   selector: 'app-role-selector',

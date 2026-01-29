@@ -17,9 +17,9 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 import { merge } from 'rxjs';
-import { ReservationSummary, ReservationFilter, ReservationState } from '../../model/reservation';
+import { ReservationSummary, ReservationFilter, ReservationState } from '../../models/reservation';
 import { ReservationService } from '../../services/reservation-service';
-import { ReservationCardComponent } from './show-reservations/reservation-card/reservation-card';
+import { ReservationCardComponent } from '../reservations/reservation-card/reservation-card';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { extractErrorMessage } from '../../utils/error-handler';
 
@@ -62,12 +62,12 @@ export class Dashboard implements OnInit {
     merge(
       this.nameFilter.valueChanges,
       this.assocFilter.valueChanges,
-      this.statusFilter.valueChanges
+      this.statusFilter.valueChanges,
     )
       .pipe(
         debounceTime(800), // Wait for user to stop typing
         distinctUntilChanged(), // Ignore identical subsequent values
-        takeUntilDestroyed(this.destroyRef) // Auto-unsubscribe
+        takeUntilDestroyed(this.destroyRef), // Auto-unsubscribe
       )
       .subscribe(() => {
         this.loadData();

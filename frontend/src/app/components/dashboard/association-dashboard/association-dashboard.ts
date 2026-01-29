@@ -11,7 +11,7 @@ import { MatTableModule } from '@angular/material/table';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
 import { AssociationService } from '../../../services/association-service';
-import { GameTable } from '../../../model/game-table';
+import { GameTable } from '../../../models/game-table';
 import { MatCardModule } from '@angular/material/card';
 
 @Component({

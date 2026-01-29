@@ -6,7 +6,7 @@ import {
   Reservation,
   ReservationFilter,
   ReservationCreateRequest,
-} from '../model/reservation';
+} from '../models/reservation';
 import { environment } from '../../environments/environment';
 
 @Injectable({

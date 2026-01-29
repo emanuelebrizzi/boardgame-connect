@@ -9,7 +9,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { ReservationCreateRequest } from '../../../model/reservation';
+import { ReservationCreateRequest } from '../../../models/reservation';
 import { ReservationService } from '../../../services/reservation-service';
 import { AssociationService } from '../../../services/association-service';
 import { MatButtonModule } from '@angular/material/button';
@@ -19,7 +19,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { filter, switchMap, tap } from 'rxjs';
-import { Boardgame } from '../../../model/boardgame';
+import { Boardgame } from '../../../models/boardgame';
 import { FormAlert } from '../../form-alert/form-alert';
 import { extractErrorMessage } from '../../../utils/error-handler';
 import { Router } from '@angular/router';

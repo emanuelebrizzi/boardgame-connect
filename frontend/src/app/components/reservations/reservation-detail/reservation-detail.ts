@@ -1,4 +1,4 @@
-import { ReservationService } from '../../../../services/reservation-service';
+import { ReservationService } from '../../../services/reservation-service';
 import { DatePipe } from '@angular/common';
 import { Component, computed, inject, input } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
@@ -10,7 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatListModule } from '@angular/material/list';
 import { Router, RouterLink } from '@angular/router';
 import { switchMap } from 'rxjs';
-import { AuthService } from '../../../../services/auth-service';
+import { AuthService } from '../../../services/auth-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({

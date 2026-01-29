@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatDialogModule, MatDialogRef } from '@angular/material/dialog';
-import { GameTableRequest, GameTableSize } from '../../../model/game-table';
+import { GameTableRequest, GameTableSize } from '../../../models/game-table';
 import { AssociationService } from '../../../services/association-service';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';

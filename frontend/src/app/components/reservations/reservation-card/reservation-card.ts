@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { MatCardModule } from '@angular/material/card';
 import { MatIcon } from '@angular/material/icon';
 import { MatChipsModule } from '@angular/material/chips';
-import { ReservationSummary } from '../../../../model/reservation';
+import { ReservationSummary } from '../../../models/reservation';
 import { RouterLink } from '@angular/router';
 
 @Component({
