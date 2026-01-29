@@ -89,7 +89,7 @@ public class BoardgameConnectReservationService implements ReservationService {
 
 	@Override
 	@Transactional
-	public Reservation createReservation(ReservationCreateRequest request, Email userEmail) {
+	public ReservationDetail createReservation(ReservationCreateRequest request, Email userEmail) {
 		Boardgame game = boardgameRepository.findById(request.boardgameId()).orElseThrow(
 				() -> new BoardgameNotFoundException("Boardgame not found with ID: " + request.boardgameId()));
 
@@ -112,8 +112,17 @@ public class BoardgameConnectReservationService implements ReservationService {
 		Reservation reservation = new Reservation(creator, association, game, availableTable, request.selectedPlayers(),
 				startTime, endTime);
 
-		return reservationRepository.save(reservation);
+		return convertToDetail(reservationRepository.save(reservation));
 
+	}
+
+	private ReservationDetail convertToDetail(Reservation res) {
+		return new ReservationDetail(res.getId(), res.getBoardgame().getName(), res.getBoardgame().getImagePath(),
+				new AssociationSummary(res.getAssociation().getId(), res.getAssociation().getAccount().getName(),
+						res.getAssociation().getAddress()),
+				res.getPlayers().stream().map(p -> new PlayerSummary(p.getId(), p.getAccount().getName())).toList(),
+				res.getBoardgame().getMinPlayer(), res.getMaxPlayers(), res.getStartTime(), res.getEndTime(),
+				res.getStatus().name());
 	}
 
 	private GameTable findTable(Association association, Instant start, Instant end, int players) {

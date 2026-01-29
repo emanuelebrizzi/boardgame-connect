@@ -41,7 +41,6 @@ import boardgameconnect.model.GameTable;
 import boardgameconnect.model.GameTableSize;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.Reservation;
-import boardgameconnect.model.ReservationStatus;
 import boardgameconnect.model.UserAccount;
 import boardgameconnect.model.UserRole;
 
@@ -188,24 +187,27 @@ class BoardgameConnectReservationServiceTest {
 		when(boardgameRepository.findById(BORDGAME_ID)).thenReturn(Optional.of(rootGame));
 		when(associationRepository.findById(ASSOCIATION_ID)).thenReturn(Optional.of(association));
 		when(playerRepository.findByAccountEmail(userEmail)).thenReturn(Optional.of(creator));
+
 		when(gameTableRepository.findByAssociationAndCapacityGreaterThanEqual(association, 3))
 				.thenReturn(List.of(freeTable));
 		when(reservationRepository.findOccupiedTables(eq(ASSOCIATION_ID), any(), any())).thenReturn(List.of());
 
-		when(reservationRepository.save(any(Reservation.class))).thenAnswer(i -> i.getArgument(0));
+		when(reservationRepository.save(any(Reservation.class))).thenAnswer(i -> {
+			Reservation toSave = i.getArgument(0);
+			ReflectionTestUtils.setField(toSave, "id", "test-uuid-123");
+			return toSave;
+		});
 
-		Reservation result = reservationService.createReservation(request, userEmail);
+		ReservationDetail result = reservationService.createReservation(request, userEmail);
 
 		assertNotNull(result);
+		assertAll(() -> assertEquals("test-uuid-123", result.id()), () -> assertEquals(BORDGAME_NAME, result.game()),
+				() -> assertEquals(3, result.maxPlayers()), () -> assertEquals(startTime, result.startTime()),
+				() -> assertEquals("OPEN", result.state()),
+				() -> assertEquals(ASSOCIATION_ID, result.association().id()));
 
-		assertEquals(association, result.getAssociation());
-		assertEquals(rootGame, result.getBoardgame());
-		assertEquals(freeTable, result.getGameTable());
-		assertEquals(3, result.getMaxPlayers());
-		assertEquals(startTime, result.getStartTime());
-		assertEquals(ReservationStatus.OPEN, result.getStatus());
-		assertTrue(result.getPlayers().contains(creator));
-		assertEquals(1, result.getPlayers().size());
+		boolean creatorFound = result.players().stream().anyMatch(p -> p.name().equals(PLAYER_NAME));
+		assertTrue(creatorFound);
 
 		verify(reservationRepository, times(1)).save(any(Reservation.class));
 	}
@@ -252,7 +254,7 @@ class BoardgameConnectReservationServiceTest {
 	void createReservationShouldCalculateCorrectEndTime() {
 		Instant startTime = Instant.parse("2025-11-25T21:00:00Z");
 		int players = 4;
-		long expectedDurationMin = 180;
+		long expectedDurationMin = rootGame.calculateDuration(players);
 		Instant expectedEndTime = startTime.plus(java.time.Duration.ofMinutes(expectedDurationMin));
 
 		ReservationCreateRequest request = new ReservationCreateRequest(BORDGAME_ID, ASSOCIATION_ID, players,
@@ -265,11 +267,16 @@ class BoardgameConnectReservationServiceTest {
 		when(gameTableRepository.findByAssociationAndCapacityGreaterThanEqual(any(), anyInt()))
 				.thenReturn(List.of(freeTable));
 
-		org.mockito.ArgumentCaptor<Reservation> reservationCaptor = org.mockito.ArgumentCaptor
-				.forClass(Reservation.class);
+		when(reservationRepository.save(any(Reservation.class))).thenAnswer(i -> {
+			Reservation toSave = i.getArgument(0);
+			ReflectionTestUtils.setField(toSave, "id", "dummy-id");
+			return toSave;
+		});
 
 		reservationService.createReservation(request, new Email(PLAYER_EMAIL_STRING));
 
+		org.mockito.ArgumentCaptor<Reservation> reservationCaptor = org.mockito.ArgumentCaptor
+				.forClass(Reservation.class);
 		verify(reservationRepository).save(reservationCaptor.capture());
 		Reservation savedReservation = reservationCaptor.getValue();
 

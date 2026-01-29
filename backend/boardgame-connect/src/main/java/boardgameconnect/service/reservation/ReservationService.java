@@ -6,7 +6,6 @@ import boardgameconnect.dto.reservation.ReservationCreateRequest;
 import boardgameconnect.dto.reservation.ReservationDetail;
 import boardgameconnect.dto.reservation.ReservationSummary;
 import boardgameconnect.model.Email;
-import boardgameconnect.model.Reservation;
 
 public interface ReservationService {
 
@@ -14,7 +13,7 @@ public interface ReservationService {
 
 	ReservationDetail getReservationById(String id);
 
-	Reservation createReservation(ReservationCreateRequest request, Email userEmail);
+	ReservationDetail createReservation(ReservationCreateRequest request, Email userEmail);
 
 	void join(String reservationId, Email email);
 
