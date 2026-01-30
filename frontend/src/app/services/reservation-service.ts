@@ -40,9 +40,9 @@ export class ReservationService {
     return this.http.get<Reservation>(`${this.apiUrl}/${id}`);
   }
 
-  // It returns the id of the created reservation to the caller.
-  createReservation(request: ReservationCreateRequest): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}`, request);
+  // It returns the last created reservation to the caller.
+  createReservation(request: ReservationCreateRequest): Observable<Reservation> {
+    return this.http.post<Reservation>(`${this.apiUrl}`, request);
   }
 
   joinReservation(reservationId: string): Observable<void> {
