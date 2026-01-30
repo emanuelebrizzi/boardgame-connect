@@ -28,6 +28,7 @@ export interface ReservationSummary {
   maxPlayers: number;
   startTime: string;
   endTime: string;
+  state: ReservationState;
 }
 
 export interface ReservationFilter {

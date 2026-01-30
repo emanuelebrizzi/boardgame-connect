@@ -17,5 +17,5 @@ export class ReservationCard {
   reservation = input.required<ReservationSummary>();
 
   protected gameCoverURL = computed(() => this.reservation().gameImgPath);
-  // protected cardStatus = computed(() => this.reservation().state);
+  protected cardStatus = computed(() => this.reservation().state);
 }

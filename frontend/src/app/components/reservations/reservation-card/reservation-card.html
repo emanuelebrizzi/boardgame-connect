@@ -1,15 +1,10 @@
-<!-- <mat-card
-  appearance="outlined"
-  class="card-container"
-  [class]="'status-' + cardStatus()"
-  [routerLink]="cardStatus() === 'closed' ? null : ['/reservations', reservation().id]"
-> -->
 <mat-card
   appearance="outlined"
   class="card-container"
+  [class]="'status-' + cardStatus()"
   [routerLink]="['/reservations', reservation().id]"
 >
-  <img mat-card-image [src]="gameCoverURL()" class="game-cover-image" />
+  <img mat-card-image [src]="gameCoverURL()" class="game-cover-image" alt="Board game cover art" />
 
   <mat-card-header class="card-header">
     <mat-card-subtitle class="card-title">
@@ -22,15 +17,11 @@
   </mat-card-header>
 
   <mat-card-content class="card-content">
-    <!-- Date Info
-        Example: 'EEE, d MMM y' format for Nov 25, 2025 is 'Tue, 25 Nov 2025'
-    -->
     <div class="info-row">
       <mat-icon class="info-icon">calendar_today</mat-icon>
       <span class="text-sm">{{ reservation().startTime | date: 'EEE, d MMM y' }}</span>
     </div>
 
-    <!-- Time Info -->
     <div class="info-row">
       <mat-icon class="info-icon">schedule</mat-icon>
       <span class="text-sm">
@@ -46,11 +37,6 @@
           {{ reservation().currentPlayers }} / {{ reservation().maxPlayers }}
         </mat-chip>
       </mat-chip-set>
-
-      <!-- State indication -->
-      <!-- <span class="status-text">
-        {{ cardStatus() }}
-      </span> -->
     </div>
   </mat-card-content>
 </mat-card>
