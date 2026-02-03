@@ -1,8 +1,9 @@
 <mat-card
   appearance="outlined"
   class="card-container"
-  [class]="'status-' + cardStatus()"
-  [routerLink]="['/reservations', reservation().id]"
+  [class]="'status-' + cardStatus().toLowerCase()"
+  [class.disabled-card]="!isAccessible()"
+  [routerLink]="isAccessible() ? ['/reservations', reservation().id] : null"
 >
   <img mat-card-image [src]="gameCoverURL()" class="game-cover-image" alt="Board game cover art" />
 

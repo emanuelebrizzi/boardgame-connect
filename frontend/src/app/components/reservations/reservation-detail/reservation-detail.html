@@ -75,18 +75,22 @@
       <button mat-button routerLink="/">BACK</button>
 
       @if (isPlayer()) {
-        @if (isParticipant()) {
-          <button mat-flat-button color="warn" (click)="exitReservation()">EXIT RESERVATION</button>
-        } @else {
-          <button
-            mat-flat-button
-            color="primary"
-            [disabled]="res.players.length >= res.maxPlayers"
-            (click)="joinReservation()"
-          >
-            <mat-icon class="mr-1">login</mat-icon>
-            JOIN GAME
-          </button>
+        @if (reservation()?.status === 'OPEN') {
+          @if (isParticipant()) {
+            <button mat-flat-button color="warn" (click)="exitReservation()">
+              EXIT RESERVATION
+            </button>
+          } @else {
+            <button
+              mat-flat-button
+              color="primary"
+              [disabled]="res.players.length >= res.maxPlayers"
+              (click)="joinReservation()"
+            >
+              <mat-icon class="mr-1">login</mat-icon>
+              JOIN GAME
+            </button>
+          }
         }
       }
     </mat-card-actions>

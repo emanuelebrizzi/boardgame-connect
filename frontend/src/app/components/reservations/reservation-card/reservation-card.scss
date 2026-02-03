@@ -3,7 +3,7 @@
   flex-direction: column;
   height: 100%;
 
-  border-left: 6px solid transparent;
+  // border-left: 6px solid transparent;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 
   &:hover {
@@ -72,9 +72,24 @@
   color: #757575;
 }
 
-.status-open {
-  border-left-color: #af4c54;
-  opacity: 0.8;
+.disabled-card {
+  // Reduces the opacity to make the card look "faded out"
+  opacity: 0.6;
+
+  // Converts the card to grayscale (black & white) to further indicate inactivity
+  filter: grayscale(100%);
+
+  // Prevents all mouse interactions (clicking, hovering, etc.)
+  pointer-events: none;
+
+  // Ensures the cursor stays as the default arrow if they somehow hover over it
+  cursor: default;
+
+  // Optional: If you want to keep the "closed" status chip colorful,
+  // you can exclude it from the grayscale filter like this:
+  // ::ng-deep .mat-mdc-chip {
+  //   filter: grayscale(0%);
+  // }
 }
 
 .status-closed {

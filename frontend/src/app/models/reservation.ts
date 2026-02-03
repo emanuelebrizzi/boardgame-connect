@@ -1,4 +1,3 @@
-import { Player } from './user';
 import { AssociationSummary } from './associaton';
 
 export interface Reservation {
@@ -11,12 +10,12 @@ export interface Reservation {
   maxPlayers: number;
   startTime: string;
   endTime: string;
-  state: ReservationState;
+  status: ReservationState;
 }
 
 export enum ReservationState {
-  Open = 'open',
-  Closed = 'closed',
+  Open = 'OPEN',
+  Closed = 'CLOSED',
 }
 
 export interface ReservationSummary {
@@ -28,7 +27,8 @@ export interface ReservationSummary {
   maxPlayers: number;
   startTime: string;
   endTime: string;
-  state: ReservationState;
+  status: ReservationState;
+  participantIds: string[];
 }
 
 export interface ReservationFilter {
