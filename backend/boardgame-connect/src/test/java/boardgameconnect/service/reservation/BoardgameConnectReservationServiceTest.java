@@ -203,17 +203,9 @@ class BoardgameConnectReservationServiceTest {
 			return toSave;
 		});
 
-		ReservationDetail result = reservationService.createReservation(request, userEmail);
+		String result = reservationService.createReservation(request, userEmail);
 
 		assertNotNull(result);
-		assertAll(() -> assertEquals("test-uuid-123", result.id()), () -> assertEquals(BORDGAME_NAME, result.game()),
-				() -> assertEquals(3, result.maxPlayers()), () -> assertEquals(startTime, result.startTime()),
-				() -> assertEquals("OPEN", result.status()),
-				() -> assertEquals(ASSOCIATION_ID, result.association().id()));
-
-		boolean creatorFound = result.players().stream().anyMatch(p -> p.name().equals(PLAYER_NAME));
-		assertTrue(creatorFound);
-
 		verify(reservationRepository, times(1)).save(any(Reservation.class));
 	}
 

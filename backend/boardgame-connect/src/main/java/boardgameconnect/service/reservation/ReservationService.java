@@ -13,7 +13,7 @@ public interface ReservationService {
 
 	ReservationDetail getReservationById(String id);
 
-	ReservationDetail createReservation(ReservationCreateRequest request, Email userEmail);
+	String createReservation(ReservationCreateRequest request, Email userEmail);
 
 	void join(String reservationId, Email email);
 
