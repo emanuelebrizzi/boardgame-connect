@@ -63,9 +63,9 @@ class ReservationControllerTest {
 	@Test
 	void getReservationsShouldReturnListOfAvailableReservationsByDefault() throws Exception {
 		var res1 = new ReservationSummary("t_123", "Root", "root.png", "La Gilda del Cassero", 2, 4,
-				Instant.parse("2025-11-20T21:00:00Z"), Instant.parse("2025-11-20T22:30:00Z"));
+				Instant.parse("2025-11-20T21:00:00Z"), Instant.parse("2025-11-20T22:30:00Z"), "OPEN", null);
 		var res2 = new ReservationSummary("t_124", "Wingspan", "wingspan.png", "Ludoteca Svelta", 1, 5,
-				Instant.parse("2025-11-21T18:30:00Z"), Instant.parse("2025-11-21T19:30:00Z"));
+				Instant.parse("2025-11-21T18:30:00Z"), Instant.parse("2025-11-21T19:30:00Z"), "OPEN", null);
 
 		when(reservationService.getAvailableReservations(null, null, null)).thenReturn(List.of(res1, res2));
 

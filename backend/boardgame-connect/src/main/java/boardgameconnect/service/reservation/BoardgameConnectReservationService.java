@@ -13,8 +13,6 @@ import boardgameconnect.dao.BoardgameRepository;
 import boardgameconnect.dao.GameTableRepository;
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.ReservationRepository;
-import boardgameconnect.dto.PlayerSummary;
-import boardgameconnect.dto.association.AssociationSummary;
 import boardgameconnect.dto.reservation.ReservationCreateRequest;
 import boardgameconnect.dto.reservation.ReservationDetail;
 import boardgameconnect.dto.reservation.ReservationSummary;
@@ -26,6 +24,7 @@ import boardgameconnect.exception.PlayerAlreadyJoinedException;
 import boardgameconnect.exception.PlayerNotFoundException;
 import boardgameconnect.exception.ReservationFullException;
 import boardgameconnect.exception.ReservationNotFoundException;
+import boardgameconnect.mapper.ReservationMapper;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
@@ -42,15 +41,18 @@ public class BoardgameConnectReservationService implements ReservationService {
 	private final AssociationRepository associationRepository;
 	private final PlayerRepository playerRepository;
 	private final GameTableRepository gameTableRepository;
+	private final ReservationMapper reservationMapper;
 
 	public BoardgameConnectReservationService(ReservationRepository reservationRepository,
 			BoardgameRepository boardgameRepository, AssociationRepository associationRepository,
-			PlayerRepository playerRepository, GameTableRepository gameTableRepository) {
+			PlayerRepository playerRepository, GameTableRepository gameTableRepository,
+			ReservationMapper reservationMapper) {
 		this.reservationRepository = reservationRepository;
 		this.boardgameRepository = boardgameRepository;
 		this.associationRepository = associationRepository;
 		this.playerRepository = playerRepository;
 		this.gameTableRepository = gameTableRepository;
+		this.reservationMapper = reservationMapper;
 
 	}
 
@@ -62,13 +64,7 @@ public class BoardgameConnectReservationService implements ReservationService {
 				.filter(res -> game == null || res.getBoardgame().getName().equalsIgnoreCase(game))
 				.filter(res -> association == null
 						|| res.getAssociation().getAccount().getName().equalsIgnoreCase(association))
-				.map(this::mapToSummary).collect(Collectors.toList());
-	}
-
-	private ReservationSummary mapToSummary(Reservation res) {
-		return new ReservationSummary(res.getId(), res.getBoardgame().getName(), res.getBoardgame().getImagePath(),
-				res.getAssociation().getAccount().getName(), res.getPlayers().size(), res.getMaxPlayers(),
-				res.getStartTime(), res.getEndTime());
+				.map(reservationMapper::mapToSummary).collect(Collectors.toList());
 	}
 
 	@Override
@@ -76,15 +72,7 @@ public class BoardgameConnectReservationService implements ReservationService {
 		Reservation res = reservationRepository.findById(id)
 				.orElseThrow(() -> new ReservationNotFoundException("Reservation " + id + "not found"));
 
-		AssociationSummary assocSummary = new AssociationSummary(res.getAssociation().getId(),
-				res.getAssociation().getAccount().getName(), res.getAssociation().getAddress());
-
-		List<PlayerSummary> playerSummaries = res.getPlayers().stream()
-				.map(p -> new PlayerSummary(p.getId(), p.getAccount().getName())).toList();
-
-		return new ReservationDetail(res.getId(), res.getBoardgame().getName(), res.getBoardgame().getImagePath(),
-				assocSummary, playerSummaries, res.getBoardgame().getMinTimeInMin(), res.getMaxPlayers(),
-				res.getStartTime(), res.getEndTime(), res.getStatus().name());
+		return reservationMapper.mapToDetail(res);
 	}
 
 	@Override
@@ -112,17 +100,8 @@ public class BoardgameConnectReservationService implements ReservationService {
 		Reservation reservation = new Reservation(creator, association, game, availableTable, request.selectedPlayers(),
 				startTime, endTime);
 
-		return convertToDetail(reservationRepository.save(reservation));
+		return reservationMapper.mapToDetail(reservationRepository.save(reservation));
 
-	}
-
-	private ReservationDetail convertToDetail(Reservation res) {
-		return new ReservationDetail(res.getId(), res.getBoardgame().getName(), res.getBoardgame().getImagePath(),
-				new AssociationSummary(res.getAssociation().getId(), res.getAssociation().getAccount().getName(),
-						res.getAssociation().getAddress()),
-				res.getPlayers().stream().map(p -> new PlayerSummary(p.getId(), p.getAccount().getName())).toList(),
-				res.getBoardgame().getMinPlayer(), res.getMaxPlayers(), res.getStartTime(), res.getEndTime(),
-				res.getStatus().name());
 	}
 
 	private GameTable findTable(Association association, Instant start, Instant end, int players) {
@@ -139,9 +118,11 @@ public class BoardgameConnectReservationService implements ReservationService {
 	public void join(String reservationId, Email email) {
 		Reservation reservation = reservationRepository.findById(reservationId)
 				.orElseThrow(() -> new ReservationNotFoundException("Reservation not found"));
+		if (reservation.getStatus() == ReservationStatus.CLOSED) {
+			throw new ForbiddenActionException("Cannot join a closed reservation");
+		}
 		Player player = playerRepository.findByAccountEmail(email)
 				.orElseThrow(() -> new PlayerNotFoundException("Player not found"));
-
 		if (reservation.getPlayers().contains(player)) {
 			throw new PlayerAlreadyJoinedException("You have already joined this game");
 		}
@@ -159,8 +140,10 @@ public class BoardgameConnectReservationService implements ReservationService {
 		Reservation reservation = reservationRepository.findById(reservationId)
 				.orElseThrow(() -> new ReservationNotFoundException("Reservation not found"));
 
+		if (reservation.getStatus() == ReservationStatus.CLOSED) {
+			throw new ForbiddenActionException("Cannot leave a closed reservation");
+		}
 		boolean removed = reservation.getPlayers().removeIf(p -> p.getAccount().getEmail().equals(email));
-
 		if (!removed) {
 			throw new ForbiddenActionException("You are not part of this reservation");
 		}

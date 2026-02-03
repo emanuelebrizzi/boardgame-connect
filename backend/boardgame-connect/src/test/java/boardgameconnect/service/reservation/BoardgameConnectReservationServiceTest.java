@@ -21,6 +21,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -34,6 +35,7 @@ import boardgameconnect.dto.reservation.ReservationDetail;
 import boardgameconnect.dto.reservation.ReservationSummary;
 import boardgameconnect.exception.ReservationFullException;
 import boardgameconnect.exception.ReservationNotFoundException;
+import boardgameconnect.mapper.ReservationMapper;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Boardgame;
 import boardgameconnect.model.Email;
@@ -73,6 +75,9 @@ class BoardgameConnectReservationServiceTest {
 	private PlayerRepository playerRepository;
 	@Mock
 	private GameTableRepository gameTableRepository;
+
+	@Spy
+	private ReservationMapper reservationMapper = new ReservationMapper();
 
 	@InjectMocks
 	private BoardgameConnectReservationService reservationService;
@@ -162,7 +167,7 @@ class BoardgameConnectReservationServiceTest {
 				() -> assertEquals(ASSOCIATION_ADDRESS, detail.association().address()),
 				() -> assertEquals(1, detail.players().size()),
 				() -> assertEquals(PLAYER_NAME, detail.players().get(0).name()),
-				() -> assertEquals("OPEN", detail.state()));
+				() -> assertEquals("OPEN", detail.status()));
 		verify(reservationRepository).findById(RESERVATION_ID);
 	}
 
@@ -203,7 +208,7 @@ class BoardgameConnectReservationServiceTest {
 		assertNotNull(result);
 		assertAll(() -> assertEquals("test-uuid-123", result.id()), () -> assertEquals(BORDGAME_NAME, result.game()),
 				() -> assertEquals(3, result.maxPlayers()), () -> assertEquals(startTime, result.startTime()),
-				() -> assertEquals("OPEN", result.state()),
+				() -> assertEquals("OPEN", result.status()),
 				() -> assertEquals(ASSOCIATION_ID, result.association().id()));
 
 		boolean creatorFound = result.players().stream().anyMatch(p -> p.name().equals(PLAYER_NAME));
