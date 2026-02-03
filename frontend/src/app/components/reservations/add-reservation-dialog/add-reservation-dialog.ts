@@ -110,8 +110,8 @@ export class AddReservationDialog {
     };
 
     this.reservationService.createReservation(request).subscribe({
-      next: (reservation) => {
-        this.router.navigate(['/reservations', reservation.id]);
+      next: (response) => {
+        this.router.navigate(['/reservations', response.id]);
         this.dialogRef.close();
       },
       error: (err) => {

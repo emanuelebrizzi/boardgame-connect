@@ -109,7 +109,7 @@ class BoardgameConnectReservationServiceTest {
 	@Test
 	void getAvailableReservationsShouldFilterByDefaultStatusOpen() {
 		when(reservationRepository.findAll()).thenReturn(List.of(openReservation));
-		List<ReservationSummary> result = reservationService.getAvailableReservations(null, null, null);
+		List<ReservationSummary> result = reservationService.getAllReservations(null, null, null);
 		assertEquals(1, result.size());
 		verify(reservationRepository, times(1)).findAll();
 	}
@@ -118,7 +118,7 @@ class BoardgameConnectReservationServiceTest {
 	void getAvailableReservationsShouldFilterByGameName() {
 		when(reservationRepository.findAll()).thenReturn(List.of(openReservation));
 
-		List<ReservationSummary> result = reservationService.getAvailableReservations(null, "ROOT", null);
+		List<ReservationSummary> result = reservationService.getAllReservations(null, "ROOT", null);
 
 		assertEquals(1, result.size());
 		assertEquals("Root", result.get(0).game());
@@ -128,7 +128,7 @@ class BoardgameConnectReservationServiceTest {
 	void getAvailableReservationsShouldFilterByAssociationName() {
 		when(reservationRepository.findAll()).thenReturn(List.of(openReservation));
 
-		List<ReservationSummary> result = reservationService.getAvailableReservations(null, null, ASSOCIATION_NAME);
+		List<ReservationSummary> result = reservationService.getAllReservations(null, null, ASSOCIATION_NAME);
 
 		assertEquals(1, result.size());
 		assertEquals(ASSOCIATION_NAME, result.get(0).association());
@@ -138,7 +138,7 @@ class BoardgameConnectReservationServiceTest {
 	void getAvailableReservationsShouldMapCorrectDTOFields() {
 		when(reservationRepository.findAll()).thenReturn(List.of(openReservation));
 
-		ReservationSummary summary = reservationService.getAvailableReservations(null, null, null).get(0);
+		ReservationSummary summary = reservationService.getAllReservations(null, null, null).get(0);
 
 		assertAll(() -> assertEquals(BORDGAME_NAME, summary.game()),
 				() -> assertEquals(ASSOCIATION_NAME, summary.association()),
@@ -150,7 +150,7 @@ class BoardgameConnectReservationServiceTest {
 	void getAvailableReservationsShouldReturnEmptyWhenNoMatch() {
 		when(reservationRepository.findAll()).thenReturn(List.of(openReservation));
 
-		List<ReservationSummary> result = reservationService.getAvailableReservations(null, "Terra Mystica", null);
+		List<ReservationSummary> result = reservationService.getAllReservations(null, "Terra Mystica", null);
 
 		assertTrue(result.isEmpty());
 	}

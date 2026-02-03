@@ -48,3 +48,7 @@ interface PlayerSummary {
   id: string;
   name: string;
 }
+
+export interface CreateResponse {
+  id: string;
+}

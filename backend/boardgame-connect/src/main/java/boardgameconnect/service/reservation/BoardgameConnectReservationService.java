@@ -57,13 +57,13 @@ public class BoardgameConnectReservationService implements ReservationService {
 	}
 
 	@Override
-	public List<ReservationSummary> getAvailableReservations(String state, String game, String association) {
+	public List<ReservationSummary> getAllReservations(String state, String game, String association) {
 		return reservationRepository.findAll().stream()
-				.filter(res -> state == null ? res.getStatus() == ReservationStatus.OPEN
-						: res.getStatus().name().equalsIgnoreCase(state))
-				.filter(res -> game == null || res.getBoardgame().getName().equalsIgnoreCase(game))
-				.filter(res -> association == null
-						|| res.getAssociation().getAccount().getName().equalsIgnoreCase(association))
+				.filter(res -> state == null || res.getStatus().name().equalsIgnoreCase(state))
+				.filter(res -> game == null || (res.getBoardgame().getName() != null
+						&& res.getBoardgame().getName().toLowerCase().contains(game.toLowerCase())))
+				.filter(res -> association == null || (res.getAssociation().getAccount().getName() != null && res
+						.getAssociation().getAccount().getName().toLowerCase().contains(association.toLowerCase())))
 				.map(reservationMapper::mapToSummary).collect(Collectors.toList());
 	}
 
@@ -126,11 +126,16 @@ public class BoardgameConnectReservationService implements ReservationService {
 		if (reservation.getPlayers().contains(player)) {
 			throw new PlayerAlreadyJoinedException("You have already joined this game");
 		}
-		if (reservation.getPlayers().size() >= reservation.getBoardgame().getMaxPlayer()) {
+		if (reservation.getPlayers().size() >= reservation.getMaxPlayers()) {
 			throw new ReservationFullException("Reservation is full");
 		}
 
 		reservation.getPlayers().add(player);
+
+		if (reservation.getPlayers().size() == reservation.getMaxPlayers()) {
+			reservation.setStatus(ReservationStatus.CLOSED);
+		}
+
 		reservationRepository.save(reservation);
 	}
 

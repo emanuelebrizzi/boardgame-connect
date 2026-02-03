@@ -6,6 +6,7 @@ import {
   Reservation,
   ReservationFilter,
   ReservationCreateRequest,
+  CreateResponse,
 } from '../models/reservation';
 import { environment } from '../../environments/environment';
 
@@ -41,8 +42,8 @@ export class ReservationService {
   }
 
   // It returns the last created reservation to the caller.
-  createReservation(request: ReservationCreateRequest): Observable<Reservation> {
-    return this.http.post<Reservation>(`${this.apiUrl}`, request);
+  createReservation(request: ReservationCreateRequest): Observable<CreateResponse> {
+    return this.http.post<CreateResponse>(`${this.apiUrl}`, request);
   }
 
   joinReservation(reservationId: string): Observable<void> {

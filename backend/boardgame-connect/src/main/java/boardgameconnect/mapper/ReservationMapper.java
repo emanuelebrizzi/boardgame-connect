@@ -14,7 +14,7 @@ import boardgameconnect.model.Reservation;
 @Component
 public class ReservationMapper {
 	public ReservationSummary mapToSummary(Reservation reservation) {
-		List<String> participantIds = reservation.getPlayers().stream().map(p -> p.getAccount().getId())
+		List<String> participantIds = reservation.getPlayers().stream().map(p -> p.getId())
 				.collect(Collectors.toList());
 		return new ReservationSummary(reservation.getId(), reservation.getBoardgame().getName(),
 				reservation.getBoardgame().getImagePath(), reservation.getAssociation().getAccount().getName(),

@@ -67,7 +67,7 @@ class ReservationControllerTest {
 		var res2 = new ReservationSummary("t_124", "Wingspan", "wingspan.png", "Ludoteca Svelta", 1, 5,
 				Instant.parse("2025-11-21T18:30:00Z"), Instant.parse("2025-11-21T19:30:00Z"), "OPEN", null);
 
-		when(reservationService.getAvailableReservations(null, null, null)).thenReturn(List.of(res1, res2));
+		when(reservationService.getAllReservations(null, null, null)).thenReturn(List.of(res1, res2));
 
 		mockMvc.perform(get(BASE_URI)
 				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
@@ -76,7 +76,7 @@ class ReservationControllerTest {
 				.andExpect(jsonPath("$", hasSize(2))).andExpect(jsonPath("$[0].id", is("t_123")))
 				.andExpect(jsonPath("$[1].id", is("t_124")));
 
-		verify(reservationService).getAvailableReservations(null, null, null);
+		verify(reservationService).getAllReservations(null, null, null);
 	}
 
 	@Test
