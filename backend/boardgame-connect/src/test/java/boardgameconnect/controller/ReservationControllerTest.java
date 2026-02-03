@@ -3,6 +3,7 @@ package boardgameconnect.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -96,6 +97,8 @@ class ReservationControllerTest {
 	void createReservationShouldReturnCreated() throws Exception {
 		ReservationCreateRequest validRequest = new ReservationCreateRequest("game-123", "assoc-456", 4,
 				Instant.parse("2025-12-31T23:59:00Z"));
+
+		when(reservationService.createReservation(any(), any())).thenReturn("test-reservation-id");
 
 		mockMvc.perform(post(BASE_URI)
 				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
