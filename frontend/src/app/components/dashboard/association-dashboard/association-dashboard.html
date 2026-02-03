@@ -19,7 +19,6 @@
           <mat-icon>add</mat-icon> Add Table
         </button>
       </div>
-
       <mat-card class="content-card">
         <mat-card-content>
           <table mat-table [dataSource]="tables()" class="full-width-table">
@@ -58,19 +57,27 @@
     </section>
 
     <section class="dashboard-section">
-      <h2>My Boardgames</h2>
-      <mat-card class="content-card">
-        <mat-card-content class="actions-content">
-          <div class="button-row">
-            <button mat-flat-button color="primary" (click)="addBoardgame()">
-              <mat-icon>library_add</mat-icon> Add Games
-            </button>
-            <button mat-stroked-button color="warn" (click)="removeBoardgame()">
-              <mat-icon>delete_sweep</mat-icon> Remove Games
-            </button>
-          </div>
-        </mat-card-content>
-      </mat-card>
+      <div class="section-header">
+        <h2>My Boardgames</h2>
+        <div class="header-actions">
+          <button
+            mat-flat-button
+            color="warn"
+            (click)="removeSelectedGames()"
+            [disabled]="selectedGameIds().length === 0"
+          >
+            <mat-icon>delete</mat-icon>
+            Remove ({{ selectedGameIds().length }})
+          </button>
+
+          <button mat-stroked-button color="primary" (click)="addBoardgame()">
+            <mat-icon>library_add</mat-icon> Add Games
+          </button>
+        </div>
+      </div>
+
+      <app-boardgame-selection [games]="games()" [(selectedIds)]="selectedGameIds">
+      </app-boardgame-selection>
     </section>
   </div>
 </div>

@@ -1,15 +1,12 @@
-
 @use '@angular/material' as mat;
 
 html {
-  @include mat.theme((
-    color: (
-      primary: mat.$cyan-palette,
-      tertiary: mat.$orange-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+  @include mat.theme((color: (primary: mat.$cyan-palette,
+        tertiary: mat.$orange-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    ));
   height: 100%;
 }
 
@@ -22,28 +19,22 @@ html {
   /* Layout Tokens */
   --app-card-width-sm: 420px;
   --app-card-width-md: 450px;
-  --app-spacing-page-top: 80px;
-
-  --app-card-width-md: 450px;
   --app-card-width-lg: 500px;
 
-  // Maybe I can remove them with default theme colors
+  --app-spacing-md: 16px;
+  /* Standard spacing for gaps */
+  --app-spacing-page-top: 80px;
+  --app-spacing-card-padding: 24px 16px;
+
+  /* Theme Colors */
   --app-bg-default: #f5f5f5;
   --app-bg-surface: #ffffff;
   --app-border-color: #e0e0e0;
-
-  --app-spacing-card-padding: 24px 16px;
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
+  // Default the application to a light color theme.
   color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
@@ -55,7 +46,7 @@ body {
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 16px;
+  padding: var(--app-spacing-card-padding);
 }
 
 .page-centered {
@@ -72,7 +63,6 @@ body {
   margin: 0 16px;
   padding: var(--app-spacing-card-padding);
 }
-
 
 .page-header {
   display: flex;
@@ -95,3 +85,30 @@ body {
   }
 }
 
+
+.app-form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-spacing-md);
+  width: 100%;
+
+  mat-form-field {
+    width: 100%;
+  }
+}
+
+.app-auth-link {
+  text-align: center;
+  margin-top: 16px;
+  font-size: 0.9rem;
+
+  a {
+    color: var(--mat-sys-primary);
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}

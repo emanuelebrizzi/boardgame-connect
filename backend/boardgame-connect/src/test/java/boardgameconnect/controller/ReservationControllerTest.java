@@ -3,6 +3,7 @@ package boardgameconnect.controller;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
@@ -63,11 +64,11 @@ class ReservationControllerTest {
 	@Test
 	void getReservationsShouldReturnListOfAvailableReservationsByDefault() throws Exception {
 		var res1 = new ReservationSummary("t_123", "Root", "root.png", "La Gilda del Cassero", 2, 4,
-				Instant.parse("2025-11-20T21:00:00Z"), Instant.parse("2025-11-20T22:30:00Z"));
+				Instant.parse("2025-11-20T21:00:00Z"), Instant.parse("2025-11-20T22:30:00Z"), "OPEN", null);
 		var res2 = new ReservationSummary("t_124", "Wingspan", "wingspan.png", "Ludoteca Svelta", 1, 5,
-				Instant.parse("2025-11-21T18:30:00Z"), Instant.parse("2025-11-21T19:30:00Z"));
+				Instant.parse("2025-11-21T18:30:00Z"), Instant.parse("2025-11-21T19:30:00Z"), "OPEN", null);
 
-		when(reservationService.getAvailableReservations(null, null, null)).thenReturn(List.of(res1, res2));
+		when(reservationService.getAllReservations(null, null, null)).thenReturn(List.of(res1, res2));
 
 		mockMvc.perform(get(BASE_URI)
 				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))
@@ -76,7 +77,7 @@ class ReservationControllerTest {
 				.andExpect(jsonPath("$", hasSize(2))).andExpect(jsonPath("$[0].id", is("t_123")))
 				.andExpect(jsonPath("$[1].id", is("t_124")));
 
-		verify(reservationService).getAvailableReservations(null, null, null);
+		verify(reservationService).getAllReservations(null, null, null);
 	}
 
 	@Test
@@ -96,6 +97,8 @@ class ReservationControllerTest {
 	void createReservationShouldReturnCreated() throws Exception {
 		ReservationCreateRequest validRequest = new ReservationCreateRequest("game-123", "assoc-456", 4,
 				Instant.parse("2025-12-31T23:59:00Z"));
+
+		when(reservationService.createReservation(any(), any())).thenReturn("test-reservation-id");
 
 		mockMvc.perform(post(BASE_URI)
 				.with(jwt().jwt(j -> j.claim("sub", TEST_USER_EMAIL))

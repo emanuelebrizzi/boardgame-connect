@@ -1,0 +1,126 @@
+import { Component, effect, inject, signal } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { UserRole } from '../../../models/user';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatCardModule } from '@angular/material/card';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { Router, RouterLink } from '@angular/router';
+import { AuthService } from '../../../services/auth-service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { RoleSelector } from '../role-selector/role-selector';
+import { SubmitButton } from '../../shared/submit-button/submit-button';
+import { FormAlert } from '../../form-alert/form-alert';
+import { extractErrorMessage } from '../../../utils/error-handler';
+import { MatSnackBar } from '@angular/material/snack-bar';
+
+@Component({
+  selector: 'app-registration',
+  imports: [
+    ReactiveFormsModule,
+    MatCardModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatButtonToggleModule,
+    RouterLink,
+    RoleSelector,
+    SubmitButton,
+    FormAlert,
+  ],
+  templateUrl: './registration.html',
+  styleUrl: './registration.scss',
+})
+export class Registration {
+  private readonly formBuilder = inject(NonNullableFormBuilder);
+  private readonly authService = inject(AuthService);
+  private readonly router = inject(Router);
+
+  private readonly snackBar = inject(MatSnackBar);
+
+  readonly role = signal<UserRole>('PLAYER');
+  readonly errorMessage = signal<string | null>(null);
+  readonly isLoading = signal<boolean>(false);
+
+  readonly registerForm = this.formBuilder.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    name: ['', [Validators.required]],
+    taxCode: [''],
+    address: [''],
+  });
+
+  constructor() {
+    effect(() => {
+      const currentRole = this.role();
+      this.updateValidators(currentRole);
+    });
+  }
+
+  private updateValidators(role: UserRole): void {
+    const taxControl = this.registerForm.controls.taxCode;
+    const addressControl = this.registerForm.controls.address;
+
+    if (role === 'ASSOCIATION') {
+      taxControl.setValidators([Validators.required]);
+      addressControl.setValidators([Validators.required]);
+    } else {
+      taxControl.clearValidators();
+      addressControl.clearValidators();
+    }
+
+    // Refresh validity status
+    taxControl.updateValueAndValidity();
+    addressControl.updateValueAndValidity();
+  }
+
+  processRegistrationForm(): void {
+    if (this.registerForm.invalid) {
+      return;
+    }
+
+    this.isLoading.set(true);
+    this.errorMessage.set(null);
+
+    const formValue = this.registerForm.getRawValue();
+    const role = this.role();
+
+    // Construct Payload based on Role
+    let requestPayload;
+
+    if (role === 'ASSOCIATION') {
+      requestPayload = {
+        email: formValue.email,
+        password: formValue.password,
+        name: formValue.name,
+        details: {
+          taxCode: formValue.taxCode,
+          address: formValue.address,
+        },
+      };
+    } else {
+      requestPayload = {
+        email: formValue.email,
+        password: formValue.password,
+        name: formValue.name,
+        details: null,
+      };
+    }
+
+    this.authService.register(role, requestPayload).subscribe({
+      next: () => {
+        this.snackBar.open('Registration successful! Please log in.', 'Close', {
+          duration: 3000,
+          horizontalPosition: 'center',
+          verticalPosition: 'bottom',
+        });
+        this.router.navigate(['/login']);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.isLoading.set(false);
+        this.errorMessage.set(extractErrorMessage(err));
+      },
+    });
+  }
+}

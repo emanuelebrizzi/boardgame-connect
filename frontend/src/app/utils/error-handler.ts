@@ -1,5 +1,5 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ErrorResponse } from '../model/error';
+import { ErrorResponse } from '../models/error';
 export function extractErrorMessage(err: unknown): string {
   if (err instanceof HttpErrorResponse) {
     const apiError = err.error as ErrorResponse;

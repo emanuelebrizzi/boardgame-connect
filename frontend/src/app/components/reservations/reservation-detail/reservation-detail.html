@@ -1,0 +1,98 @@
+@if (reservation(); as res) {
+  <mat-card class="reservation-card mat-elevation-z3">
+    <div class="image-container">
+      <img
+        [src]="res.gameImgPath"
+        width="600"
+        height="300"
+        priority
+        alt="Boardgame Cover"
+        class="cover-image"
+      />
+      <div class="overlay-title">
+        <mat-card-title>{{ res.game }}</mat-card-title>
+      </div>
+    </div>
+
+    <mat-card-content>
+      <div class="info-grid">
+        <div class="info-section">
+          <h3 class="section-label"><mat-icon>event</mat-icon> Date & Time</h3>
+          <div class="date-display">
+            <span class="day">{{ res.startTime | date: 'mediumDate' }}</span>
+            <div class="time-row">
+              <span class="time-label">Start:</span>
+              <span class="time-value">{{ res.startTime | date: 'shortTime' }}</span>
+            </div>
+            <div class="time-row">
+              <span class="time-label">End:</span>
+              <span class="time-value">{{ res.endTime | date: 'shortTime' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-section">
+          <h3 class="section-label"><mat-icon>store</mat-icon> Location</h3>
+          <div class="association-display">
+            <span class="association-name">{{ res.association.name }}</span>
+            <span class="association-address">{{ res.association.address }}</span>
+          </div>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="players-section">
+        <div class="section-header">
+          <h3>Participants</h3>
+          <mat-chip-set>
+            <mat-chip
+              [highlighted]="true"
+              [color]="res.players.length >= res.maxPlayers ? 'warn' : 'primary'"
+            >
+              {{ res.players.length }} / {{ res.maxPlayers }} Joined
+            </mat-chip>
+          </mat-chip-set>
+        </div>
+
+        <mat-list>
+          @for (player of res.players; track player.id) {
+            <mat-list-item>
+              <mat-icon matListItemIcon>person</mat-icon>
+              <span matListItemTitle>{{ player.name }}</span>
+              @if (player.id === currentUserId()) {
+                <span matListItemMeta class="you-badge">(You)</span>
+              }
+            </mat-list-item>
+          }
+        </mat-list>
+      </div>
+    </mat-card-content>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-actions align="end">
+      <button mat-button routerLink="/">BACK</button>
+
+      @if (isPlayer()) {
+        @if (reservation()?.status === 'OPEN') {
+          @if (isParticipant()) {
+            <button mat-flat-button color="warn" (click)="exitReservation()">
+              EXIT RESERVATION
+            </button>
+          } @else {
+            <button
+              mat-flat-button
+              color="primary"
+              [disabled]="res.players.length >= res.maxPlayers"
+              (click)="joinReservation()"
+            >
+              <mat-icon class="mr-1">login</mat-icon>
+              JOIN GAME
+            </button>
+          }
+        }
+      }
+    </mat-card-actions>
+  </mat-card>
+}

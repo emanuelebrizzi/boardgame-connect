@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { computed, inject, Injectable, signal } from '@angular/core';
-import { LoginRequest, LoginResponse } from '../model/login';
+import { LoginRequest, LoginResponse } from '../models/login';
 import { Observable, tap } from 'rxjs';
-import { AssociationRegisterRequest, PlayerRegisterRequest } from '../model/registration';
-import { UserProfile, UserRole } from '../model/user';
+import { AssociationRegisterRequest, PlayerRegisterRequest } from '../models/registration';
+import { UserProfile, UserRole } from '../models/user';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -30,7 +30,7 @@ export class AuthService {
 
   register(
     role: UserRole,
-    request: PlayerRegisterRequest | AssociationRegisterRequest
+    request: PlayerRegisterRequest | AssociationRegisterRequest,
   ): Observable<void> {
     const endpoint =
       role === 'PLAYER'
@@ -48,8 +48,13 @@ export class AuthService {
   }
 
   private getUserFromStorage(): UserProfile | null {
-    const storedUser = localStorage.getItem(this.USER_KEY);
-    return storedUser ? JSON.parse(storedUser) : null;
+    try {
+      const storedUser = localStorage.getItem(this.USER_KEY);
+      return storedUser ? JSON.parse(storedUser) : null;
+    } catch (e) {
+      localStorage.removeItem(this.USER_KEY); // Clean up bad data
+      return null;
+    }
   }
 
   private getTokenFromStorage(): string | null {

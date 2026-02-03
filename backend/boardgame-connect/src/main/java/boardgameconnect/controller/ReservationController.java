@@ -1,6 +1,7 @@
 package boardgameconnect.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,8 +38,8 @@ public class ReservationController {
 	@PreAuthorize("hasAnyRole('PLAYER', 'ASSOCIATION')")
 	public ResponseEntity<List<ReservationSummary>> getReservations(
 			@Valid @ModelAttribute ReservationFilterRequest filter) {
-		List<ReservationSummary> reservations = reservationService.getAvailableReservations(filter.state(),
-				filter.game(), filter.association());
+		List<ReservationSummary> reservations = reservationService.getAllReservations(filter.state(), filter.game(),
+				filter.association());
 
 		return ResponseEntity.ok(reservations);
 	}
@@ -52,10 +53,10 @@ public class ReservationController {
 
 	@PostMapping
 	@PreAuthorize("hasRole('PLAYER')")
-	public ResponseEntity<Void> createReservation(@Valid @RequestBody ReservationCreateRequest request) {
+	public ResponseEntity<Map<String, String>> createReservation(@Valid @RequestBody ReservationCreateRequest request) {
 		var playerEmail = new Email(SecurityContextHolder.getContext().getAuthentication().getName());
-		reservationService.createReservation(request, playerEmail);
-		return ResponseEntity.status(HttpStatus.CREATED).build();
+		String reservationId = reservationService.createReservation(request, playerEmail);
+		return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("id", reservationId));
 	}
 
 	@PostMapping("/{id}/join")

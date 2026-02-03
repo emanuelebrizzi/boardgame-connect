@@ -1,0 +1,22 @@
+<div class="container">
+  <header>
+    <h1>Remove Games</h1>
+    <p>Select games to remove from your library.</p>
+  </header>
+
+  <app-boardgame-selection [games]="myGames()" [(selectedIds)]="selectedGameIds">
+  </app-boardgame-selection>
+
+  <div class="actions">
+    <button mat-button (click)="cancel()">Cancel</button>
+    <app-submit-button
+      color="warn"
+      [isLoading]="isSubmitting()"
+      [isDisabled]="selectedGameIds().length === 0"
+      loadingText="Removing..."
+      (click)="submitRemove()"
+    >
+      Remove Selected ({{ selectedGameIds().length }})
+    </app-submit-button>
+  </div>
+</div>

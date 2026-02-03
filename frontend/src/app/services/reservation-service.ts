@@ -6,7 +6,8 @@ import {
   Reservation,
   ReservationFilter,
   ReservationCreateRequest,
-} from '../model/reservation';
+  CreateResponse,
+} from '../models/reservation';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -40,8 +41,16 @@ export class ReservationService {
     return this.http.get<Reservation>(`${this.apiUrl}/${id}`);
   }
 
-  // It returns the id of the created reservation to the caller.
-  createReservation(request: ReservationCreateRequest): Observable<string> {
-    return this.http.post<string>(`${this.apiUrl}`, request);
+  // It returns the last created reservation to the caller.
+  createReservation(request: ReservationCreateRequest): Observable<CreateResponse> {
+    return this.http.post<CreateResponse>(`${this.apiUrl}`, request);
+  }
+
+  joinReservation(reservationId: string): Observable<void> {
+    return this.http.post<void>(`${this.apiUrl}/${reservationId}/join`, {});
+  }
+
+  leaveReservation(reservationId: string): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${reservationId}/leave`);
   }
 }

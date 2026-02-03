@@ -7,11 +7,11 @@
     </mat-form-field>
 
     @if (!associationId()) {
-    <mat-form-field appearance="outline" class="filter-item">
-      <mat-label>Association</mat-label>
-      <input matInput [formControl]="assocFilter" placeholder="e.g. Gilda" />
-      <mat-icon matSuffix>store</mat-icon>
-    </mat-form-field>
+      <mat-form-field appearance="outline" class="filter-item">
+        <mat-label>Association</mat-label>
+        <input matInput [formControl]="assocFilter" placeholder="e.g. Gilda" />
+        <mat-icon matSuffix>store</mat-icon>
+      </mat-form-field>
     }
 
     <mat-form-field appearance="outline" class="filter-item status-filter">
@@ -34,7 +34,7 @@
         <mat-icon>filter_alt_off</mat-icon>
       </button>
 
-      <button mat-stroked-button color="primary" (click)="loadData()" aria-label="Refresh list">
+      <button mat-stroked-button color="primary" (click)="refresh()" aria-label="Refresh list">
         <mat-icon>refresh</mat-icon>
       </button>
     </div>
@@ -42,31 +42,31 @@
 </div>
 
 @if (isLoading()) {
-<div class="state-message" role="status">
-  <mat-spinner diameter="40"></mat-spinner>
-  <span class="visually-hidden">Loading reservations...</span>
-</div>
+  <div class="state-message" role="status">
+    <mat-spinner diameter="40"></mat-spinner>
+    <span class="visually-hidden">Loading reservations...</span>
+  </div>
 } @else if (hasError()) {
-<div class="state-message error" role="alert">
-  <div class="icon-circle">
-    <mat-icon>error</mat-icon>
-  </div>
-  <h2>Something has happened!</h2>
-  <p>{{ errorMessage() }}</p>
+  <div class="state-message error" role="alert">
+    <div class="icon-circle">
+      <mat-icon>error</mat-icon>
+    </div>
+    <h2>Something has happened!</h2>
+    <p>{{ errorMessage() }}</p>
 
-  <button mat-flat-button color="primary" (click)="loadData()">
-    <mat-icon>refresh</mat-icon> Retry Connection
-  </button>
-</div>
-} @else {
-<div class="results-grid">
-  @for (item of reservations(); track item.id) {
-  <app-reservation-card [reservation]="item" />
-  } @empty {
-  <div class="empty-state">
-    <mat-icon>event_busy</mat-icon>
-    <p>No reservations found.</p>
+    <button mat-flat-button color="primary" (click)="refresh()">
+      <mat-icon>refresh</mat-icon> Retry Connection
+    </button>
   </div>
-  }
-</div>
+} @else {
+  <div class="results-grid">
+    @for (item of reservations(); track item.id) {
+      <app-reservation-card [reservation]="item" />
+    } @empty {
+      <div class="empty-state">
+        <mat-icon>event_busy</mat-icon>
+        <p>No reservations found.</p>
+      </div>
+    }
+  </div>
 }

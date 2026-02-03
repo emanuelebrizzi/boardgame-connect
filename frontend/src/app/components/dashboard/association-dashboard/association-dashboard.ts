@@ -11,12 +11,22 @@ import { MatTableModule } from '@angular/material/table';
 import { toSignal, toObservable } from '@angular/core/rxjs-interop';
 import { switchMap } from 'rxjs';
 import { AssociationService } from '../../../services/association-service';
-import { GameTable } from '../../../model/game-table';
+import { GameTable } from '../../../models/game-table';
 import { MatCardModule } from '@angular/material/card';
+import { BoardgameService } from '../../../services/boardgame-service';
+import { Boardgame } from '../../../models/boardgame';
+import { BoardgameSelection } from '../../boardgames/boardgame-selection/boardgame-selection';
 
 @Component({
   selector: 'app-association-dashboard',
-  imports: [Dashboard, MatButtonModule, MatIconModule, MatTableModule, MatCardModule],
+  imports: [
+    Dashboard,
+    MatButtonModule,
+    MatIconModule,
+    MatTableModule,
+    MatCardModule,
+    BoardgameSelection,
+  ],
   templateUrl: './association-dashboard.html',
   styleUrl: './association-dashboard.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -24,6 +34,7 @@ import { MatCardModule } from '@angular/material/card';
 export class AssociationDashboard {
   private readonly authService = inject(AuthService);
   private readonly associationService = inject(AssociationService);
+  private readonly boardgameService = inject(BoardgameService);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
   private readonly snackBar = inject(MatSnackBar);
@@ -39,12 +50,34 @@ export class AssociationDashboard {
     { initialValue: [] as GameTable[] },
   );
 
+  readonly games = toSignal(
+    toObservable(this.refreshTrigger).pipe(
+      switchMap(() => this.boardgameService.getMyBoardgames()),
+    ),
+    { initialValue: [] as Boardgame[] },
+  );
+
+  readonly selectedGameIds = signal<string[]>([]);
+
   addBoardgame() {
     this.router.navigate(['boardgames/add']);
   }
 
-  removeBoardgame() {
-    this.router.navigate(['boardgames/remove']);
+  removeSelectedGames() {
+    const idsToRemove = this.selectedGameIds();
+
+    if (idsToRemove.length === 0) return;
+
+    if (confirm(`Are you sure you want to remove ${idsToRemove.length} games?`)) {
+      this.boardgameService.removeBoardgames(idsToRemove).subscribe({
+        next: () => {
+          this.showSuccess('Games removed successfully');
+          this.selectedGameIds.set([]);
+          this.refreshData();
+        },
+        error: () => this.showError('Could not remove games'),
+      });
+    }
   }
 
   addTable() {
@@ -56,7 +89,7 @@ export class AssociationDashboard {
     dialogRef.afterClosed().subscribe((success) => {
       if (success) {
         this.showSuccess('Table added successfully');
-        this.refreshTables();
+        this.refreshData();
       }
     });
   }
@@ -66,14 +99,14 @@ export class AssociationDashboard {
       this.associationService.removeTable(tableId).subscribe({
         next: () => {
           this.showSuccess('Table removed successfully');
-          this.refreshTables();
+          this.refreshData();
         },
         error: () => this.showError('Could not remove table'),
       });
     }
   }
 
-  private refreshTables() {
+  private refreshData() {
     this.refreshTrigger.update((v) => v + 1);
   }
 

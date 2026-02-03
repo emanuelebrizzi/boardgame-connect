@@ -2,9 +2,9 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Observable } from 'rxjs';
-import { GameTable, GameTableRequest } from '../model/game-table';
-import { AssociationSummary } from '../model/associaton';
-import { Boardgame } from '../model/boardgame';
+import { GameTable, GameTableRequest } from '../models/game-table';
+import { AssociationSummary } from '../models/associaton';
+import { Boardgame } from '../models/boardgame';
 
 @Injectable({
   providedIn: 'root',
