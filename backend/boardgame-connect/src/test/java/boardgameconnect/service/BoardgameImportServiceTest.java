@@ -12,7 +12,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
@@ -22,6 +21,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import boardgameconnect.dao.BoardgameRepository;
 import boardgameconnect.exception.DataImportException;
@@ -38,7 +38,6 @@ class BoardgameImportServiceTest {
 	private BoardgameImportService importService;
 
 	private String csvContent;
-
 	private String delimiter;
 
 	@BeforeEach
@@ -55,10 +54,9 @@ class BoardgameImportServiceTest {
 		when(repository.existsByNameIgnoreCase("Catan")).thenReturn(false);
 		when(repository.existsByNameIgnoreCase("Dixit")).thenReturn(true);
 
-		importService.importFromStream(inputStream, delimiter);
+		ReflectionTestUtils.invokeMethod(importService, "importFromStream", inputStream, delimiter);
 
 		verify(repository, times(1)).save(any(Boardgame.class));
-
 		verify(repository, times(1)).existsByNameIgnoreCase("Catan");
 		verify(repository, times(1)).existsByNameIgnoreCase("Dixit");
 	}
@@ -66,10 +64,9 @@ class BoardgameImportServiceTest {
 	@Test
 	void importFromStreamShouldSkipRowWhenDelimiterIsWrong() {
 		String wrongDelimiter = ",";
-
 		InputStream is = new ByteArrayInputStream(csvContent.getBytes(StandardCharsets.UTF_8));
 
-		importService.importFromStream(is, wrongDelimiter);
+		ReflectionTestUtils.invokeMethod(importService, "importFromStream", is, wrongDelimiter);
 
 		verify(repository, never()).save(any(Boardgame.class));
 	}
@@ -82,7 +79,6 @@ class BoardgameImportServiceTest {
 				() -> importService.importInitialData(nonExistingPath, delimiter));
 
 		assertTrue(exception.getMessage().contains("Resource file not found at " + nonExistingPath));
-
 		verifyNoInteractions(repository);
 	}
 
@@ -90,13 +86,13 @@ class BoardgameImportServiceTest {
 	void importFromStreamShouldHandleSpacesAndNotSaveWhenNameMatchesAfterTrim() {
 		String gameWithSpaces = "  Catan  ";
 		String cleanName = "Catan";
-		String csvContent = "name;minPlayer;maxPlayer;minTime;timePerPlayer;imagePath\n" + gameWithSpaces
+		String customCsvContent = "name;minPlayer;maxPlayer;minTime;timePerPlayer;imagePath\n" + gameWithSpaces
 				+ ";3;4;60;15;/images/catan.png";
-		InputStream is = new ByteArrayInputStream(csvContent.getBytes(StandardCharsets.UTF_8));
+		InputStream is = new ByteArrayInputStream(customCsvContent.getBytes(StandardCharsets.UTF_8));
 
 		when(repository.existsByNameIgnoreCase(cleanName)).thenReturn(true);
 
-		importService.importFromStream(is, delimiter);
+		ReflectionTestUtils.invokeMethod(importService, "importFromStream", is, delimiter);
 
 		verify(repository, never()).save(any(Boardgame.class));
 		verify(repository).existsByNameIgnoreCase(cleanName);
@@ -110,22 +106,21 @@ class BoardgameImportServiceTest {
 
 		when(repository.existsByNameIgnoreCase("BrokenGame")).thenReturn(false);
 
-		importService.importFromStream(is, delimiter);
+		ReflectionTestUtils.invokeMethod(importService, "importFromStream", is, delimiter);
 
 		verify(repository, never()).save(any(Boardgame.class));
 	}
 
 	@Test
-	void importFromStreamShouldThrowDataImportExceptionWhenStreamFails() throws IOException {
+	void importFromStreamShouldThrowDataImportExceptionWhenStreamFails() throws Exception {
 		InputStream mockInputStream = mock(InputStream.class);
 		when(mockInputStream.read(any(byte[].class), anyInt(), anyInt()))
 				.thenThrow(new java.io.IOException("Simulated IO error"));
 
 		DataImportException exception = assertThrows(DataImportException.class,
-				() -> importService.importFromStream(mockInputStream, delimiter));
+				() -> ReflectionTestUtils.invokeMethod(importService, "importFromStream", mockInputStream, delimiter));
 
 		assertTrue(exception.getMessage().contains("Fatal error: Failed to parse boardgame CSV stream"));
-
 		verifyNoInteractions(repository);
 	}
 }

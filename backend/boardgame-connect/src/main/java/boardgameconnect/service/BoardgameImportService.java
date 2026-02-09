@@ -36,7 +36,7 @@ public class BoardgameImportService {
 	}
 
 	@Transactional
-	public void importFromStream(InputStream inputStream, String delimiter) {
+	private void importFromStream(InputStream inputStream, String delimiter) {
 		try (BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
 
 			br.readLine();
