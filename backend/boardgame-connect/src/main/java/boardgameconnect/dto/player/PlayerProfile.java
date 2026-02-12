@@ -1,4 +1,4 @@
-package boardgameconnect.dto;
+package boardgameconnect.dto.player;
 
 import boardgameconnect.model.UserRole;
 

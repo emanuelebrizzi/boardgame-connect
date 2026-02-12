@@ -5,9 +5,9 @@ import org.springframework.stereotype.Service;
 
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.UserAccountRepository;
-import boardgameconnect.dto.PlayerProfile;
 import boardgameconnect.dto.auth.login.LoginRequest;
 import boardgameconnect.dto.auth.login.LoginResponse;
+import boardgameconnect.dto.player.PlayerProfile;
 import boardgameconnect.exception.InvalidCredentialsException;
 import boardgameconnect.exception.PlayerNotFoundException;
 import boardgameconnect.mapper.UserMapper;

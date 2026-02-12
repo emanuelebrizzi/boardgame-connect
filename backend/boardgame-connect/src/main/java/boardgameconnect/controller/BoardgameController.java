@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import boardgameconnect.dto.BoardgameDto;
-import boardgameconnect.service.BoardgameService;
+import boardgameconnect.service.boardgame.BoardgameService;
 
 @RestController
 @RequestMapping("/api/v1/boardgames")

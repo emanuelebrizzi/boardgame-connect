@@ -23,6 +23,7 @@ import boardgameconnect.dao.BoardgameRepository;
 import boardgameconnect.dto.BoardgameDto;
 import boardgameconnect.mapper.BoardgameMapper;
 import boardgameconnect.model.Boardgame;
+import boardgameconnect.service.boardgame.BoardgameService;
 
 @ExtendWith(MockitoExtension.class)
 class BoardgameServiceTest {

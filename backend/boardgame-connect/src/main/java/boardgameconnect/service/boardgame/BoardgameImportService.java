@@ -1,4 +1,4 @@
-package boardgameconnect.service;
+package boardgameconnect.service.boardgame;
 
 import java.io.BufferedReader;
 import java.io.InputStream;

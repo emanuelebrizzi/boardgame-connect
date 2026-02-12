@@ -1,4 +1,4 @@
-package boardgameconnect.service;
+package boardgameconnect.service.boardgame;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;

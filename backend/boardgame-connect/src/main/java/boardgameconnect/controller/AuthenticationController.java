@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import boardgameconnect.dto.PlayerProfile;
 import boardgameconnect.dto.association.AssociationProfile;
 import boardgameconnect.dto.auth.login.LoginRequest;
 import boardgameconnect.dto.auth.login.LoginResponse;
 import boardgameconnect.dto.auth.register.AssociationDetails;
 import boardgameconnect.dto.auth.register.RegistrationRequest;
+import boardgameconnect.dto.player.PlayerProfile;
 import boardgameconnect.service.auth.login.AssociationLoginService;
 import boardgameconnect.service.auth.login.PlayerLoginService;
 import boardgameconnect.service.auth.register.AssociationRegistrationService;

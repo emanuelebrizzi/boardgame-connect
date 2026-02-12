@@ -18,9 +18,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import boardgameconnect.dao.PlayerRepository;
 import boardgameconnect.dao.UserAccountRepository;
-import boardgameconnect.dto.PlayerProfile;
 import boardgameconnect.dto.auth.login.LoginRequest;
 import boardgameconnect.dto.auth.login.LoginResponse;
+import boardgameconnect.dto.player.PlayerProfile;
 import boardgameconnect.mapper.UserMapper;
 import boardgameconnect.model.Email;
 import boardgameconnect.model.Player;

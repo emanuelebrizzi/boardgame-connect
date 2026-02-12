@@ -6,7 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import boardgameconnect.service.BoardgameImportService;
+import boardgameconnect.service.boardgame.BoardgameImportService;
 
 @Configuration
 public class DataInitializer {

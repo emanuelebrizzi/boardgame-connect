@@ -17,7 +17,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import boardgameconnect.dto.BoardgameDto;
-import boardgameconnect.service.BoardgameService;
+import boardgameconnect.service.boardgame.BoardgameService;
 
 @WebMvcTest(BoardgameController.class)
 class BoardgameControllerTest {

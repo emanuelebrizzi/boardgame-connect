@@ -2,8 +2,8 @@ package boardgameconnect.mapper;
 
 import org.springframework.stereotype.Component;
 
-import boardgameconnect.dto.PlayerProfile;
 import boardgameconnect.dto.association.AssociationProfile;
+import boardgameconnect.dto.player.PlayerProfile;
 import boardgameconnect.model.Association;
 import boardgameconnect.model.Player;
 import boardgameconnect.model.UserRole;

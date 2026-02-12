@@ -21,12 +21,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import boardgameconnect.config.SecurityConfig;
-import boardgameconnect.dto.PlayerProfile;
 import boardgameconnect.dto.association.AssociationProfile;
 import boardgameconnect.dto.auth.login.LoginRequest;
 import boardgameconnect.dto.auth.login.LoginResponse;
 import boardgameconnect.dto.auth.register.AssociationDetails;
 import boardgameconnect.dto.auth.register.RegistrationRequest;
+import boardgameconnect.dto.player.PlayerProfile;
 import boardgameconnect.exception.EmailAlreadyInUseException;
 import boardgameconnect.exception.InvalidCredentialsException;
 import boardgameconnect.model.Email;
